@@ -4,15 +4,14 @@ import SharedSpaceCreateAndEdit from "../../components/shared-spaces/shared-spac
 
 export default {
   name: "add-shared-space",
-  components: {SharedSpaceCreateAndEdit},
+  components: { SharedSpaceCreateAndEdit },
   data() {
     return {
       shared_space: {
-        name: '',
+        name: "",
         capacity: 0,
-        description: '',
-        location: '',
-      }
+        description: "",
+      },
     };
   },
   methods: {
@@ -20,27 +19,29 @@ export default {
       try {
         const response = await http.post("/shared-area", shared_space); // Hacer la llamada POST
         console.log("Shared Space saved:", response.data);
-        this.$router.push("/dashboard-admin/classrooms-shared-spaces/shared-spaces");
+        this.$router.push(
+          "/dashboard-admin/classrooms-shared-spaces/shared-spaces"
+        );
       } catch (error) {
         console.error("Error saving shared space:", error);
       }
     },
     cancel() {
-      this.$router.push("/dashboard-admin/classrooms-shared-spaces/shared-spaces");
+      this.$router.push(
+        "/dashboard-admin/classrooms-shared-spaces/shared-spaces"
+      );
     },
   },
 };
 </script>
 
 <template>
-    <shared-space-create-and-edit
-        :shared_space="shared_space"
-        :isCreateMode="true"
-        @save="saveSharedSpace"
-        @cancel="cancel"
-    />
+  <shared-space-create-and-edit
+    :shared_space="shared_space"
+    :isCreateMode="true"
+    @save="saveSharedSpace"
+    @cancel="cancel"
+  />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

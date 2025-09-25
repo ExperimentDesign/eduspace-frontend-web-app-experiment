@@ -4,10 +4,10 @@ import SharedSpaceCard from "../../components/shared-spaces/shared-space-card.co
 
 export default {
   name: "sports-facilities",
-  components: {SharedSpaceCard},
+  components: { SharedSpaceCard },
   data() {
     return {
-      shared_spaces: []
+      shared_spaces: [],
     };
   },
   mounted() {
@@ -25,7 +25,9 @@ export default {
     async deleteSharedSpaces(id) {
       try {
         await http.delete(`/shared-area/${id}`);
-        this.shared_spaces = this.areas.filter(shared_area => shared_area.id !== id);
+        this.shared_spaces = this.areas.filter(
+          (shared_area) => shared_area.id !== id
+        );
       } catch (error) {
         console.error("Error deleting space:", error);
       }
@@ -34,10 +36,12 @@ export default {
       this.$router.push({ name: "edit-space", params: { id } });
     },
     goToAdd() {
-      this.$router.push('/dashboard-admin/classrooms-shared-spaces/shared-spaces/add');
-    }
-  }
-}
+      this.$router.push(
+        "/dashboard-admin/classrooms-shared-spaces/shared-spaces/add"
+      );
+    },
+  },
+};
 </script>
 
 <template>
@@ -57,24 +61,34 @@ export default {
       <div class="mb-2">
         <span class="font-medium text-600">Description:</span>
       </div>
-      <div class="mb-3">
-        <span class="font-medium text-600">Location:</span>
-      </div>
       <div class="flex align-items-center gap-2 mb-3">
         <i class="pi pi-box text-yellow-500"></i>
         <span>Equipment</span>
       </div>
-      <pv-button label="Add" severity="warning" text raised class="w-full" @click="goToAdd"/>
+      <pv-button
+        label="Add"
+        severity="warning"
+        text
+        raised
+        class="w-full"
+        @click="goToAdd"
+      />
     </div>
 
     <div class="cards-container">
-      <shared-space-card v-for="shared_space in shared_spaces" :key="shared_space.id" :shared_space="shared_space" @delete="deleteSharedSpaces" @edit="editSharedSpace" />
+      <shared-space-card
+        v-for="shared_space in shared_spaces"
+        :key="shared_space.id"
+        :shared_space="shared_space"
+        @delete="deleteSharedSpaces"
+        @edit="editSharedSpace"
+      />
     </div>
   </div>
 </template>
 
 <style scoped>
-.container{
+.container {
   display: flex;
   width: 100%;
   align-content: space-between;

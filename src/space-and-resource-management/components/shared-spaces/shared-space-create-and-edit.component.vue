@@ -6,25 +6,29 @@ export default {
       type: Object,
       required: true,
       default: () => ({
-        name: '',
+        name: "",
         capacity: 0,
-        description: '',
-        location: '',
+        description: "",
       }),
     },
     isCreateMode: {
       type: Boolean,
-      default: true
-    }
+      default: true,
+    },
   },
   data() {
     return {
-      form: { ...this.shared_space }
+      form: { ...this.shared_space },
     };
   },
   methods: {
     save() {
-      if (!this.form.name || !this.form.capacity || !this.form.description || !this.form.location) {
+      if (
+        !this.form.name ||
+        !this.form.capacity ||
+        !this.form.description ||
+        !this.form.location
+      ) {
         alert("Please fill in all fields.");
         return;
       }
@@ -32,8 +36,8 @@ export default {
     },
     cancel() {
       this.$emit("cancel");
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -43,36 +47,40 @@ export default {
     <i class="pi pi-chevron-right"></i>
     <h4 style="margin-left: 20px">Shared Spaces</h4>
     <i class="pi pi-chevron-right"></i>
-    <h4 style="margin-left: 20px">{{ isCreateMode ? 'Add Shared Space' : 'Edit Shared Space' }}</h4>
+    <h4 style="margin-left: 20px">
+      {{ isCreateMode ? "Add Shared Space" : "Edit Shared Space" }}
+    </h4>
   </div>
 
   <div class="shared-space-create-form">
     <div class="form-header">
-      <h2>{{ isCreateMode ? 'Create Shared Space' : 'Edit Shared Space' }}</h2>
+      <h2>{{ isCreateMode ? "Create Shared Space" : "Edit Shared Space" }}</h2>
     </div>
     <form @submit.prevent="save" class="form-grid">
       <div class="form-field">
         <pv-float-label>Name:</pv-float-label>
-        <pv-input-text v-model="form.name" placeholder="Enter name"/>
+        <pv-input-text v-model="form.name" placeholder="Enter name" />
       </div>
 
       <div class="form-field">
         <pv-float-label>Capacity:</pv-float-label>
-        <pv-input-number v-model.number="form.capacity" :min="0" placeholder="Enter capacity"/>
+        <pv-input-number
+          v-model.number="form.capacity"
+          :min="0"
+          placeholder="Enter capacity"
+        />
       </div>
 
       <div class="form-field">
         <pv-float-label>Description:</pv-float-label>
-        <pv-input-text v-model="form.description" placeholder="Enter description"/>
-      </div>
-
-      <div class="form-field">
-        <pv-float-label>Location:</pv-float-label>
-        <pv-input-text v-model="form.location" placeholder="Enter location"/>
+        <pv-input-text
+          v-model="form.description"
+          placeholder="Enter description"
+        />
       </div>
 
       <div class="form-actions">
-        <pv-button type="submit" label="Save" class="p-button-success"/>
+        <pv-button type="submit" label="Save" class="p-button-success" />
         <pv-button
           type="button"
           label="Cancel"
