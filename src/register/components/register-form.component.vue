@@ -16,12 +16,121 @@ export default {
         username: "",
       },
       dialogVisible: false, // Controla la visibilidad del diálogo
+      errors: {
+        email: "",
+        dni: "",
+        phone: "",
+        birthdate: "",
+      },
     };
   },
   methods: {
-    submitForm() {
-      this.onSubmit(this.formData);
-      this.dialogVisible = true; // Muestra el diálogo cuando se crea la cuenta
+    validateEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    },
+    validateDNI(dni) {
+      // DNI peruano: exactamente 8 dígitos
+      const dniRegex = /^\d{8}$/;
+      return dniRegex.test(dni);
+    },
+    validatePhone(phone) {
+      // Teléfono peruano: exactamente 9 dígitos, empezando con 9
+      const phoneRegex = /^9\d{8}$/;
+      return phoneRegex.test(phone);
+    },
+    validateAge(birthdate) {
+      if (!birthdate) return false;
+
+      const today = new Date();
+      const birth = new Date(birthdate);
+      let age = today.getFullYear() - birth.getFullYear();
+      const monthDiff = today.getMonth() - birth.getMonth();
+
+      // Ajustar la edad si aún no ha cumplido años este año
+      if (
+        monthDiff < 0 ||
+        (monthDiff === 0 && today.getDate() < birth.getDate())
+      ) {
+        age--;
+      }
+
+      return age >= 18;
+    },
+    validateField(field, value) {
+      this.errors[field] = "";
+
+      switch (field) {
+        case "email":
+          if (value && !this.validateEmail(value)) {
+            this.errors.email =
+              "Ingrese un email válido (ejemplo: usuario@dominio.com)";
+          }
+          break;
+        case "dni":
+          if (value && !this.validateDNI(value)) {
+            this.errors.dni = "El DNI debe tener exactamente 8 dígitos";
+          }
+          break;
+        case "phone":
+          if (value && !this.validatePhone(value)) {
+            this.errors.phone =
+              "El teléfono debe tener 9 dígitos y comenzar con 9 (ej: 987654321)";
+          }
+          break;
+        case "birthdate":
+          if (value && !this.validateAge(value)) {
+            this.errors.birthdate = "Debe ser mayor de 18 años";
+          }
+          break;
+      }
+    },
+    isFormValid() {
+      // Validar todos los campos requeridos (incluyendo birthdate)
+      const requiredFields = [
+        "firstName",
+        "lastName",
+        "email",
+        "username",
+        "password",
+        "dni",
+        "phone",
+        "birthdate",
+      ];
+      const hasAllRequiredFields = requiredFields.every(
+        (field) => this.formData[field]
+      );
+
+      // Validar formatos específicos
+      const isEmailValid = this.validateEmail(this.formData.email);
+      const isDNIValid = this.validateDNI(this.formData.dni);
+      const isPhoneValid = this.validatePhone(this.formData.phone);
+      const isAgeValid = this.validateAge(this.formData.birthdate);
+
+      return (
+        hasAllRequiredFields &&
+        isEmailValid &&
+        isDNIValid &&
+        isPhoneValid &&
+        isAgeValid
+      );
+    },
+    async submitForm() {
+      // Validar todos los campos antes de enviar
+      this.validateField("email", this.formData.email);
+      this.validateField("dni", this.formData.dni);
+      this.validateField("phone", this.formData.phone);
+      this.validateField("birthdate", this.formData.birthdate);
+
+      if (this.isFormValid()) {
+        try {
+          await this.onSubmit(this.formData);
+          this.dialogVisible = true; // Muestra el diálogo cuando se crea la cuenta exitosamente
+        } catch (error) {
+          // No mostrar el diálogo si hay error
+          console.error("Error en el registro:", error);
+        }
+      }
     },
     goToLogin() {
       this.$router.push("/login");
@@ -33,7 +142,10 @@ export default {
 <template>
   <div class="register-container">
     <!-- Diálogo de éxito -->
-    <pv-dialog v-model:visible="dialogVisible" header="Account Created Successfully">
+    <pv-dialog
+      v-model:visible="dialogVisible"
+      header="Account Created Successfully"
+    >
       <p>Your account has been created successfully!</p>
       <pv-button label="Continue" class="dialog-button" @click="goToLogin" />
     </pv-dialog>
@@ -52,27 +164,100 @@ export default {
       <!-- Registration Form -->
       <form @submit.prevent="submitForm" class="register-form">
         <div class="form-field">
-          <pv-input-text v-model="formData.firstName" placeholder="Name" required />
-          <pv-input-text v-model="formData.lastName" placeholder="Last Name" required />
+          <pv-input-text
+            v-model="formData.firstName"
+            placeholder="Name"
+            required
+          />
+          <pv-input-text
+            v-model="formData.lastName"
+            placeholder="Last Name"
+            required
+          />
         </div>
 
         <div class="form-field">
-          <pv-calendar v-model="formData.birthdate" placeholder="Birthdate" />
-          <pv-input-text v-model="formData.phone" placeholder="Cell phone" required />
+          <div class="input-container">
+            <pv-calendar
+              v-model="formData.birthdate"
+              placeholder="Fecha de nacimiento"
+              required
+              :class="{ 'p-invalid': errors.birthdate }"
+              @blur="validateField('birthdate', formData.birthdate)"
+              :maxDate="new Date()"
+              dateFormat="dd/mm/yy"
+              :showIcon="true"
+            />
+            <small v-if="errors.birthdate" class="error-message">{{
+              errors.birthdate
+            }}</small>
+          </div>
+          <div class="input-container">
+            <pv-input-text
+              v-model="formData.phone"
+              placeholder="Teléfono (ej: 987654321)"
+              required
+              :class="{ 'p-invalid': errors.phone }"
+              @input="formData.phone = formData.phone.replace(/\D/g, '')"
+              @blur="validateField('phone', formData.phone)"
+              maxlength="9"
+            />
+            <small v-if="errors.phone" class="error-message">{{
+              errors.phone
+            }}</small>
+          </div>
         </div>
 
         <div class="form-field">
-          <pv-input-text v-model="formData.email" placeholder="Email" required />
+          <div class="input-container">
+            <pv-input-text
+              v-model="formData.email"
+              placeholder="Email"
+              required
+              :class="{ 'p-invalid': errors.email }"
+              @blur="validateField('email', formData.email)"
+            />
+            <small v-if="errors.email" class="error-message">{{
+              errors.email
+            }}</small>
+          </div>
         </div>
 
         <div class="form-field">
-          <pv-input-text v-model="formData.username" placeholder="Username" toggleMask required />
-          <pv-password v-model="formData.password" placeholder="Password" toggleMask required />
+          <pv-input-text
+            v-model="formData.username"
+            placeholder="Username"
+            toggleMask
+            required
+          />
+          <pv-password
+            v-model="formData.password"
+            placeholder="Password"
+            toggleMask
+            required
+          />
         </div>
 
         <div class="form-field">
-          <pv-input-text v-model="formData.dni" placeholder="DNI" required />
-          <pv-input-text v-model="formData.address" placeholder="Address" required />
+          <div class="input-container">
+            <pv-input-text
+              v-model="formData.dni"
+              placeholder="DNI (8 dígitos)"
+              required
+              :class="{ 'p-invalid': errors.dni }"
+              @input="formData.dni = formData.dni.replace(/\D/g, '')"
+              @blur="validateField('dni', formData.dni)"
+              maxlength="8"
+            />
+            <small v-if="errors.dni" class="error-message">{{
+              errors.dni
+            }}</small>
+          </div>
+          <pv-input-text
+            v-model="formData.address"
+            placeholder="Dirección"
+            required
+          />
         </div>
 
         <pv-button type="submit" label="SIGN UP" class="sign-up-button" />
@@ -91,7 +276,8 @@ export default {
   justify-content: center;
 }
 
-.left-side, .right-side {
+.left-side,
+.right-side {
   padding: 40px;
   display: flex;
   flex-direction: column;
@@ -131,7 +317,21 @@ p {
   margin-bottom: 1em;
 }
 
-.sign-up-button, .submit-button {
+.input-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.8em;
+  margin-top: 0.25em;
+  min-height: 1.2em;
+}
+
+.sign-up-button,
+.submit-button {
   margin-top: 20px;
   background-color: #00bcd4;
   color: white;
@@ -141,7 +341,8 @@ p {
   cursor: pointer;
 }
 
-.sign-up-button:hover, .submit-button:hover {
+.sign-up-button:hover,
+.submit-button:hover {
   background-color: #0097a7;
 }
 
