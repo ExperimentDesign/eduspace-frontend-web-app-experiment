@@ -7,6 +7,9 @@ export default {
     },
     goToSpaceShared() {
       this.$router.push('/dashboard-admin/classrooms-shared-spaces/shared-spaces');
+    },
+    goToResources() {
+      this.$router.push('/dashboard-admin/classrooms-shared-spaces/resources');
     }
   }
 }
@@ -48,6 +51,23 @@ export default {
         </template>
       </pv-card>
     </div>
+
+    <!-- Card 3: Resources -->
+    <div class="p-col-12 p-md-6">
+      <pv-card class="pv-card">
+        <template #header>
+          <h3>Resources</h3>
+          <p>
+            Management and registration of resources available in classrooms such as projectors, computers, and other equipment.
+          </p>
+        </template>
+
+        <template #footer>
+          <pv-button  class = "pv-button" label="Go" @click="goToResources" />
+        </template>
+      </pv-card>
+      </div>
+
   </div>
 </template>
 

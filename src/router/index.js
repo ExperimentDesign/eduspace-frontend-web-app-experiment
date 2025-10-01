@@ -23,6 +23,9 @@ import SharedSpaceComponent from "../space-and-resource-management/pages/shared-
 import EditClassroomComponent from "../space-and-resource-management/pages/classrooms/edit-classroom.component.vue";
 import EditSharedSpaceComponent
     from "../space-and-resource-management/pages/shared-spaces/edit-shared-space.component.vue";
+import ResourceComponent from "../space-and-resource-management/pages/resources/resource.component.vue";
+import AddResourceComponent from "../space-and-resource-management/pages/resources/add-resource.component.vue";
+import EditResourceComponent from "../space-and-resource-management/pages/resources/edit-resource.component.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -52,6 +55,9 @@ const router = createRouter({
         { path: '/dashboard-admin/classrooms-shared-spaces/shared-spaces/edit/:id', name: 'edit-shared-space', component: EditSharedSpaceComponent, meta: {title: 'Edit Shared Space'}},
         { path: '/dashboard-admin/classrooms-shared-spaces/classrooms', name: 'classrooms', component: ClassroomsComponent, meta: {title: 'Classrooms'}},
         { path: '/dashboard-admin/classrooms-shared-spaces/classrooms/add', name: 'add-classrooms', component: AddClassroomsComponent, meta: {title: 'Add Classrooms'}},
+        { path: '/dashboard-admin/classrooms-shared-spaces/resources', name: 'resource-list', component: ResourceComponent, meta: {title: 'Resource List'} },
+        { path: '/dashboard-admin/classrooms-shared-spaces/resources/add', name: 'add-resource', component: AddResourceComponent, meta: {title: 'Add Resource'} },
+        { path: '/dashboard-admin/classrooms-shared-spaces/classrooms/:classroomId/resources/edit/:resourceId', name: 'edit-resource', component: EditResourceComponent, meta: {title: 'Edit Resource'}},
         { path: '/dashboard-admin/classroom/edit/:id', name: 'edit-classroom', component: EditClassroomComponent, meta: {title: 'Edit Classroom'}},
 
         /**
