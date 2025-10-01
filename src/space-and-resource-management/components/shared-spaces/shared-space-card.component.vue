@@ -15,6 +15,13 @@ export default {
         console.error("Error deleting shared space:", error);
       }
     },
+    async editSharedSpace() {
+      try {
+        await this.$emit("edit", this.shared_space.id);
+      } catch (error) {
+        console.error("Error editing shared space:", error);
+      }
+    },
   },
 };
 </script>
@@ -37,14 +44,11 @@ export default {
         <i class="pi pi-box text-yellow-500"></i>
         <span>equipment</span>
       </div>
-      <pv-button
-        label="Delete"
-        severity="danger"
-        text
-        raised
-        class="w-full"
-        @click="deleteSharedSpace"
-      />
+      <div class="card-buttons">
+        <pv-button label="Edit" severity="info" text raised class="w-full" @click="editSharedSpace"/>
+        <pv-button label="Delete" severity="danger" text raised class="w-full" @click="deleteSharedSpace"/>
+      </div>
+
     </div>
   </div>
 </template>
@@ -58,5 +62,11 @@ export default {
 
 .card {
   width: 300px;
+}
+
+.card-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 1rem;
 }
 </style>

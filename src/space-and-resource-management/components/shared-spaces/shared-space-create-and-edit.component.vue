@@ -26,8 +26,7 @@ export default {
       if (
         !this.form.name ||
         !this.form.capacity ||
-        !this.form.description ||
-        !this.form.location
+        !this.form.description
       ) {
         alert("Please fill in all fields.");
         return;

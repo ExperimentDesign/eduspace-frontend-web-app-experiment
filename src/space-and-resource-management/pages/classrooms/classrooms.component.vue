@@ -1,5 +1,4 @@
 <script>
-// 1. Importa el SERVICIO, no 'http' ni 'TeacherService'.
 import { ClassroomService } from "../../services/classroom.service.js";
 import ClassroomCard from "../../components/classrooms/classroom-card.component.vue";
 
@@ -9,7 +8,6 @@ export default {
   data() {
     return {
       classrooms: [],
-      // 2. Crea una instancia del servicio.
       classroomService: new ClassroomService(),
     };
   },
@@ -19,19 +17,17 @@ export default {
   methods: {
     async loadClassrooms() {
       try {
-        // 3. UNA SOLA LÍNEA: El servicio hace todo el trabajo pesado.
         this.classrooms = await this.classroomService.getAllClassroomsWithTeacherNames();
       } catch (error) {
-        console.error("Error al cargar las aulas:", error);
+        console.error("Error loading classrooms:", error);
       }
     },
     async deleteClassroom(id) {
       try {
-        // 4. Usa el método del servicio.
         await this.classroomService.delete(id);
         this.classrooms = this.classrooms.filter(classroom => classroom.id !== id);
       } catch (error) {
-        console.error("Error al eliminar el aula:", error);
+        console.error("Error deleting classroom:", error);
       }
     },
     editClassroom(id) {
@@ -53,15 +49,15 @@ export default {
 
   <div class="container">
     <div class="card border-round-xl shadow-2 p-3 h-full">
-      <div class="text-xl font-semibold mb-2">Añadir Aula</div>
+      <div class="text-xl font-semibold mb-2">Add Classroom</div>
       <div class="mb-2">
-        <span class="font-medium text-600">Crea un nuevo espacio de aprendizaje.</span>
+        <span class="font-medium text-600">Create a new learning space.</span>
       </div>
       <div class="flex align-items-center gap-2 mb-3">
         <i class="pi pi-box text-yellow-500"></i>
-        <span>Aula</span>
+        <span>Classroom</span>
       </div>
-      <pv-button label="Añadir" severity="warning" text raised class="w-full" @click="goToAdd"/>
+      <pv-button label="Add" severity="warning" text raised class="w-full" @click="goToAdd"/>
     </div>
 
     <div class="cards-container">

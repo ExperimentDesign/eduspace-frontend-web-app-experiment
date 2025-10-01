@@ -21,6 +21,8 @@ import ClassroomsComponent from "../space-and-resource-management/pages/classroo
 import AddSharedSpaceComponent from "../space-and-resource-management/pages/shared-spaces/add-shared-space.component.vue";
 import SharedSpaceComponent from "../space-and-resource-management/pages/shared-spaces/shared-space.component.vue";
 import EditClassroomComponent from "../space-and-resource-management/pages/classrooms/edit-classroom.component.vue";
+import EditSharedSpaceComponent
+    from "../space-and-resource-management/pages/shared-spaces/edit-shared-space.component.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -46,7 +48,8 @@ const router = createRouter({
         { path: '/dashboard-admin/personal-data', name: 'personal-data', component: PersonalDataComponent, meta: {title: 'Personal Data'} },
         { path: '/dashboard-admin/classrooms-shared-spaces', name: 'classrooms-shared-spaces', component: ClassroomsSharedSpacesComponent, meta: {title: 'Classrooms and Shared Spaces'} },
         { path: '/dashboard-admin/classrooms-shared-spaces/shared-spaces', name: 'shared-spaces', component: SharedSpaceComponent, meta: {title: 'Shared Spaces'}},
-        { path: '/dashboard-admin/classrooms-shared-spaces/shared-spaces/add', name: 'add-shared-spaces', component: AddSharedSpaceComponent, meta: {title: 'Add Shared Spaces'}},
+        { path: '/dashboard-admin/classrooms-shared-spaces/shared-spaces/add', name: 'add-shared-space', component: AddSharedSpaceComponent, meta: {title: 'Add Shared Spaces'}},
+        { path: '/dashboard-admin/classrooms-shared-spaces/shared-spaces/edit/:id', name: 'edit-shared-space', component: EditSharedSpaceComponent, meta: {title: 'Edit Shared Space'}},
         { path: '/dashboard-admin/classrooms-shared-spaces/classrooms', name: 'classrooms', component: ClassroomsComponent, meta: {title: 'Classrooms'}},
         { path: '/dashboard-admin/classrooms-shared-spaces/classrooms/add', name: 'add-classrooms', component: AddClassroomsComponent, meta: {title: 'Add Classrooms'}},
         { path: '/dashboard-admin/classroom/edit/:id', name: 'edit-classroom', component: EditClassroomComponent, meta: {title: 'Edit Classroom'}},

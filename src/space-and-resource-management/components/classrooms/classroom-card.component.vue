@@ -10,7 +10,7 @@ export default {
   methods: {
     async deleteClassroom() {
       try {
-        await this.$emit('delete', this.classroom.id);
+        this.$emit('delete', this.classroom.id);
       } catch (error) {
         console.error("Error deleting classroom:", error);
       }

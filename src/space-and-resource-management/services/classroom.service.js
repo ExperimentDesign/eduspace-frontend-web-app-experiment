@@ -16,7 +16,7 @@ export class ClassroomService {
         const { name, description, teacherId } = classroomData;
 
         if (!teacherId) {
-            return Promise.reject(new Error("El ID del profesor es requerido."));
+            return Promise.reject(new Error("Teacher ID is required."));
         }
 
         const url = `${this.endpoint}/teachers/${teacherId}`;
@@ -43,7 +43,7 @@ export class ClassroomService {
             const teacher = teachers.find(t => t.id === classroom.teacherId);
             return {
                 ...classroom,
-                teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : 'No asignado',
+                teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Unassigned',
             };
         });
     }
