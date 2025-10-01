@@ -10,7 +10,6 @@ import ClassroomChangesMeetingsComponent from "../dashboard-admin/pages/classroo
 import HomeAdminComponent from "../dashboard-admin/pages/home-admin.component.vue";
 import PersonalDataComponent from "../dashboard-admin/pages/personal-data.component.vue";
 import HomeTeacherComponent from "../dashboard-teacher/pages/home-teacher.component.vue";
-import NotificationsComponent from "../notifications/pages/notification-management.component.vue";
 import ReservationsComponent from "../dashboard-teacher/pages/reservations.component.vue";
 import BreakdownReportsComponent from "../dashboard-teacher/pages/breakdown-reports.component.vue";
 import RegisterComponent from "../register/pages/register.component.vue";
@@ -65,7 +64,6 @@ const router = createRouter({
          */
 
         { path: '/dashboard-teacher/home-teacher', name:'home-teacher', component: HomeTeacherComponent, meta: {title: 'Home Teacher'}},
-        { path: '/dashboard-teacher/notifications', name: 'notifications', component: NotificationsComponent, meta: {title: 'Notifications'}},
         { path: '/dashboard-teacher/reservations', name: 'reservations', component: ReservationsComponent, meta: {title: 'Reservations'}},
         { path: '/dashboard-teacher/reservations/reservation-scheduling', name: 'reservation', component: ReservationManagementComponent, meta: {title: 'Reservation of spaces'} },
         { path: '/dashboard-teacher/breakdown-reports', name: 'breakdown-reports', component: BreakdownReportsComponent, meta: {title: 'Breakdown Reports'}},

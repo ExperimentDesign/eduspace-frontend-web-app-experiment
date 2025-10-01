@@ -127,8 +127,6 @@ export default {
         payload.meetData.administratorId = this.meet.administrator?.id;
         payload.meetData.classroomId = this.meet.classroom?.id;
 
-        console.log("🧠 Payload de ACTUALIZACIÓN enviado al servidor:", payload.meetData);
-
         await this.meetService.update(this.meet.id, payload.meetData);
         await this.loadMeetings();
         this.notifySuccessfulAction('Meet Updated Successfully');
@@ -191,14 +189,4 @@ export default {
 
 <style scoped>
 
-.data-manager {
-  border: 1px solid #dcdcdc;
-  border-radius: 8px;
-  padding: 1rem;
-  background-color: #ffffff;
-}
-
-.pv-column {
-  padding: 0.5rem;
-}
 </style>
