@@ -1,50 +1,43 @@
 <script>
-import http from "../../../shared/services/http-common.js";
+// 1. Importa el SERVICIO.
+import { ClassroomService } from "../../services/classroom.service.js";
 import ClassroomCreateAndEdit from "../../components/classrooms/classroom-create-and-edit.component.vue";
 
 export default {
   name: "add-classroom",
-  components: {ClassroomCreateAndEdit},
+  components: { ClassroomCreateAndEdit },
   data() {
     return {
       classroom: {
         name: '',
         description: '',
-        teacherId: null
-      }
+        teacherId: null,
+      },
+      // 2. Instancia el servicio.
+      classroomService: new ClassroomService(),
     };
   },
   methods: {
-    async saveClassroom(classroom) {
+    async saveClassroom(classroomData) {
       try {
-        // Verifica que el teacherId esté definido
-        if (!classroom.teacherId) {
-          throw new Error("Teacher ID is not selected.");
-        }
-
-        // Realiza la solicitud POST con la URL correcta
-        const url = `/classrooms/teachers/${classroom.teacherId}`;
-        await http.post(url, {
-          name: classroom.name,
-          description: classroom.description,
-        });
-
-        alert("Classroom created successfully");
+        // 3. Llama al método 'create' del servicio. ¡Así de simple!
+        await this.classroomService.create(classroomData);
+        alert("Aula creada exitosamente");
         this.$router.push("/dashboard-admin/classrooms-shared-spaces");
       } catch (error) {
-        console.error("Error creating classroom:", error);
-        alert("Error creating classroom: " + error.message);
+        console.error("Error al crear el aula:", error);
+        alert("Error al crear el aula: " + error.message);
       }
     },
     cancel() {
       this.$router.push("/dashboard-admin/classrooms-shared-spaces");
     },
-  }
-}
+  },
+};
 </script>
 
 <template>
-  <classroom-create-and-edit 
+  <classroom-create-and-edit
       :classroom="classroom"
       :isCreateMode="true"
       @save="saveClassroom"
@@ -52,5 +45,4 @@ export default {
 </template>
 
 <style scoped>
-
 </style>

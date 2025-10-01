@@ -15,6 +15,9 @@ export default {
         console.error("Error deleting classroom:", error);
       }
     },
+    async editClassroom() {
+      this.$emit("edit", this.classroom.id);
+    }
   },
 };
 </script>
@@ -33,7 +36,10 @@ export default {
         <i class="pi pi-box text-yellow-500"></i>
         <span>Classroom</span>
       </div>
-      <pv-button label="Delete" severity="danger" text raised class="w-full" @click="deleteClassroom"/>
+      <div class="card-buttons">
+        <pv-button label="Edit" severity="info" text raised class="w-full" @click="editClassroom"/>
+        <pv-button label="Delete" severity="danger" text raised class="w-full" @click="deleteClassroom"/>
+      </div>
     </div>
   </div>
 </template>
@@ -44,8 +50,15 @@ export default {
   width: 100%;
   align-content: space-between;
 }
-
 .card {
   width: 300px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.card-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 1rem;
 }
 </style>

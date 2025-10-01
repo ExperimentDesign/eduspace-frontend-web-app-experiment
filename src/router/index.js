@@ -20,6 +20,7 @@ import AddClassroomsComponent from "../space-and-resource-management/pages/class
 import ClassroomsComponent from "../space-and-resource-management/pages/classrooms/classrooms.component.vue";
 import AddSharedSpaceComponent from "../space-and-resource-management/pages/shared-spaces/add-shared-space.component.vue";
 import SharedSpaceComponent from "../space-and-resource-management/pages/shared-spaces/shared-space.component.vue";
+import EditClassroomComponent from "../space-and-resource-management/pages/classrooms/edit-classroom.component.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -48,6 +49,7 @@ const router = createRouter({
         { path: '/dashboard-admin/classrooms-shared-spaces/shared-spaces/add', name: 'add-shared-spaces', component: AddSharedSpaceComponent, meta: {title: 'Add Shared Spaces'}},
         { path: '/dashboard-admin/classrooms-shared-spaces/classrooms', name: 'classrooms', component: ClassroomsComponent, meta: {title: 'Classrooms'}},
         { path: '/dashboard-admin/classrooms-shared-spaces/classrooms/add', name: 'add-classrooms', component: AddClassroomsComponent, meta: {title: 'Add Classrooms'}},
+        { path: '/dashboard-admin/classroom/edit/:id', name: 'edit-classroom', component: EditClassroomComponent, meta: {title: 'Edit Classroom'}},
 
         /**
          *  Dashboard-teacher
