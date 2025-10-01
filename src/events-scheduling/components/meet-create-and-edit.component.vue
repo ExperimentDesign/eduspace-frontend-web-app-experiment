@@ -60,13 +60,12 @@ export default {
 
         if (newItem.id) {
           this.localItem.administratorId = newItem.administrator?.id || null;
-          // Para edición, si el item ya tiene un classroom, asignarlo al classroomId
           if (newItem.classroom) {
             this.localItem.classroomId = newItem.classroom.id;
           }
         } else {
           this.localItem.administratorId = this.userId;
-          this.localItem.classroomId = null; // Limpiar para nueva creación
+          this.localItem.classroomId = null;
         }
         this.formatTeachersForEdit();
       },
@@ -165,80 +164,138 @@ export default {
       @saved="onSaveRequested"
   >
     <template #content>
-      <div class="p-fluid grid formgrid">
-        <div class="field col-12">
-          <pv-float-label>
-            <label for="title">Title</label>
-            <pv-input-text id="title" v-model="localItem.title" :class="{ 'p-invalid': submitted && !localItem.title }" />
-          </pv-float-label>
+      <div class="meet-form">
+        <div class="form-section">
+          <div class="section-header">
+            <i class="pi pi-info-circle"></i>
+            <h3>Meeting Information</h3>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field full-width">
+              <label for="title">Title <span class="required">*</span></label>
+              <pv-input-text
+                  id="title"
+                  v-model="localItem.title"
+                  placeholder="Enter meeting title"
+                  :class="{ 'p-invalid': submitted && !localItem.title }"
+              />
+              <small v-if="submitted && !localItem.title" class="error-message">
+                Title is required
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field full-width">
+              <label for="description">Description</label>
+              <pv-input-text
+                  id="description"
+                  v-model="localItem.description"
+                  placeholder="Enter meeting description (optional)"
+              />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field full-width">
+              <label for="classroom">Classroom <span class="required">*</span></label>
+              <pv-dropdown
+                  id="classroom"
+                  v-model="localItem.classroomId"
+                  :options="classrooms"
+                  optionLabel="name"
+                  optionValue="id"
+                  placeholder="Select a classroom"
+                  :class="{ 'p-invalid': submitted && !localItem.classroomId }"
+                  class="w-full"
+              />
+              <small v-if="submitted && !localItem.classroomId" class="error-message">
+                Classroom is required
+              </small>
+            </div>
+          </div>
         </div>
 
-        <div class="field col-12">
-          <pv-float-label>
-            <label for="description">Description</label>
-            <pv-input-text id="description" v-model="localItem.description" />
-          </pv-float-label>
+        <div class="form-section">
+          <div class="section-header">
+            <i class="pi pi-calendar"></i>
+            <h3>Date & Time</h3>
+          </div>
+
+          <div class="form-row">
+            <div class="form-field full-width">
+              <label for="day">Date <span class="required">*</span></label>
+              <pv-date-picker
+                  id="day"
+                  v-model="localItem.day"
+                  showIcon
+                  fluid
+                  :showOnFocus="false"
+                  date-format="yy-mm-dd"
+                  placeholder="Select meeting date"
+                  :class="{ 'p-invalid': submitted && !localItem.day }"
+              />
+              <small v-if="submitted && !localItem.day" class="error-message">
+                Date is required
+              </small>
+            </div>
+          </div>
+
+          <div class="form-row two-cols">
+            <div class="form-field">
+              <label for="start-time">Start Time <span class="required">*</span></label>
+              <pv-date-picker
+                  id="start-time"
+                  v-model="localItem.start"
+                  timeOnly
+                  placeholder="Start time"
+                  :class="{ 'p-invalid': submitted && !localItem.start }"
+              />
+              <small v-if="submitted && !localItem.start" class="error-message">
+                Start time is required
+              </small>
+            </div>
+            <div class="form-field">
+              <label for="end-time">End Time <span class="required">*</span></label>
+              <pv-date-picker
+                  id="end-time"
+                  v-model="localItem.end"
+                  timeOnly
+                  placeholder="End time"
+                  :class="{ 'p-invalid': submitted && !localItem.end }"
+              />
+              <small v-if="submitted && !localItem.end" class="error-message">
+                End time is required
+              </small>
+            </div>
+          </div>
         </div>
 
-        <div class="field col-12">
-          <pv-float-label>
-            <pv-dropdown
-                id="classroom"
-                v-model="localItem.classroomId"
-                :options="classrooms"
-                optionLabel="name"
-                optionValue="id"
-                placeholder="Select a classroom"
-                :class="{ 'p-invalid': submitted && !localItem.classroomId }" />
-          </pv-float-label>
-        </div>
+        <div class="form-section">
+          <div class="section-header">
+            <i class="pi pi-users"></i>
+            <h3>Participants</h3>
+          </div>
 
-        <div class="field col-12">
-          <pv-float-label>
-            <pv-date-picker
-                v-model="localItem.day"
-                showIcon fluid :showOnFocus="false"
-                date-format="yy-mm-dd"
-                :class="{ 'p-invalid': submitted && !localItem.day }"
-                placeholder="Select a day"
-            />
-          </pv-float-label>
-        </div>
-
-        <div class="field col-12 md:col-6">
-          <pv-float-label>
-            <pv-date-picker
-                id="start-time"
-                v-model="localItem.start"
-                timeOnly
-                :class="{ 'p-invalid': submitted && !localItem.start }"
-                placeholder="Start time"
-            />
-          </pv-float-label>
-        </div>
-        <div class="field col-12 md:col-6">
-          <pv-float-label>
-            <pv-date-picker
-                id="end-time"
-                v-model="localItem.end"
-                timeOnly
-                :class="{ 'p-invalid': submitted && !localItem.end }"
-                placeholder="End time"
-            />
-          </pv-float-label>
-        </div>
-
-        <div class="field col-12">
-          <pv-float-label>
-            <pv-multi-select
-                id="invite"
-                v-model="selectedTeachers"
-                :options="teachers"
-                option-label="name"
-                option-value="id"
-                placeholder="Select teachers"
-            />
-          </pv-float-label>
+          <div class="form-row">
+            <div class="form-field full-width">
+              <label for="invite">Invite Teachers</label>
+              <pv-multi-select
+                  id="invite"
+                  v-model="selectedTeachers"
+                  :options="teachers"
+                  option-label="name"
+                  option-value="id"
+                  placeholder="Select teachers to invite"
+                  class="w-full"
+                  display="chip"
+              />
+              <small class="field-hint">
+                You can invite multiple teachers to this meeting
+              </small>
+            </div>
+          </div>
         </div>
       </div>
     </template>
@@ -246,26 +303,100 @@ export default {
 </template>
 
 <style scoped>
+.meet-form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
 
-.formgrid .field {
+.form-section {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 1.5rem;
+  border: 1px solid #e9ecef;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #dee2e6;
 }
 
-.p-float-label > label {
-  top: 0.75rem;
-  left: 0.75rem;
+.section-header i {
+  color: #667eea;
+  font-size: 1.25rem;
 }
 
-/* Ajusta la posición de la etiqueta cuando el campo está activo o lleno. */
-.p-float-label > .p-inputtext:focus ~ label,
-.p-float-label > .p-inputtext.p-filled ~ label,
-.p-float-label > .p-dropdown.p-focus ~ label,
-.p-float-label > .p-dropdown.p-inputwrapper-filled ~ label,
-.p-float-label > .p-datepicker.p-focus ~ label,
-.p-float-label > .p-datepicker.p-inputwrapper-filled ~ label,
-.p-float-label > .p-multiselect.p-focus ~ label,
-.p-float-label > .p-multiselect.p-inputwrapper-filled ~ label {
-  top: -0.75rem;
-  font-size: 0.75rem;
+.section-header h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: #495057;
+  font-weight: 600;
+}
+
+.form-row {
+  display: grid;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.form-row.two-cols {
+  grid-template-columns: 1fr 1fr;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-field.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-field label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #495057;
+}
+
+.required {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  display: block;
+}
+
+.field-hint {
+  color: #6c757d;
+  font-size: 0.85rem;
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+:deep(.p-invalid) {
+  border-color: #dc3545;
+}
+
+@media (max-width: 768px) {
+  .form-row.two-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .form-section {
+    padding: 1rem;
+  }
 }
 </style>

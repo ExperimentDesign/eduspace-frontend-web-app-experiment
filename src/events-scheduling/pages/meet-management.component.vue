@@ -6,7 +6,6 @@ import { MeetService } from "../services/meet.service.js";
 import { ClassroomsService } from "../services/classroom.service.js";
 import { AdministratorsService } from "../services/administrators.service.js";
 
-
 export default {
   name: "meet-management",
   components: { MeetCreateAndEditDialog, DataManager },
@@ -49,7 +48,7 @@ export default {
           const administrator = allAdministrators.find(a => a.id === meetData.administratorId?.administratorIdentifier);
 
           return new Meet({
-            id: meetData.meetingId, // Usa el nombre de la propiedad de la API
+            id: meetData.meetingId,
             title: meetData.title,
             description: meetData.description,
             day: meetData.date,
@@ -100,6 +99,7 @@ export default {
     },
     async createMeet(payload) {
       try {
+
         const createResponse = await this.meetService.create(
             payload.administratorId,
             payload.classroomId,
@@ -116,7 +116,7 @@ export default {
         await this.loadMeetings();
         this.notifySuccessfulAction('Meet Created Successfully');
       } catch (error) {
-        console.error("Error during meet creation process:", error);
+        console.error("Error :", error);
         this.notifyErrorAction('An error occurred while creating the meet.');
       } finally {
         this.createAndEditDialogIsVisible = false;
@@ -148,33 +148,85 @@ export default {
 </script>
 
 <template>
-  <div class="w-full">
-    <data-manager
-        :title="title"
-        :items="meetings"
-        @new-item-requested="onNewItem"
-        @edit-item-requested="onEditItem($event)"
-        @delete-item-requested="onDeleteItem($event)">
+  <div class="meet-management-page">
+    <div class="page-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <i class="pi pi-calendar"></i>
+        </div>
+        <div class="header-text">
+          <h1>Meeting Management</h1>
+          <p>Schedule and organize meetings with teachers</p>
+        </div>
+      </div>
+    </div>
 
-      <template #custom-columns>
-        <pv-column field="id" header="Id" :sortable="true"></pv-column>
-        <pv-column field="title" header="Title" :sortable="true"></pv-column>
-        <pv-column field="description" header="Description"></pv-column>
-        <pv-column field="day" header="Day" :sortable="true"></pv-column>
-        <pv-column field="start" header="Start Time"></pv-column>
-        <pv-column field="end" header="End Time"></pv-column>
-        <pv-column field="classroom.name" header="Classroom" :sortable="true"></pv-column>
-        <pv-column field="administrator.firstName" header="Person in charge" :sortable="true"></pv-column>
-        <pv-column header="Invitees">
-          <template #body="slotProps">
-            <span v-if="slotProps.data.teachers && slotProps.data.teachers.length">
-              {{ slotProps.data.teachers.map(t => t.firstName).join(', ') }}
-            </span>
-            <span v-else>No teachers</span>
-          </template>
-        </pv-column>
-      </template>
-    </data-manager>
+    <div class="data-table-wrapper">
+      <data-manager
+          :title="title"
+          :items="meetings"
+          @new-item-requested="onNewItem"
+          @edit-item-requested="onEditItem($event)"
+          @delete-item-requested="onDeleteItem($event)">
+
+        <template #custom-columns>
+          <pv-column field="id" header="ID" :sortable="true" style="min-width: 80px"></pv-column>
+          <pv-column field="title" header="Title" :sortable="true" style="min-width: 200px"></pv-column>
+          <pv-column field="description" header="Description" style="min-width: 250px"></pv-column>
+          <pv-column field="day" header="Date" :sortable="true" style="min-width: 120px">
+            <template #body="slotProps">
+              <div class="date-cell">
+                <i class="pi pi-calendar-plus"></i>
+                <span>{{ slotProps.data.day }}</span>
+              </div>
+            </template>
+          </pv-column>
+          <pv-column field="start" header="Start" style="min-width: 100px">
+            <template #body="slotProps">
+              <div class="time-cell">
+                <i class="pi pi-clock"></i>
+                <span>{{ slotProps.data.start }}</span>
+              </div>
+            </template>
+          </pv-column>
+          <pv-column field="end" header="End" style="min-width: 100px">
+            <template #body="slotProps">
+              <div class="time-cell">
+                <i class="pi pi-clock"></i>
+                <span>{{ slotProps.data.end }}</span>
+              </div>
+            </template>
+          </pv-column>
+          <pv-column field="classroom.name" header="Classroom" :sortable="true" style="min-width: 150px">
+            <template #body="slotProps">
+              <div class="classroom-cell">
+                <i class="pi pi-building"></i>
+                <span>{{ slotProps.data.classroom?.name || 'N/A' }}</span>
+              </div>
+            </template>
+          </pv-column>
+          <pv-column field="administrator.firstName" header="Organizer" :sortable="true" style="min-width: 150px">
+            <template #body="slotProps">
+              <div class="organizer-cell">
+                <i class="pi pi-user"></i>
+                <span>{{ slotProps.data.administrator?.firstName || 'N/A' }}</span>
+              </div>
+            </template>
+          </pv-column>
+          <pv-column header="Participants" style="min-width: 200px">
+            <template #body="slotProps">
+              <div class="participants-cell">
+                <i class="pi pi-users"></i>
+                <span v-if="slotProps.data.teachers && slotProps.data.teachers.length" class="participants-list">
+                  {{ slotProps.data.teachers.map(t => t.firstName).join(', ') }}
+                </span>
+                <span v-else class="no-participants">No teachers</span>
+              </div>
+            </template>
+          </pv-column>
+        </template>
+      </data-manager>
+    </div>
 
     <meet-create-and-edit-dialog
         :item="meet"
@@ -184,9 +236,152 @@ export default {
         @cancel-requested="onCancelRequested"
         @save-requested="onSaveRequested($event)"
     />
+
+    <pv-toast />
   </div>
 </template>
 
 <style scoped>
+.meet-management-page {
+  padding: 2rem;
+  max-width: 1600px;
+  margin: 0 auto;
+}
 
+.page-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+}
+
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.header-icon {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-icon i {
+  font-size: 3rem;
+  color: white;
+}
+
+.header-text h1 {
+  margin: 0 0 0.5rem 0;
+  color: white;
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+.header-text p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1.1rem;
+}
+
+.data-table-wrapper {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.date-cell,
+.time-cell,
+.classroom-cell,
+.organizer-cell,
+.participants-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.date-cell i {
+  color: #667eea;
+}
+
+.time-cell i {
+  color: #f093fb;
+}
+
+.classroom-cell i {
+  color: #4facfe;
+}
+
+.organizer-cell i {
+  color: #43e97b;
+}
+
+.participants-cell i {
+  color: #fa709a;
+}
+
+.participants-list {
+  color: #495057;
+  font-weight: 500;
+}
+
+.no-participants {
+  color: #adb5bd;
+  font-style: italic;
+}
+
+:deep(.p-datatable .p-datatable-thead > tr > th) {
+  background: #f8f9fa;
+  color: #495057;
+  font-weight: 600;
+  border-bottom: 2px solid #e9ecef;
+  padding: 1rem;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr) {
+  transition: background-color 0.2s;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr:hover) {
+  background: #f8f9fa;
+}
+
+:deep(.p-datatable .p-datatable-tbody > tr > td) {
+  padding: 1rem;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+@media (max-width: 768px) {
+  .meet-management-page {
+    padding: 1rem;
+  }
+
+  .page-header {
+    padding: 1.5rem;
+  }
+
+  .header-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .header-text h1 {
+    font-size: 1.5rem;
+  }
+
+  .header-text p {
+    font-size: 1rem;
+  }
+
+  .data-table-wrapper {
+    padding: 1rem;
+    overflow-x: auto;
+  }
+}
 </style>
