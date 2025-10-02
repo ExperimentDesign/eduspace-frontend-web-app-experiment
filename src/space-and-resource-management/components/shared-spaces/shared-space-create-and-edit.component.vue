@@ -19,16 +19,50 @@ export default {
   data() {
     return {
       form: { ...this.shared_space },
+      sharedSpaceOptions: [
+        { label: "Gym", value: "Gym" },
+        { label: "Soccer Campus", value: "Soccer Campus" },
+        { label: "Library", value: "Library" },
+        { label: "Auditorium", value: "Auditorium" },
+        { label: "Conference Room", value: "Conference Room" },
+      ],
+      capacityError: "",
     };
   },
+  watch: {
+    'form.name': 'validateCapacity',
+    'form.capacity': 'validateCapacity',
+  },
   methods: {
+    validateCapacity() {
+      const maxCapacity = {
+        Gym: 20,
+        "Soccer Campus": 30,
+        Library: 20,
+        Auditorium: 50,
+        "Conference Room": 50,
+      };
+      if (!this.form.name || !this.form.capacity) {
+        this.capacityError = "";
+        return;
+      }
+      if (this.form.capacity > (maxCapacity[this.form.name] || 0)) {
+        this.capacityError = `Capacity for ${this.form.name} must not exceed ${maxCapacity[this.form.name]}.`;
+      } else {
+        this.capacityError = "";
+      }
+    },
     save() {
       if (
         !this.form.name ||
         !this.form.capacity ||
         !this.form.description
       ) {
-        alert("Please fill in all fields.");
+        this.capacityError = "Please fill in all fields.";
+        return;
+      }
+      this.validateCapacity();
+      if (this.capacityError) {
         return;
       }
       this.$emit("save", this.form);
@@ -58,7 +92,14 @@ export default {
     <form @submit.prevent="save" class="form-grid">
       <div class="form-field">
         <pv-float-label>Name:</pv-float-label>
-        <pv-input-text v-model="form.name" placeholder="Enter name" />
+        <pv-dropdown
+          v-model="form.name"
+          :options="sharedSpaceOptions"
+          option-label="label"
+          option-value="value"
+          placeholder="Select shared space"
+          class="pv-input-text"
+        />
       </div>
 
       <div class="form-field">
@@ -68,6 +109,9 @@ export default {
           :min="0"
           placeholder="Enter capacity"
         />
+        <div v-if="capacityError" style="color: red; font-size: 0.9em; margin-top: 4px;">
+          {{ capacityError }}
+        </div>
       </div>
 
       <div class="form-field">
@@ -79,7 +123,7 @@ export default {
       </div>
 
       <div class="form-actions">
-        <pv-button type="submit" label="Save" class="p-button-success" />
+        <pv-button type="submit" label="Save" class="p-button-success" :disabled="!!capacityError" />
         <pv-button
           type="button"
           label="Cancel"
