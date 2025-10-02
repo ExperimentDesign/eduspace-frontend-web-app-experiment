@@ -1,14 +1,14 @@
 <script>
 import { Meet } from "../model/meet.entity.js";
-import DataManager from "../../shared/components/data-meet.component.vue";
 import MeetCreateAndEditDialog from "../components/meet-create-and-edit.component.vue";
 import { MeetService } from "../services/meet.service.js";
 import { ClassroomsService } from "../services/classroom.service.js";
 import { AdministratorsService } from "../services/administrators.service.js";
+import MeetingCard from '../components/MeetingCard.vue';
 
 export default {
   name: "meet-management",
-  components: { MeetCreateAndEditDialog, DataManager },
+  components: { MeetCreateAndEditDialog, MeetingCard },
   data() {
     return {
       title: { singular: 'Meet', plural: 'Meetings' },
@@ -137,6 +137,9 @@ export default {
         this.createAndEditDialogIsVisible = false;
       }
     },
+    onViewItem(meeting) {
+      this.notifySuccessfulAction(`Viewing meeting: ${meeting.title || meeting.id}`);
+    },
   },
   created() {
     this.meetService = new MeetService();
@@ -161,71 +164,14 @@ export default {
       </div>
     </div>
 
-    <div class="data-table-wrapper">
-      <data-manager
-          :title="title"
-          :items="meetings"
-          @new-item-requested="onNewItem"
-          @edit-item-requested="onEditItem($event)"
-          @delete-item-requested="onDeleteItem($event)">
-
-        <template #custom-columns>
-          <pv-column field="id" header="ID" :sortable="true" style="min-width: 80px"></pv-column>
-          <pv-column field="title" header="Title" :sortable="true" style="min-width: 200px"></pv-column>
-          <pv-column field="description" header="Description" style="min-width: 250px"></pv-column>
-          <pv-column field="day" header="Date" :sortable="true" style="min-width: 120px">
-            <template #body="slotProps">
-              <div class="date-cell">
-                <i class="pi pi-calendar-plus"></i>
-                <span>{{ slotProps.data.day }}</span>
-              </div>
-            </template>
-          </pv-column>
-          <pv-column field="start" header="Start" style="min-width: 100px">
-            <template #body="slotProps">
-              <div class="time-cell">
-                <i class="pi pi-clock"></i>
-                <span>{{ slotProps.data.start }}</span>
-              </div>
-            </template>
-          </pv-column>
-          <pv-column field="end" header="End" style="min-width: 100px">
-            <template #body="slotProps">
-              <div class="time-cell">
-                <i class="pi pi-clock"></i>
-                <span>{{ slotProps.data.end }}</span>
-              </div>
-            </template>
-          </pv-column>
-          <pv-column field="classroom.name" header="Classroom" :sortable="true" style="min-width: 150px">
-            <template #body="slotProps">
-              <div class="classroom-cell">
-                <i class="pi pi-building"></i>
-                <span>{{ slotProps.data.classroom?.name || 'N/A' }}</span>
-              </div>
-            </template>
-          </pv-column>
-          <pv-column field="administrator.firstName" header="Organizer" :sortable="true" style="min-width: 150px">
-            <template #body="slotProps">
-              <div class="organizer-cell">
-                <i class="pi pi-user"></i>
-                <span>{{ slotProps.data.administrator?.firstName || 'N/A' }}</span>
-              </div>
-            </template>
-          </pv-column>
-          <pv-column header="Participants" style="min-width: 200px">
-            <template #body="slotProps">
-              <div class="participants-cell">
-                <i class="pi pi-users"></i>
-                <span v-if="slotProps.data.teachers && slotProps.data.teachers.length" class="participants-list">
-                  {{ slotProps.data.teachers.map(t => t.firstName).join(', ') }}
-                </span>
-                <span v-else class="no-participants">No teachers</span>
-              </div>
-            </template>
-          </pv-column>
-        </template>
-      </data-manager>
+    <div class="meetings-list">
+      <button class="p-button p-button-success" @click="onNewItem">Nuevo Meeting</button>
+      <div v-if="meetings.length">
+        <MeetingCard v-for="meeting in meetings" :key="meeting.id" :meeting="meeting" @view="onViewItem" @edit="onEditItem" @delete="onDeleteItem" />
+      </div>
+      <div v-else>
+        <p>No hay reuniones programadas.</p>
+      </div>
     </div>
 
     <meet-create-and-edit-dialog
@@ -289,99 +235,10 @@ export default {
   font-size: 1.1rem;
 }
 
-.data-table-wrapper {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-}
-
-.date-cell,
-.time-cell,
-.classroom-cell,
-.organizer-cell,
-.participants-cell {
+.meetings-list {
+  margin-top: 2rem;
   display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.date-cell i {
-  color: #667eea;
-}
-
-.time-cell i {
-  color: #f093fb;
-}
-
-.classroom-cell i {
-  color: #4facfe;
-}
-
-.organizer-cell i {
-  color: #43e97b;
-}
-
-.participants-cell i {
-  color: #fa709a;
-}
-
-.participants-list {
-  color: #495057;
-  font-weight: 500;
-}
-
-.no-participants {
-  color: #adb5bd;
-  font-style: italic;
-}
-
-:deep(.p-datatable .p-datatable-thead > tr > th) {
-  background: #f8f9fa;
-  color: #495057;
-  font-weight: 600;
-  border-bottom: 2px solid #e9ecef;
-  padding: 1rem;
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr) {
-  transition: background-color 0.2s;
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr:hover) {
-  background: #f8f9fa;
-}
-
-:deep(.p-datatable .p-datatable-tbody > tr > td) {
-  padding: 1rem;
-  border-bottom: 1px solid #f1f3f5;
-}
-
-@media (max-width: 768px) {
-  .meet-management-page {
-    padding: 1rem;
-  }
-
-  .page-header {
-    padding: 1.5rem;
-  }
-
-  .header-content {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .header-text h1 {
-    font-size: 1.5rem;
-  }
-
-  .header-text p {
-    font-size: 1rem;
-  }
-
-  .data-table-wrapper {
-    padding: 1rem;
-    overflow-x: auto;
-  }
+  flex-direction: column;
+  gap: 1rem;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <pv-card class="teacher-card">
+  <pv-card :class="['teacher-card', { compact: compact }]">
     <template #title>
       <div class="card-title">
         <i class="pi pi-user"></i>
@@ -7,7 +7,22 @@
       </div>
     </template>
     <template #content>
-      <div class="teacher-info">
+      <!-- Compact summary similar to MeetingCard compact -->
+      <div v-if="compact" class="teacher-compact">
+        <div class="compact-left">
+          <pv-avatar :label="initials" size="large" style="background-color:#3b82f6;color:white;" />
+        </div>
+        <div class="compact-center">
+          <div class="compact-name">{{ fullName }}</div>
+          <div class="compact-email">{{ maskedEmail }}</div>
+        </div>
+        <div class="compact-right">
+          <div class="compact-phone">{{ formattedPhone }}</div>
+        </div>
+      </div>
+
+      <!-- Full detailed view (unchanged) -->
+      <div v-else class="teacher-info">
         <div class="info-row">
           <i class="pi pi-envelope"></i>
           <div class="info-content">
@@ -38,7 +53,7 @@
         </div>
       </div>
     </template>
-    <template #footer>
+    <template #footer v-if="!compact">
       <div class="card-actions">
         <pv-button
             icon="pi pi-eye"
@@ -63,6 +78,10 @@ export default {
         return value.firstName && value.lastName && value.email && value.dni && value.phone;
       }
     }
+    , compact: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     fullName() {
@@ -79,6 +98,11 @@ export default {
     formattedPhone() {
       const phone = this.teacher.phone;
       return phone.replace(/(\d{3})(\d{3})(\d{3})/, '$1 $2 $3');
+    },
+    initials() {
+      const fn = this.teacher.firstName || '';
+      const ln = this.teacher.lastName || '';
+      return (fn[0] || '') + (ln[0] || '');
     }
   }
 }
@@ -94,11 +118,12 @@ export default {
   flex-direction: column;
 }
 
-.teacher-card:hover {
+.teacher-card:not(.compact):hover {
   transform: translateY(-4px);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
+/* Hover elevation only when NOT compact (applies only via :not(.compact) selector) */
 .card-title {
   display: flex;
   align-items: center;
@@ -166,6 +191,14 @@ export default {
   display: flex;
   justify-content: center;
 }
+
+/* Compact view styles */
+.teacher-compact { display:flex; align-items:center; gap:12px; padding:8px 4px; }
+.compact-left { flex: 0 0 auto; }
+.compact-center { flex: 1 1 auto; }
+.compact-name { font-weight:600; }
+.compact-email { font-size:0.85rem; color:#6c757d; }
+.compact-right { flex: 0 0 auto; text-align:right; font-size:0.9rem; color:#2c3e50; }
 
 @media (max-width: 768px) {
   .card-actions button {
