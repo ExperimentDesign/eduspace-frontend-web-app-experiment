@@ -166,7 +166,7 @@ export default {
 
     <div class="meetings-list">
       <button class="p-button p-button-success" @click="onNewItem">Nuevo Meeting</button>
-      <div v-if="meetings.length">
+      <div v-if="meetings.length" class="cards">
         <MeetingCard v-for="meeting in meetings" :key="meeting.id" :meeting="meeting" @view="onViewItem" @edit="onEditItem" @delete="onDeleteItem" />
       </div>
       <div v-else>
@@ -240,5 +240,11 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* small separation between MeetingCard components */
 }
 </style>

@@ -28,50 +28,63 @@ export default {
       teachers: [],
       classrooms: [],
       selectedTeachers: [],
+      selectedTeachersError: null,
     };
   },
   computed: {
     ...mapGetters('user', ['userId', 'currentUsername']),
 
-    userName() {
-      return this.currentUsername;
+    teachersWithDisabled() {
+      // When 2 teachers are already selected, disable other teacher options
+      const max = 2;
+      const selectedSet = new Set(this.selectedTeachers || []);
+      return this.teachers.map(t => ({
+        ...t,
+        disabled: (this.selectedTeachers && this.selectedTeachers.length >= max && !selectedSet.has(t.id))
+      }));
     }
   },
   created() {
     this.loadInitialData();
-  },
-  watch: {
-    item: {
-      handler(newItem) {
-        this.localItem = { ...newItem };
 
-        if (newItem.start && typeof newItem.start === 'string') {
-          const [hours, minutes, seconds] = newItem.start.split(':');
-          const startDate = new Date();
-          startDate.setHours(hours, minutes, seconds || 0);
-          this.localItem.start = startDate;
-        }
-        if (newItem.end && typeof newItem.end === 'string') {
-          const [hours, minutes, seconds] = newItem.end.split(':');
-          const endDate = new Date();
-          endDate.setHours(hours, minutes, seconds || 0);
-          this.localItem.end = endDate;
-        }
+    // Watch `item` to sync incoming prop into localItem (deep & immediate)
+    this.$watch('item', (newItem) => {
+      this.localItem = { ...newItem };
 
-        if (newItem.id) {
-          this.localItem.administratorId = newItem.administrator?.id || null;
-          if (newItem.classroom) {
-            this.localItem.classroomId = newItem.classroom.id;
-          }
-        } else {
-          this.localItem.administratorId = this.userId;
-          this.localItem.classroomId = null;
+      if (newItem && newItem.start && typeof newItem.start === 'string') {
+        const [hours, minutes, seconds] = newItem.start.split(':');
+        const startDate = new Date();
+        startDate.setHours(hours, minutes, seconds || 0);
+        this.localItem.start = startDate;
+      }
+      if (newItem && newItem.end && typeof newItem.end === 'string') {
+        const [hours, minutes, seconds] = newItem.end.split(':');
+        const endDate = new Date();
+        endDate.setHours(hours, minutes, seconds || 0);
+        this.localItem.end = endDate;
+      }
+
+      if (newItem && newItem.id) {
+        this.localItem.administratorId = newItem.administrator?.id || null;
+        if (newItem.classroom) {
+          this.localItem.classroomId = newItem.classroom.id;
         }
-        this.formatTeachersForEdit();
-      },
-      deep: true,
-      immediate: true
-    }
+      } else {
+        this.localItem.administratorId = this.userId;
+        this.localItem.classroomId = null;
+      }
+      this.formatTeachersForEdit();
+    }, { immediate: true, deep: true });
+
+    // Watch selectedTeachers to prevent selecting more than 2 and show an error
+    this.$watch('selectedTeachers', (newVal) => {
+      if (newVal && newVal.length > 2) {
+        this.selectedTeachers = newVal.slice(0, 2);
+        this.selectedTeachersError = 'Solo puedes invitar hasta 2 profesores.';
+      } else {
+        this.selectedTeachersError = null;
+      }
+    }, { immediate: true });
   },
   methods: {
     async loadInitialData() {
@@ -101,9 +114,16 @@ export default {
     },
     formatTeachersForEdit() {
       if (Array.isArray(this.item.teachers) && this.item.teachers.length > 0) {
-        this.selectedTeachers = this.item.teachers.map(teacher => typeof teacher === 'object' ? teacher.id : teacher);
+        // Keep at most 2 teachers when editing
+        this.selectedTeachers = this.item.teachers.map(teacher => typeof teacher === 'object' ? teacher.id : teacher).slice(0, 2);
+        if (this.item.teachers.length > 2) {
+          this.selectedTeachersError = 'Solo puedes invitar hasta 2 profesores.';
+        } else {
+          this.selectedTeachersError = null;
+        }
       } else {
         this.selectedTeachers = [];
+        this.selectedTeachersError = null;
       }
     },
     formatDate(date) {
@@ -124,6 +144,11 @@ export default {
     },
     onSaveRequested() {
       this.submitted = true;
+      // enforce max 2 teachers
+      if (this.selectedTeachers && this.selectedTeachers.length > 2) {
+        this.selectedTeachersError = 'Solo puedes invitar hasta 2 profesores.';
+        return;
+      }
       if (!this.localItem.title || !this.localItem.day || !this.localItem.start || !this.localItem.end || !this.localItem.classroomId) {
         return;
       }
@@ -158,6 +183,7 @@ export default {
   <create-and-edit
       :entity="localItem"
       :visible="visible"
+      size="standard"
       entity-name="Meet"
       @update:visible="(value) => $emit('update:visible', value)"
       @cancelled="onCancelRequested"
@@ -284,13 +310,15 @@ export default {
               <pv-multi-select
                   id="invite"
                   v-model="selectedTeachers"
-                  :options="teachers"
+                  :options="teachersWithDisabled"
                   option-label="name"
                   option-value="id"
                   placeholder="Select teachers to invite"
                   class="w-full"
+                  :class="{ 'p-invalid': submitted && selectedTeachersError }"
                   display="chip"
               />
+              <small v-if="selectedTeachersError" class="error-message">{{ selectedTeachersError }}</small>
               <small class="field-hint">
                 You can invite multiple teachers to this meeting
               </small>

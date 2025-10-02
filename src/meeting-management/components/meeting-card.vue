@@ -8,7 +8,6 @@
     </template>
     <template #content>
       <div class="meeting-content">
-        <!-- Compact summary view -->
         <div v-if="compact" class="compact-content">
           <div class="compact-row">
             <i class="pi pi-calendar-plus"></i>
@@ -23,7 +22,6 @@
           </div>
         </div>
 
-        <!-- Full detailed view -->
         <div v-else>
           <div class="row">
             <i class="pi pi-building"></i>
@@ -69,7 +67,6 @@
     </template>
     <template #footer v-if="!compact">
       <div class="card-actions">
-        <pv-button icon="pi pi-eye" label="View" size="small" @click="$emit('view', meeting)" />
         <pv-button icon="pi pi-pencil" label="Edit" severity="warning" size="small" @click="$emit('edit', meeting)" />
         <pv-button icon="pi pi-trash" label="Delete" severity="danger" size="small" @click="$emit('delete', meeting)" />
       </div>
@@ -105,6 +102,14 @@ export default {
 .meeting-card {
   border-radius: 8px;
   padding: 0;
+  border: 1px solid rgba(44, 62, 80, 0.12);
+  box-shadow: 0 4px 12px rgba(44, 62, 80, 0.10);
+  background: #ffffff;
+  transition: box-shadow 0.18s ease, transform 0.12s ease;
+}
+.meeting-card:hover {
+  box-shadow: 0 12px 36px rgba(44, 62, 80, 0.18);
+  transform: translateY(-3px);
 }
 
 .card-title {
