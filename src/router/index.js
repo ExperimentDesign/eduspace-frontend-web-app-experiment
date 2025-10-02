@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import MeetManagementComponent from '../events-scheduling/pages/meet-management.component.vue';
+import MeetManagementComponent from '../meeting-management/pages/meet-management.component.vue';
 import ReservationManagementComponent from '../reservation-scheduling/pages/reservation-management.component.vue';
 import HomeComponent from '../public/pages/home.component.vue';
 import LoginComponent from '../login/pages/login.component.vue';
@@ -15,16 +15,16 @@ import BreakdownReportsComponent from "../dashboard-teacher/pages/breakdown-repo
 import RegisterComponent from "../register/pages/register.component.vue";
 import ReportsManagementComponent from "../breakdown-management/pages/reports-management.vue";
 import ClassroomsSharedSpacesComponent from "../dashboard-admin/pages/classrooms-shared-spaces.component.vue";
-import AddClassroomsComponent from "../space-and-resource-management/pages/classrooms/add-classrooms.component.vue";
-import ClassroomsComponent from "../space-and-resource-management/pages/classrooms/classrooms.component.vue";
-import AddSharedSpaceComponent from "../space-and-resource-management/pages/shared-spaces/add-shared-space.component.vue";
-import SharedSpaceComponent from "../space-and-resource-management/pages/shared-spaces/shared-space.component.vue";
-import EditClassroomComponent from "../space-and-resource-management/pages/classrooms/edit-classroom.component.vue";
+import AddClassroomsComponent from "../classroom-space-resource-management/pages/classrooms/add-classrooms.component.vue";
+import ClassroomsComponent from "../classroom-space-resource-management/pages/classrooms/classrooms.component.vue";
+import AddSharedSpaceComponent from "../classroom-space-resource-management/pages/shared-spaces/add-shared-space.component.vue";
+import SharedSpaceComponent from "../classroom-space-resource-management/pages/shared-spaces/shared-space.component.vue";
+import EditClassroomComponent from "../classroom-space-resource-management/pages/classrooms/edit-classroom.component.vue";
 import EditSharedSpaceComponent
-    from "../space-and-resource-management/pages/shared-spaces/edit-shared-space.component.vue";
-import ResourceComponent from "../space-and-resource-management/pages/resources/resource.component.vue";
-import AddResourceComponent from "../space-and-resource-management/pages/resources/add-resource.component.vue";
-import EditResourceComponent from "../space-and-resource-management/pages/resources/edit-resource.component.vue";
+    from "../classroom-space-resource-management/pages/shared-spaces/edit-shared-space.component.vue";
+import ResourceComponent from "../classroom-space-resource-management/pages/resources/resource.component.vue";
+import AddResourceComponent from "../classroom-space-resource-management/pages/resources/add-resource.component.vue";
+import EditResourceComponent from "../classroom-space-resource-management/pages/resources/edit-resource.component.vue";
 
 const router = createRouter({
     history: createWebHistory(),

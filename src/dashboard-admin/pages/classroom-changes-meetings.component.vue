@@ -2,9 +2,6 @@
 export default {
   name: "classroom-changes-meetings",
   methods: {
-    goToClassroomChanges() {
-      this.$router.push('/');
-    },
     goToMeetingManagement() {
       this.$router.push('/dashboard-admin/classroom-changes-meetings/meeting-management');
     }
