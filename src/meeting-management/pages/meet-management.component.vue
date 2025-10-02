@@ -4,7 +4,7 @@ import MeetCreateAndEditDialog from "../components/meet-create-and-edit.componen
 import { MeetService } from "../services/meet.service.js";
 import { ClassroomsService } from "../services/classroom.service.js";
 import { AdministratorsService } from "../services/administrators.service.js";
-import MeetingCard from '../components/MeetingCard.vue';
+import MeetingCard from '../components/meeting-card.vue';
 
 export default {
   name: "meet-management",

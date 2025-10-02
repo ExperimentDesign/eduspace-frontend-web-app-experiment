@@ -118,12 +118,6 @@ export default {
   flex-direction: column;
 }
 
-.teacher-card:not(.compact):hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-}
-
-/* Hover elevation only when NOT compact (applies only via :not(.compact) selector) */
 .card-title {
   display: flex;
   align-items: center;

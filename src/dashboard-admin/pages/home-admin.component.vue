@@ -3,7 +3,7 @@ import { mapGetters } from "vuex";
 import TeacherCardComponent from "../../personal-data/components/teacher-card.component.vue";
 import { TeacherService } from "../../personal-data/services/teacher.service.js";
 import http from "../../shared/services/http-common.js";
-import MeetingCard from "../../meeting-management/components/MeetingCard.vue";
+import MeetingCard from "../../meeting-management/components/meeting-card.vue";
 import MeetCreateAndEditDialog from "../../meeting-management/components/meet-create-and-edit.component.vue";
 import { Meet } from "../../meeting-management/model/meet.entity.js";
 import { MeetService } from "../../meeting-management/services/meet.service.js";
@@ -111,8 +111,8 @@ export default {
             const mid = mAdmin.id ?? mAdmin.administratorIdentifier ?? mAdmin.administratorId ?? null;
             const mName = (mAdmin.name) ? mAdmin.name : `${mAdmin.firstName || ''} ${mAdmin.lastName || ''}`.trim();
             if (mid && adminId && String(mid) === String(adminId)) return true;
-            if (mName && adminFullName && mName === adminFullName) return true;
-            return false;
+            return !!(mName && adminFullName && mName === adminFullName);
+
           }
           return String(mAdmin) === String(adminId) || String(mAdmin) === adminFullName;
         };
@@ -488,22 +488,6 @@ export default {
   color: #333;
   font-size: 14px;
   text-align: right;
-}
-
-.status-active,
-.status-completed {
-  color: #4CAF50;
-  font-weight: 600;
-}
-
-.status-pending {
-  color: #FF9800;
-  font-weight: 600;
-}
-
-.status-inactive {
-  color: #F44336;
-  font-weight: 600;
 }
 
 .report-divider {

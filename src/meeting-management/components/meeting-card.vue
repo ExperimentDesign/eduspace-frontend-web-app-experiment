@@ -107,11 +107,6 @@ export default {
   padding: 0;
 }
 
-.meeting-card:not(.compact):hover {
-  transform: translateY(-4px);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-}
-
 .card-title {
   display: flex;
   align-items: center;
@@ -127,7 +122,6 @@ export default {
 .description { background: #f8f9fa; padding: 0.75rem; border-radius: 6px; }
 .card-actions { display: flex; gap: 0.5rem; justify-content: flex-end; }
 
-/* Compact styles */
 .compact-content { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 4px; }
 .compact-row { display: flex; align-items: center; gap: 8px; width: 100%; }
 .compact-info { display: flex; flex-direction: column; }
