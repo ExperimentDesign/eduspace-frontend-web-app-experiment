@@ -66,7 +66,7 @@
 import { mapGetters, mapActions } from "vuex";
 import HomeIcon from "/src/assets/admin/Home.svg";
 import ClassroomIcon from "/src/assets/admin/Clasroom.svg";
-import EnviromentIcon from "/src/assets/admin/Enviroment.svg";
+import EnvironmentIcon from "/src/assets/admin/Environment.svg";
 import PersonalDIcon from "/src/assets/admin/Personal_Data.svg";
 import BreakdownIcon from "/src/assets/teacher/Breakdown_Reports.svg";
 import NotificationIcon from "/src/assets/teacher/Notification.svg";
@@ -83,16 +83,16 @@ export default {
     ...mapGetters("user", ["isAuthenticated", "currentUsername", "userRole"]),
   },
   methods: {
-    ...mapActions("user", ["clearAuth"]),
-    handleLogOut() {
-      this.clearAuth();
+    ...mapActions("user", ["signOut"]),
+    async handleLogOut() {
+      await this.signOut();
       this.$router.push({ name: "login" });
     },
     changeToolbar() {
       if (this.userRole === "RoleAdmin") {
         this.items = [
           { label: "Home", to: "/dashboard-admin/home-admin", svg: HomeIcon },
-          { label: "Classrooms and Shared Spaces", to: "/dashboard-admin/classrooms-shared-spaces", svg: EnviromentIcon },
+          { label: "Classrooms and Shared Spaces", to: "/dashboard-admin/classrooms-shared-spaces", svg: EnvironmentIcon },
           {label: 'Classroom Changes and Meetings', to: '/dashboard-admin/classroom-changes-meetings', svg: ClassroomIcon},
           { label: "Personal Data", to: "/dashboard-admin/personal-data", svg: PersonalDIcon },
         ];

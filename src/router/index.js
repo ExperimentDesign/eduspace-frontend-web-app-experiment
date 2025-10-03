@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import store from "../store/index.js";
 
 // Componentes de Autenticación y Públicos
 import HomeComponent from '../public/pages/home.component.vue';
@@ -75,8 +76,35 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-    let baseTitle = 'EduSpace';
-    document.title = `${baseTitle} | ${to.meta['title']}`;
+    document.title = `EduSpace | ${to.meta.title || 'Welcome'}`;
+
+    const isAuthenticated = store.getters['user/isAuthenticated'];
+    const userRole = store.getters['user/userRole'];
+
+    if (isAuthenticated && (to.name === 'login' || to.name === 'register')) {
+        if (userRole === 'RoleAdmin') {
+            return next({ name: 'home-admin' });
+        } else if (userRole === 'RoleTeacher') {
+            return next({ name: 'home-teacher' });
+        }
+    }
+
+    const requiredAuth = to.matched.some(record => record.meta.requiresAuth);
+    const requiredRole = to.matched.find(record => record.meta.role)?.meta.role;
+
+    if (requiredAuth && !isAuthenticated) {
+        return next({ name: 'login' });
+    }
+
+    if (isAuthenticated && requiredRole && userRole !== requiredRole) {
+        if (userRole === 'RoleAdmin') {
+            return next({ name: 'home-admin' });
+        } else if (userRole === 'RoleTeacher') {
+            return next({ name: 'home-teacher' });
+        }
+        return next({ name: 'login' });
+    }
+
     next();
 });
 
