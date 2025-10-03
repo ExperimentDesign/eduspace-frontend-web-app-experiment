@@ -105,7 +105,7 @@ export default {
       } else if (this.userRole === "RoleTeacher") {
         this.items = [
           { label: "Home", to: "/dashboard-teacher/home-teacher", svg: HomeIcon },
-          { label: "Notifications", to: "/dashboard-teacher/notifications", svg: NotificationIcon },
+          { label: "Reservations", to: "/dashboard-teacher/reservations", svg: NotificationIcon},
           { label: "Breakdown Reports", to: "/dashboard-teacher/breakdown-reports", svg: BreakdownIcon },
           { label: "Space Availability", to: "/dashboard-teacher/space-availability", svg: SpaceIcon },
         ];

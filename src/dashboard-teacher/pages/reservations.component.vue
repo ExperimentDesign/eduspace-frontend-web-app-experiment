@@ -3,10 +3,10 @@ export default {
   name: "TeacherReservations",
   methods: {
     goToReservationSpaces() {
-      this.$router.push('/');
+      this.$router.push({ name: 'reservation-management' });
     },
     goToSpaceConsultation() {
-      this.$router.push('/');
+      this.$router.push({ name: 'space-availability' });
     }
   }
 }
@@ -27,7 +27,7 @@ export default {
           </p>
         </template>
         <template #footer>
-          <pv-button  class = "pv-button" label="Go" @click="goToReservationSpaces" />
+          <pv-button class="pv-button" label="Go" @click="goToReservationSpaces" />
         </template>
       </pv-card>
     </div>
@@ -42,7 +42,7 @@ export default {
         </template>
 
         <template #footer>
-          <pv-button  class = "pv-button" label="Go" @click="goToSpaceConsultation" />
+          <pv-button class="pv-button" label="Go" @click="goToSpaceConsultation" />
         </template>
       </pv-card>
     </div>
@@ -101,8 +101,6 @@ p {
 .pv-button:hover {
   background-color: #ffdb4d;
 }
-
-
 
 .p-col-12 {
   flex: 0 0 100%;

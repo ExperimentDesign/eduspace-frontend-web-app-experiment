@@ -31,9 +31,9 @@
               <p><strong>Classroom:</strong> {{ reservation.name || "Unknown" }}</p>
               <p>{{ reservation.description || "No description available" }}</p>
             </li>
-            <p v-if="classroomReservations.length === 0">
+            <li v-if="classroomReservations.length === 0" class="empty">
               No classroom reservations available.
-            </p>
+            </li>
           </ul>
         </template>
       </pv-card>
@@ -44,22 +44,22 @@
           <h3>Shared Area Reservations</h3>
         </template>
         <template #content>
-          <ul>
-            <li v-for="(reservation, index) in sharedAreaReservations" :key="index">
-              <p><strong>Title:</strong> {{ reservation.title || "Unknown" }}</p>
-              <p><strong>Start:</strong> {{ reservation.start || "N/A" }}</p>
-              <p><strong>End:</strong> {{ reservation.end || "N/A" }}</p>
-              <p>
-                <strong>Area:</strong>
-                {{
-                  sharedAreas.find((area) => area.id === reservation.areaId)?.name || "Unknown"
-                }}
-              </p>
-            </li>
-            <p v-if="sharedAreaReservations.length === 0">
-              No shared area reservations available.
-            </p>
-          </ul>
+          <div v-if="sharedAreaReservations.length > 0" class="shared-reservations-container">
+            <div
+              v-for="(reservation, index) in sharedAreaReservations"
+              :key="`shared-${reservation.id || index}`"
+              class="shared-reservation-card"
+            >
+              <div class="reservation-header">
+                <h4 class="reservation-title">{{ reservation.title || 'Sin título' }}</h4>
+                <span class="reservation-area">{{ reservation.areaName || 'Área desconocida' }}</span>
+              </div>
+              <p class="reservation-datetime"><strong>Inicio:</strong> {{ formatDateTime(reservation.start) }}</p>
+              <p class="reservation-datetime"><strong>Fin:</strong> {{ formatDateTime(reservation.end) }}</p>
+              <p v-if="reservation.areaDescription" class="reservation-description"><strong>Descripción:</strong> {{ reservation.areaDescription }}</p>
+            </div>
+          </div>
+          <p v-else>No shared area reservations available.</p>
         </template>
       </pv-card>
 
@@ -78,7 +78,7 @@
               <p><strong>Title:</strong> {{ meeting.title || "No title" }}</p>
               <p><strong>Description:</strong> {{ meeting.description || "No description" }}</p>
             </li>
-            <p v-if="meetings.length === 0">No meetings scheduled.</p>
+            <li v-if="meetings.length === 0" class="empty">No meetings scheduled.</li>
           </ul>
         </template>
       </pv-card>
@@ -94,11 +94,11 @@ export default {
   name: "TeacherDashboard",
   data() {
     return {
-      teacher: null, // Información del Teacher
-      classroomReservations: [], // Reservas de aulas
-      sharedAreaReservations: [], // Reservas de áreas comunes
-      sharedAreas: [], // Lista de áreas compartidas
-      meetings: [], // Reuniones del Teacher
+      teacher: null,
+      classroomReservations: [],
+      sharedAreaReservations: [],
+      sharedAreas: [],
+      meetings: [],
     };
   },
   computed: {
@@ -114,11 +114,29 @@ export default {
       return `${firstName[0] || ""}${lastName[0] || ""}`.toUpperCase();
     },
   },
+  methods: {
+    formatDateTime(dateString) {
+      if (!dateString) return "N/A";
+      try {
+        const date = new Date(dateString);
+        return date.toLocaleString('es-ES', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+      } catch (error) {
+        console.error("Error al formatear la fecha:", error);
+        return dateString;
+      }
+    }
+  },
   async mounted() {
     try {
       console.log("Teacher ID desde Vuex:", this.userId);
 
-      // Realizar peticiones para cargar los datos
+      // Cargar información del teacher
       const teacherResponse = await http.get("/teachers-profiles");
       const allTeachers = teacherResponse.data;
       this.teacher = allTeachers.find((t) => String(t.id) === String(this.userId)) || {
@@ -127,19 +145,42 @@ export default {
         dni: null,
       };
 
+      // Cargar reservas de aulas
       const classroomResponse = await http.get("/classrooms");
       this.classroomReservations = classroomResponse.data.filter(
           (classroom) => classroom.teacherId === this.userId
       );
 
-      const sharedAreaReservationResponse = await http.get("/shared-area-reservation");
-      this.sharedAreaReservations = sharedAreaReservationResponse.data.filter(
-          (reservation) => reservation.teacherId === this.userId
-      );
-
+      // Cargar áreas compartidas
       const sharedAreaResponse = await http.get("/shared-area");
       this.sharedAreas = sharedAreaResponse.data;
 
+      // Cargar reservas de cada área compartida
+      const allReservations = [];
+      for (const area of this.sharedAreas) {
+        try {
+          const areaReservationsResponse = await http.get(`/areas/${area.id}/reservations`);
+          // Agregar información del área a cada reserva
+          const reservationsWithAreaInfo = areaReservationsResponse.data.map(reservation => ({
+            ...reservation,
+            areaId: area.id,
+            areaName: area.name,
+            areaDescription: area.description
+          }));
+          allReservations.push(...reservationsWithAreaInfo);
+        } catch (error) {
+          console.error(`Error cargando reservas del área ${area.id}:`, error);
+        }
+      }
+
+      // Filtrar solo las reservas del teacher actual
+      this.sharedAreaReservations = allReservations.filter(
+          reservation => reservation.teacherId === this.userId
+      );
+
+      console.log("Reservas del teacher:", this.sharedAreaReservations);
+
+      // Cargar reuniones
       const meetResponse = await http.get("/meet");
       this.meetings = meetResponse.data.filter((meet) =>
           meet.teachers.some((teacher) => teacher.id === this.userId)
@@ -192,7 +233,7 @@ export default {
   padding: 20px;
   border-radius: 10px;
   background-color: #fff;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .dashboard-card h3 {
@@ -212,5 +253,60 @@ li {
 
 p {
   margin: 5px 0;
+}
+
+/* Estilos para tarjetas de Shared Area Reservations */
+.shared-reservations-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.shared-reservation-card {
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbff 100%);
+  border: 1px solid rgba(66,165,245,0.15);
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.shared-reservation-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 14px rgba(66,165,245,0.12);
+}
+
+.reservation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.reservation-title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: #0d47a1;
+}
+
+.reservation-area {
+  background: rgba(66,165,245,0.12);
+  color: #1565c0;
+  padding: 4px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+}
+
+.reservation-datetime {
+  font-size: 13px;
+  color: #333;
+  margin: 4px 0;
+}
+
+.reservation-description {
+  font-size: 13px;
+  color: #555;
+  margin-top: 8px;
 }
 </style>

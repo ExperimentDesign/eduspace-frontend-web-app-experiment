@@ -1,11 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import MeetManagementComponent from '../meeting-management/pages/meet-management.component.vue';
-import ReservationManagementComponent from '../reservation-scheduling/pages/reservation-management.component.vue';
+import ReservationManagementComponent from '../reservation-management/pages/reservation-management.component.vue';
 import HomeComponent from '../public/pages/home.component.vue';
 import LoginComponent from '../login/pages/login.component.vue';
-import ClassroomManagementComponent from "../breakdown-management/pages/classroom-management.component.vue";
-import ResourceManagementComponent from "../breakdown-management/pages/resource-management.component.vue";
-import ReportResourceComponent from "../breakdown-management/pages/report-resource.component.vue";
+import ClassroomManagementComponent from "../breakdown-report-management/pages/classroom-management.component.vue";
+import ResourceManagementComponent from "../breakdown-report-management/pages/resource-management.component.vue";
+import ReportResourceComponent from "../breakdown-report-management/pages/report-resource.component.vue";
 import ClassroomChangesMeetingsComponent from "../dashboard-admin/pages/classroom-changes-meetings.component.vue";
 import HomeAdminComponent from "../dashboard-admin/pages/home-admin.component.vue";
 import PersonalDataComponent from "../dashboard-admin/pages/personal-data.component.vue";
@@ -13,7 +13,7 @@ import HomeTeacherComponent from "../dashboard-teacher/pages/home-teacher.compon
 import ReservationsComponent from "../dashboard-teacher/pages/reservations.component.vue";
 import BreakdownReportsComponent from "../dashboard-teacher/pages/breakdown-reports.component.vue";
 import RegisterComponent from "../register/pages/register.component.vue";
-import ReportsManagementComponent from "../breakdown-management/pages/reports-management.vue";
+import ReportsManagementComponent from "../breakdown-report-management/pages/reports-management.vue";
 import ClassroomsSharedSpacesComponent from "../dashboard-admin/pages/classrooms-shared-spaces.component.vue";
 import AddClassroomsComponent from "../classroom-space-resource-management/pages/classrooms/add-classrooms.component.vue";
 import ClassroomsComponent from "../classroom-space-resource-management/pages/classrooms/classrooms.component.vue";
@@ -25,6 +25,7 @@ import EditSharedSpaceComponent
 import ResourceComponent from "../classroom-space-resource-management/pages/resources/resource.component.vue";
 import AddResourceComponent from "../classroom-space-resource-management/pages/resources/add-resource.component.vue";
 import EditResourceComponent from "../classroom-space-resource-management/pages/resources/edit-resource.component.vue";
+import SpaceAvailabilityComponent from "../dashboard-teacher/pages/space-availability.component.vue";
 
 const router = createRouter({
     history: createWebHistory(),
@@ -34,7 +35,7 @@ const router = createRouter({
         {path: '/login', name: 'login', component: LoginComponent, meta: {title: 'Login'}},
 
         { path: '/dashboard-admin/classroom-changes-meetings/meeting-management', name: 'meet', component: MeetManagementComponent, meta: {title: 'Meeting Management'} },
-        { path: '/reservation-scheduling', name: 'reservation', component: ReservationManagementComponent, meta: {title: 'Reservation Management'} },
+        { path: '/reservation-management', name: 'reservation', component: ReservationManagementComponent, meta: {title: 'Reservation Management'} },
         { path: '/home', name: 'home', component: HomeComponent, meta: { title: 'Home' } },
         { path: '/login', name: 'login', component: LoginComponent, meta: { title: 'login' } },
         { path: '/classrooms', name: 'classrooms', component: ClassroomManagementComponent, meta: {title: 'Classroom Management'} },
@@ -65,7 +66,8 @@ const router = createRouter({
 
         { path: '/dashboard-teacher/home-teacher', name:'home-teacher', component: HomeTeacherComponent, meta: {title: 'Home Teacher'}},
         { path: '/dashboard-teacher/reservations', name: 'reservations', component: ReservationsComponent, meta: {title: 'Reservations'}},
-        { path: '/dashboard-teacher/reservations/reservation-scheduling', name: 'reservation', component: ReservationManagementComponent, meta: {title: 'Reservation of spaces'} },
+        { path: '/dashboard-teacher/reservations/reservation-management', name: 'reservation-management', component: ReservationManagementComponent, meta: {title: 'Reservation of spaces'} },
+        { path: '/dashboard-teacher/reservations/space-availability', name: 'space-availability', component: SpaceAvailabilityComponent, meta: {title: 'My Reservations'}},
         { path: '/dashboard-teacher/breakdown-reports', name: 'breakdown-reports', component: BreakdownReportsComponent, meta: {title: 'Breakdown Reports'}},
         { path: '/dashboard-teacher/breakdown-reports/classrooms', name: 'Classrooms', component: ClassroomManagementComponent, meta: {title: 'Classrooms'}},
         { path: '/dashboard-teacher/breakdown-reports/reports', name: 'reports', component: ReportsManagementComponent, meta: {title: 'Reports'}},
