@@ -42,6 +42,21 @@ export default {
           daysOfWeek: [0, 1, 2, 3, 4, 5, 6],
           startTime: '07:00',
           endTime: '20:00'
+        },
+        locale: 'es',
+        buttonText: {
+          today: 'Hoy',
+          week: 'Semana'
+        },
+        slotLabelFormat: {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
+        },
+        eventTimeFormat: {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false
         }
       }
     }
@@ -53,21 +68,16 @@ export default {
   },
   methods: {
     handleDateSelect(selectInfo) {
-      // Emit event to parent component to open dialog
       this.$emit('date-selected', {
         start: selectInfo.startStr,
         end: selectInfo.endStr,
         allDay: selectInfo.allDay
       });
-
-      // Unselect the date range
       selectInfo.view.calendar.unselect();
     },
 
     handleEventClick(clickInfo) {
       const event = clickInfo.event;
-
-      // Just show event info since we don't have delete endpoint
       alert(`Reserva: ${event.title}\nInicio: ${event.start.toLocaleString('es-ES')}\nFin: ${event.end.toLocaleString('es-ES')}`);
     },
 
@@ -79,18 +89,19 @@ export default {
 </script>
 
 <template>
-  <div class='demo-app'>
-    <div class='demo-app-main'>
+  <div class='calendar-container'>
+    <div class='calendar-wrapper'>
       <fc-calendar
-          class='demo-app-calendar'
+          class='enhanced-calendar'
           :options='calendarOptions'
       >
         <template v-slot:eventContent='arg'>
-          <div class="fc-event-main-frame">
-            <div class="fc-event-time">{{ arg.timeText }}</div>
-            <div class="fc-event-title-container">
-              <div class="fc-event-title">{{ arg.event.title }}</div>
+          <div class="event-content">
+            <div class="event-time">
+              <i class="pi pi-clock"></i>
+              {{ arg.timeText }}
             </div>
+            <div class="event-title">{{ arg.event.title }}</div>
           </div>
         </template>
       </fc-calendar>
@@ -99,46 +110,175 @@ export default {
 </template>
 
 <style scoped>
-h2 {
-  margin: 0;
-  font-size: 16px;
+.calendar-container {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 }
 
-ul {
-  margin: 0;
-  padding: 0 0 0 1.5em;
+.calendar-wrapper {
+  padding: 1.5rem;
 }
 
-li {
-  margin: 1.5em 0;
-  padding: 0;
+.enhanced-calendar {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-b {
-  margin-right: 3px;
+/* Header styling */
+.enhanced-calendar :deep(.fc-toolbar) {
+  padding: 1rem;
+  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 100%);
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
 }
 
-.demo-app {
+.enhanced-calendar :deep(.fc-toolbar-title) {
+  color: #00838f;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.enhanced-calendar :deep(.fc-button) {
+  background: white;
+  border: 1px solid #00bcd4;
+  color: #00838f;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.enhanced-calendar :deep(.fc-button:hover) {
+  background: #00bcd4;
+  border-color: #00bcd4;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.enhanced-calendar :deep(.fc-button-active) {
+  background: #00acc1 !important;
+  border-color: #00acc1 !important;
+  color: white !important;
+}
+
+/* Column headers */
+.enhanced-calendar :deep(.fc-col-header-cell) {
+  background: #f8f9fa;
+  border-color: #e9ecef;
+  padding: 1rem 0.5rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+.enhanced-calendar :deep(.fc-col-header-cell-cushion) {
+  color: #495057;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+}
+
+/* Time slots */
+.enhanced-calendar :deep(.fc-timegrid-slot) {
+  height: 3rem;
+  border-color: #e9ecef;
+}
+
+.enhanced-calendar :deep(.fc-timegrid-slot-label) {
+  color: #6c757d;
+  font-size: 0.875rem;
+}
+
+/* Events */
+.enhanced-calendar :deep(.fc-event) {
+  border: none;
+  border-radius: 6px;
+  background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%);
+  box-shadow: 0 2px 4px rgba(0, 188, 212, 0.3);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.enhanced-calendar :deep(.fc-event:hover) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 188, 212, 0.5);
+}
+
+.event-content {
+  padding: 0.5rem;
+  color: white;
+}
+
+.event-time {
   display: flex;
-  min-height: 100%;
-  font-family: Arial, Helvetica Neue, Helvetica, sans-serif;
-  font-size: 14px;
+  align-items: center;
+  gap: 0.25rem;
+  font-weight: 600;
+  font-size: 0.75rem;
+  margin-bottom: 0.25rem;
+  opacity: 0.95;
 }
 
-.demo-app-main {
-  flex-grow: 1;
-  padding: 3em;
+.event-time i {
+  font-size: 0.7rem;
 }
 
-.fc-event-main-frame {
-  padding: 2px;
+.event-title {
+  font-weight: 500;
+  font-size: 0.875rem;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.fc-event-time {
-  font-weight: bold;
+/* Selection highlight */
+.enhanced-calendar :deep(.fc-highlight) {
+  background: rgba(0, 188, 212, 0.15);
+  border-radius: 4px;
 }
 
-.fc-event-title {
-  font-style: italic;
+/* Today column */
+.enhanced-calendar :deep(.fc-day-today) {
+  background: rgba(0, 188, 212, 0.05) !important;
+}
+
+/* Business hours */
+.enhanced-calendar :deep(.fc-non-business) {
+  background: #f8f9fa;
+}
+
+/* Scrollbar */
+.enhanced-calendar :deep(.fc-scroller)::-webkit-scrollbar {
+  width: 8px;
+}
+
+.enhanced-calendar :deep(.fc-scroller)::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.enhanced-calendar :deep(.fc-scroller)::-webkit-scrollbar-thumb {
+  background: #cbd5e0;
+  border-radius: 4px;
+}
+
+.enhanced-calendar :deep(.fc-scroller)::-webkit-scrollbar-thumb:hover {
+  background: #a0aec0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .calendar-wrapper {
+    padding: 1rem;
+  }
+
+  .enhanced-calendar :deep(.fc-toolbar) {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .enhanced-calendar :deep(.fc-toolbar-title) {
+    font-size: 1.25rem;
+  }
 }
 </style>
