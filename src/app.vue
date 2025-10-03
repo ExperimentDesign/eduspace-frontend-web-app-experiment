@@ -86,10 +86,8 @@ export default {
     ...mapGetters("user", ["isAuthenticated", "currentUsername", "userRole"]), // Incluye `currentUsername`
   },
   methods: {
-    ...mapActions("user", ["clearAuth"]), // Usa la acción `clearAuth` para cerrar sesión
-    toggleDrawer() {
-      this.drawer = !this.drawer;
-    },
+    ...mapActions("user", ["clearAuth"]),
+// Usa la acción `clearAuth` para cerrar sesión
     handleLogOut() {
       this.clearAuth(); // Limpia el estado de autenticación
       this.$router.push({ name: "login" }); // Redirige al login
@@ -197,28 +195,6 @@ export default {
   padding: 20px;
 }
 
-.admin-sidenav {
-  background: linear-gradient(160deg,
-  rgba(147, 227, 241, 1) 0%,
-  rgba(255, 255, 255, 1) 24%,
-  rgba(246, 246, 246, 1) 34%,
-  rgba(255, 255, 255, 1) 52%,
-  rgba(255, 255, 255, 1) 71%,
-  rgba(255, 255, 255, 1) 85%,
-  rgba(255, 231, 120, 1) 100%);
-}
-
-.teacher-sidenav {
-  background: linear-gradient(160deg,
-  rgba(255, 231, 120, 1) 0%,
-  rgba(255, 255, 255, 1) 24%,
-  rgba(246, 246, 246, 1) 34%,
-  rgba(255, 255, 255, 1) 52%,
-  rgba(255, 255, 255, 1) 71%,
-  rgba(255, 255, 255, 1) 85%,
-  rgba(147, 227, 241, 1) 100%);
-}
-
 .drawer-content {
   display: flex;
   flex-direction: column;
@@ -277,20 +253,6 @@ export default {
 .p-button-text {
   color: #000 !important;
   text-align: left;
-}
-
-.admin-hover-active:hover,
-.router-link-active .admin-hover-active,
-.router-link-exact-active .admin-hover-active {
-  background-color: rgba(12, 192, 223, 0.28) !important;
-  color: #000 !important;
-}
-
-.teacher-hover-active:hover,
-.router-link-active .teacher-hover-active,
-.router-link-exact-active .teacher-hover-active {
-  background-color: rgba(255, 210, 0, 0.28) !important;
-  color: #000 !important;
 }
 
 .pv-button {

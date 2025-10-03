@@ -145,25 +145,6 @@ h2::after {
   position: relative;
 }
 
-:deep(.p-inputtext),
-:deep(.p-textarea),
-:deep(.p-datepicker) {
-  width: 100%;
-  padding: 14px;
-  border: 2px solid #e0e0e0;
-  border-radius: 12px;
-  font-size: 1.1rem;
-  transition: all 0.3s ease;
-  background-color: #fff;
-}
-
-:deep(.p-inputtext:focus),
-:deep(.p-textarea:focus),
-:deep(.p-datepicker:focus) {
-  border-color: #3498db;
-  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
 .float-label {
   position: absolute;
   left: 14px;
@@ -172,17 +153,6 @@ h2::after {
   color: #7f8c8d;
   transition: 0.2s ease all;
   pointer-events: none;
-}
-
-:deep(.p-inputtext:focus) + .float-label,
-:deep(.p-inputtext:not(:placeholder-shown)) + .float-label,
-:deep(.p-textarea:focus) + .float-label,
-:deep(.p-textarea:not(:placeholder-shown)) + .float-label {
-  top: -10px;
-  font-size: 0.9rem;
-  color: #3498db;
-  background-color: #fff;
-  padding: 0 5px;
 }
 
 .fixed-label {
@@ -209,16 +179,6 @@ h2::after {
   background: linear-gradient(90deg, #2980b9, #27ae60);
   transform: translateY(-2px);
   box-shadow: 0 7px 20px rgba(0, 0, 0, 0.2);
-}
-
-:deep(.p-datepicker) {
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-:deep(.p-datepicker-trigger) {
-  border-top-right-radius: 12px;
-  border-bottom-right-radius: 12px;
 }
 
 @media (max-width: 768px) {
