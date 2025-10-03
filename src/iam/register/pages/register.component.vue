@@ -1,6 +1,6 @@
 <script>
 import RegisterForm from "../components/register-form.component.vue";
-import { SignUpRequest } from "../../iam/model/sign-up.request.js";
+import { SignUpRequest } from "../../model/sign-up.request.js";
 import RegisterService from "../services/register.services.js";
 import { mapGetters } from "vuex";
 

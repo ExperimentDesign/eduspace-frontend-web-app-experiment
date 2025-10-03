@@ -1,5 +1,6 @@
 <script>
-import { ClassroomService } from "../../services/classroom.service.js";
+import {ClassroomService} from "../../../shared/services/classroom.service.js";
+import {TeacherService} from "../../../personal-data/services/teacher.service.js";
 import ClassroomCard from "../../components/classrooms/classroom-card.component.vue";
 
 export default {
@@ -17,7 +18,18 @@ export default {
   methods: {
     async loadClassrooms() {
       try {
-        this.classrooms = await this.classroomService.getAllClassroomsWithTeacherNames();
+        const response = await this.classroomService.getAll();
+        const teachers = await TeacherService.fetchTeachers();
+
+        this.classrooms = response.data.map(
+            classroom => {
+              const teacher = teachers.find(t => t.id === classroom.teacherId);
+              return {
+                ...classroom,
+                teacherName: teacher ? `${teacher.firstName} ${teacher.lastName}` : 'Unassigned',
+              }
+            }
+        )
       } catch (error) {
         console.error("Error loading classrooms:", error);
       }

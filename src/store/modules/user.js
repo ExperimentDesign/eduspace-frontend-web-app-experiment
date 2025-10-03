@@ -1,23 +1,23 @@
 import AuthenticationService from "../../iam/services/authentication.service.js";
 
-// Helper to get user from localStorage
-const savedUser = JSON.parse(localStorage.getItem("user"));
-
 export default {
     namespaced: true,
     state: {
-        id: savedUser?.id || null,
-        role: savedUser?.role || null,
+        id: null,
+        role: null,
         token: localStorage.getItem("token") || null,
-        isAuthenticated: !!(savedUser && localStorage.getItem("token")),
-        user: savedUser || null,
+        // El estado de isAuthenticated debe reflejar si hay un token válido
+        isAuthenticated: !!localStorage.getItem("token"),
+        user: null,
     },
     mutations: {
         SET_USER(state, user) {
             state.id = user?.id || null;
             state.role = user?.role || null;
             state.user = user;
-            state.isAuthenticated = !!user;
+            // -- CORRECCIÓN CLAVE AQUÍ --
+            // Si establecemos un usuario, significa que está autenticado.
+            state.isAuthenticated = true;
         },
         SET_TOKEN(state, token) {
             state.token = token;
@@ -37,11 +37,13 @@ export default {
             if (!id || !role || !token) {
                 throw new Error("Datos de usuario incompletos en la respuesta del servidor.");
             }
-            const userPayload = { id, role, username };
-            commit("SET_USER", userPayload);
-            commit("SET_TOKEN", token);
+
+            // Guardamos el token en el almacenamiento local
             localStorage.setItem("token", token);
-            localStorage.setItem("user", JSON.stringify(userPayload));
+
+            // Actualizamos el estado con el token y los datos del usuario
+            commit("SET_TOKEN", token);
+            commit("SET_USER", { id, role, username });
         },
         async signUp(_, payload) {
             await AuthenticationService.signUp(payload);
@@ -49,7 +51,6 @@ export default {
         signOut({ commit }) {
             commit("CLEAR_USER");
             localStorage.removeItem("token");
-            localStorage.removeItem("user");
         },
         clearAuth({ commit }) {
             commit("CLEAR_USER");

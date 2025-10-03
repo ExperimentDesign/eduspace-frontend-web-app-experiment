@@ -1,5 +1,5 @@
 <script>
-import { ClassroomService } from "../../services/classroom.service.js";
+import {ClassroomService} from "../../../shared/services/classroom.service.js";
 import ClassroomCreateAndEdit from "../../components/classrooms/classroom-create-and-edit.component.vue";
 
 export default {

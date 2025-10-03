@@ -2,7 +2,7 @@
 import CreateAndEdit from "../../shared/components/create-and-edit.component.vue";
 import { TeacherService } from "../services/teachers.service.js";
 import { mapGetters } from "vuex";
-import { ClassroomsService } from "../services/classroom.service.js";
+import {ClassroomService} from "../../shared/services/classroom.service.js";
 
 export default {
   name: "meet-create-and-edit-dialog",
@@ -104,8 +104,8 @@ export default {
       console.log("Teachers loaded:", this.teachers);
     },
     async loadClassrooms() {
-      const classroomsService = new ClassroomsService();
-      const response = await classroomsService.getAllClassrooms();
+      const classroomsService = new ClassroomService();
+      const response = await classroomsService.getAll();
       this.classrooms = response.data.map(classroom => ({
         id: classroom.id,
         name: classroom.name
@@ -114,7 +114,6 @@ export default {
     },
     formatTeachersForEdit() {
       if (Array.isArray(this.item.teachers) && this.item.teachers.length > 0) {
-        // Keep at most 2 teachers when editing
         this.selectedTeachers = this.item.teachers.map(teacher => typeof teacher === 'object' ? teacher.id : teacher).slice(0, 2);
         if (this.item.teachers.length > 2) {
           this.selectedTeachersError = 'Solo puedes invitar hasta 2 profesores.';
@@ -144,7 +143,6 @@ export default {
     },
     onSaveRequested() {
       this.submitted = true;
-      // enforce max 2 teachers
       if (this.selectedTeachers && this.selectedTeachers.length > 2) {
         this.selectedTeachersError = 'Solo puedes invitar hasta 2 profesores.';
         return;

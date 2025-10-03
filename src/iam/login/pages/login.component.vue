@@ -1,7 +1,7 @@
 <script>
 import LoginForm from '../components/login-form.component.vue';
 import { mapActions, mapState } from 'vuex';
-import { SignInRequest } from "../../iam/model/sign-in.request.js";
+import { SignInRequest } from "../../model/sign-in.request.js";
 
 export default {
   name: "LoginPage",

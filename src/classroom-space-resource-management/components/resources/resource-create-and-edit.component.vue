@@ -1,5 +1,5 @@
 <script>
-import { ClassroomService } from "../../services/classroom.service.js";
+import {ClassroomService} from "../../../shared/services/classroom.service.js";
 
 export default {
   name: "resource-create-and-edit",

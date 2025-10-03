@@ -2,7 +2,7 @@
 import { Meet } from "../model/meet.entity.js";
 import MeetCreateAndEditDialog from "../components/meet-create-and-edit.component.vue";
 import { MeetService } from "../services/meet.service.js";
-import { ClassroomsService } from "../services/classroom.service.js";
+import {ClassroomService} from "../../shared/services/classroom.service.js";
 import { AdministratorsService } from "../services/administrators.service.js";
 import MeetingCard from '../components/meeting-card.vue';
 
@@ -35,7 +35,7 @@ export default {
       try {
         const [meetingsResponse, classroomsResponse, administratorsResponse] = await Promise.all([
           this.meetService.getAll(),
-          this.classroomsService.getAllClassrooms(),
+          this.classroomsService.getAll(),
           this.administratorsService.getAllAdministrators()
         ]);
 
@@ -143,7 +143,7 @@ export default {
   },
   created() {
     this.meetService = new MeetService();
-    this.classroomsService = new ClassroomsService();
+    this.classroomsService = new ClassroomService();
     this.administratorsService = new AdministratorsService();
     this.loadMeetings();
   }

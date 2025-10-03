@@ -37,8 +37,7 @@
 </template>
 
 <script>
-// Importar el servicio del módulo space-and-resource-management
-import {ClassroomService} from "../../classroom-space-resource-management/services/classroom.service.js";
+import {ClassroomService} from "../../shared/services/classroom.service.js";
 
 export default {
   name: 'ClassroomManagement',
@@ -58,7 +57,6 @@ export default {
         console.log("Todos los classrooms:", response.data);
         console.log("userId actual:", this.id, "tipo:", typeof this.id);
 
-        // Asegurar comparación correcta (número con número)
         this.classrooms = response.data.filter(
             classroom => {
               console.log(`Classroom ${classroom.id} teacherId:`, classroom.teacherId, "tipo:", typeof classroom.teacherId);

@@ -31,7 +31,7 @@
 
 <script>
 import {ResourceService} from "../../classroom-space-resource-management/services/resource.service.js";
-import {ClassroomService} from "../../classroom-space-resource-management/services/classroom.service.js";
+import {ClassroomService} from "../../shared/services/classroom.service.js";
 
 export default {
   name: 'ResourceManagement',

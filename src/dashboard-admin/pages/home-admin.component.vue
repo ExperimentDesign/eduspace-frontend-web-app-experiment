@@ -7,7 +7,7 @@ import MeetingCard from "../../meeting-management/components/meeting-card.vue";
 import MeetCreateAndEditDialog from "../../meeting-management/components/meet-create-and-edit.component.vue";
 import { Meet } from "../../meeting-management/model/meet.entity.js";
 import { MeetService } from "../../meeting-management/services/meet.service.js";
-import { ClassroomsService } from "../../meeting-management/services/classroom.service.js";
+import {ClassroomService} from "../../shared/services/classroom.service.js";
 import { AdministratorsService } from "../../meeting-management/services/administrators.service.js";
 
 export default {
@@ -51,7 +51,7 @@ export default {
       }
 
       this.meetService = new MeetService();
-      this.classroomsService = new ClassroomsService();
+      this.classroomsService = new ClassroomService();
       this.administratorsService = new AdministratorsService();
 
       await this.loadMeetings();
@@ -77,7 +77,7 @@ export default {
       try {
         const [meetingsResponse, classroomsResponse, administratorsResponse] = await Promise.all([
           this.meetService.getAll(),
-          this.classroomsService.getAllClassrooms(),
+          this.classroomsService.getAll(),
           this.administratorsService.getAllAdministrators()
         ]);
 
@@ -129,34 +129,6 @@ export default {
         console.error('Error loading meetings in admin home', error);
         this.notifyErrorAction('Could not load meetings');
       }
-    },
-
-    onNewItem() {
-      this.meet = new Meet({});
-      this.isEdit = false;
-      this.submitted = false;
-      this.createAndEditDialogIsVisible = true;
-    },
-    onViewItem(meeting) {
-      this.notifySuccessfulAction(`Viewing meeting: ${meeting.title || meeting.id}`);
-    },
-    onEditItem(meeting) {
-      this.meet = JSON.parse(JSON.stringify(meeting));
-      this.isEdit = true;
-      this.submitted = false;
-      this.createAndEditDialogIsVisible = true;
-    },
-    onDeleteItem(meeting) {
-      this.meetService.delete(meeting.id).then(() => {
-        this.meetings = this.meetings.filter(m => m.id !== meeting.id);
-        this.notifySuccessfulAction('Meet Deleted');
-      }).catch(error => {
-        console.error('Error deleting meet from admin home', error);
-        this.notifyErrorAction('Could not delete meet.');
-      });
-    },
-    onCancelRequested() {
-      this.createAndEditDialogIsVisible = false;
     },
     onSaveRequested(payload) {
       this.submitted = true;
