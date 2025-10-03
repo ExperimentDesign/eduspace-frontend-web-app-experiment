@@ -4,7 +4,7 @@
 
     <div class="classroom-cards">
       <div
-          v-for="classroom in filteredClassrooms"
+          v-for="classroom in classrooms"
           :key="classroom.id"
           class="classroom-card"
       >
@@ -30,45 +30,52 @@
       </div>
     </div>
 
-    <p v-if="filteredClassrooms.length === 0" class="no-classrooms">
-      No hay aulas disponibles para este profesor.
+    <p v-if="classrooms.length === 0" class="no-classrooms">
+      No hay aulas disponibles.
     </p>
   </div>
 </template>
 
 <script>
-import { ClassroomService } from "../services/classroom.service.js";
-import { mapGetters } from "vuex";
+// Importar el servicio del módulo space-and-resource-management
+import {ClassroomService} from "../../classroom-space-resource-management/services/classroom.service.js";
 
 export default {
   name: 'ClassroomManagement',
   data() {
     return {
-      classrooms: []
+      classrooms: [],
+      classroomService: new ClassroomService()
     };
-  },
-  computed: {
-    ...mapGetters('user', ['userId']),
-    filteredClassrooms() {
-      return this.classrooms.filter(classroom => classroom.teacherId === this.userId);
-    }
   },
   created() {
     this.loadClassrooms();
   },
   methods: {
     async loadClassrooms() {
-      const classroomService = new ClassroomService();
       try {
-        const response = await classroomService.getAll();
-        this.classrooms = response.data;
-        console.log("Aulas cargadas:", this.classrooms);
+        const response = await this.classroomService.getAll();
+        console.log("Todos los classrooms:", response.data);
+        console.log("userId actual:", this.id, "tipo:", typeof this.id);
+
+        // Asegurar comparación correcta (número con número)
+        this.classrooms = response.data.filter(
+            classroom => {
+              console.log(`Classroom ${classroom.id} teacherId:`, classroom.teacherId, "tipo:", typeof classroom.teacherId);
+              return Number(classroom.teacherId) === Number(this.userId);
+            }
+        );
+
+        console.log("Classrooms filtrados para este teacher:", this.classrooms);
       } catch (error) {
         console.error("Error al cargar las aulas", error);
       }
     },
     goToClassroomResources(classroomId) {
-      this.$router.push({ name: 'resource-management', params: { classroomId } });
+      this.$router.push({
+        name: 'resource-management',
+        params: { classroomId }
+      });
     }
   }
 };
@@ -180,6 +187,6 @@ export default {
 
   .centered-title {
     font-size: 1.8rem;
-    }
+  }
 }
 </style>

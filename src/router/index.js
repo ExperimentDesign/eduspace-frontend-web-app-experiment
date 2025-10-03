@@ -70,6 +70,8 @@ const router = createRouter({
         { path: '/dashboard-teacher/reservations/space-availability', name: 'space-availability', component: SpaceAvailabilityComponent, meta: {title: 'My Reservations'}},
         { path: '/dashboard-teacher/breakdown-reports', name: 'breakdown-reports', component: BreakdownReportsComponent, meta: {title: 'Breakdown Reports'}},
         { path: '/dashboard-teacher/breakdown-reports/classrooms', name: 'Classrooms', component: ClassroomManagementComponent, meta: {title: 'Classrooms'}},
+        { path: '/dashboard-teacher/breakdown-reports/classrooms/:classroomId/resources', name: 'resource-management', component: ResourceManagementComponent, meta: { title: 'Resource Management' }, props: true },
+        { path: '/dashboard-teacher/breakdown-reports/classrooms/:classroomId/resources/:resourceId/report', name: 'report-resource', component: ReportResourceComponent, meta: { title: 'Report Resource' }, props: true },
         { path: '/dashboard-teacher/breakdown-reports/reports', name: 'reports', component: ReportsManagementComponent, meta: {title: 'Reports'}},
     ]
 });

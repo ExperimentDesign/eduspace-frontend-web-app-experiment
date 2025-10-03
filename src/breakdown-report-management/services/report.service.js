@@ -3,28 +3,27 @@ import http from "../../shared/services/http-common.js";
 export class ReportService {
     resourceEndpoint = '/reports';
 
+    /**
+     * Get all reports
+     * GET /api/v1/reports
+     */
     getAll() {
         return http.get(this.resourceEndpoint);
     }
 
-    getById(id) {
-        return http.get(`${this.resourceEndpoint}/${id}`);
+    /**
+     * Get reports by resource ID
+     * GET /api/v1/reports/resources/{resourceId}
+     */
+    getByResourceId(resourceId) {
+        return http.get(`${this.resourceEndpoint}/resources/${resourceId}`);
     }
 
-    create(reportResource) {
-        // Deja que json-server maneje el id automáticamente
-        return http.post(this.resourceEndpoint, reportResource).then(response => response.data);
-    }
-
-    update(id, reportResource) {
-        return http.put(`${this.resourceEndpoint}/${id}`, reportResource);
-    }
-
-    delete(id) {
-        return http.delete(`${this.resourceEndpoint}/${id}`);
-    }
-
-    findByResource(resourceId) {
-        return http.get(`${this.resourceEndpoint}?resourceId=${resourceId}`);
+    /**
+     * Create a report
+     * POST /api/v1/reports
+     */
+    create(reportData) {
+        return http.post(this.resourceEndpoint, reportData);
     }
 }

@@ -4,7 +4,7 @@
     <table>
       <thead>
       <tr>
-        <th>Resource Name</th>
+        <th>Resource ID</th>
         <th>Kind of Report</th>
         <th>Description</th>
         <th>Created At</th>
@@ -13,21 +13,21 @@
       </tr>
       </thead>
       <tbody>
-      <tr v-for="report in filteredReports" :key="report.id">
-        <td>{{ report.resourceName || 'Unknown Resource' }}</td>
-        <td>{{ report.kind_of_report }}</td>
+      <tr v-for="report in reports" :key="report.id">
+        <td>{{ report.resourceId }}</td>
+        <td>{{ report.kindOfReport }}</td>
         <td>{{ report.description }}</td>
-        <td>{{ report.created_at }}</td>
+        <td>{{ formatDate(report.createdAt) }}</td>
         <td>
-            <span :class="['status-label', report.status === 'en proceso' ? 'in-progress' : 'completed']">
-              {{ report.status }}
-            </span>
+          <span :class="['status-label', getStatusClass(report.status)]">
+            {{ report.status }}
+          </span>
         </td>
         <td>
           <i
               class="pi pi-refresh status-icon"
               @click="toggleStatus(report)"
-              :class="{'in-progress': report.status === 'en proceso', 'completed': report.status === 'completado'}"
+              :class="getStatusIconClass(report.status)"
           ></i>
         </td>
       </tr>
@@ -38,75 +38,79 @@
 
 <script>
 import { ReportService } from "../services/report.service.js";
-import { ResourceService } from "../services/resource.service.js";
-import { mapGetters } from "vuex";
 
 export default {
   data() {
     return {
-      reports: [], // Todos los reportes obtenidos del servicio
+      reports: [],
       reportService: new ReportService(),
-      resourceService: new ResourceService(),
     };
   },
   created() {
     this.fetchReports();
   },
-  computed: {
-    ...mapGetters(['userId', 'userRole']),
-    idTeacher() {
-      console.log("ID del usuario desde Vuex:", this.userId); // Verificar que userId esté presente
-      return this.userId; // ID del teacher conectado
-    },
-    filteredReports() {
-      return this.reports.filter((report) => String(report.idTeacher) === String(this.idTeacher));
-    },
-  },
   methods: {
     async fetchReports() {
       try {
         const response = await this.reportService.getAll();
-        const reports = response.data || [];
-        for (let report of reports) {
-          const resource = await this.resourceService.getById(report.resourceId);
-          report.resourceName = resource.data.name; // Agregar el nombre del recurso
-        }
-        this.reports = reports;
+        console.log("Reports response", response.data);
+        this.reports = response.data || [];
       } catch (error) {
         console.error("Error fetching reports:", error);
       }
     },
     async toggleStatus(report) {
-      // Removed unused variable resourceName
-      const reportToUpdate = { ...report, status: report.status === "en proceso" ? "completado" : "en proceso" };
-      delete reportToUpdate.resourceName;
+      const newStatus = report.status === "in progress" ? "completed" : "in progress";
+
+      const reportToUpdate = {
+        kindOfReport: report.kindOfReport,
+        description: report.description,
+        resourceId: report.resourceId,
+        createdAt: report.createdAt,
+        status: newStatus
+      };
+
       try {
         await this.reportService.update(report.id, reportToUpdate);
-        report.status = reportToUpdate.status;
+        report.status = newStatus;
       } catch (error) {
         console.error("Error updating report status:", error);
       }
     },
+    formatDate(dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
+    },
+    getStatusClass(status) {
+      return status === 'in progress' ? 'in-progress' : 'completed';
+    },
+    getStatusIconClass(status) {
+      return status === 'in progress' ? 'in-progress' : 'completed';
+    }
   },
 };
 </script>
-
 
 <style scoped>
 .report-table {
   max-width: 1000px;
   margin: 50px auto;
   padding: 20px;
-  border-radius: 16px; /* Esquinas más redondeadas */
-  background-color: #f9f9f9; /* Color de fondo suave */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  border-radius: 16px;
+  background-color: #f9f9f9;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .table-title {
   text-align: center;
   font-size: 2rem;
   margin-bottom: 20px;
-  color: #333; /* Color del título */
+  color: #333;
 }
 
 table {
@@ -121,37 +125,37 @@ th, td {
 }
 
 th {
-  background-color: #0CC0DF; /* Color de fondo para el encabezado */
-  color: white; /* Color del texto del encabezado */
+  background-color: #0CC0DF;
+  color: white;
   font-weight: bold;
 }
 
 .status-label {
   padding: 5px 10px;
-  border-radius: 12px; /* Esquinas redondeadas */
+  border-radius: 12px;
   font-weight: bold;
 }
 
 .in-progress {
-  background-color: #28a745; /* Color de fondo para 'en proceso' */
-  color: white; /* Color del texto */
+  background-color: #28a745;
+  color: white;
 }
 
 .completed {
-  background-color: #007bff; /* Color de fondo para 'completado' */
-  color: white; /* Color del texto */
+  background-color: #007bff;
+  color: white;
 }
 
 .status-icon {
   font-size: 1.5rem;
   cursor: pointer;
-  color: red; /* Color del ícono */
+  color: #0CC0DF;
   transition: color 0.3s;
-  background: none; /* Elimina cualquier fondo */
-  padding: 0; /* Elimina el padding */
+  background: none;
+  padding: 0;
 }
 
 .status-icon:hover {
-  color: #ffcc00; /* Color al pasar el mouse sobre el ícono */
+  color: #ffcc00;
 }
 </style>

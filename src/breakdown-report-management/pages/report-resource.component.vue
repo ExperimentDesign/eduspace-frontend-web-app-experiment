@@ -13,6 +13,7 @@
           <label for="kind_of_report" class="float-label">Kind of Report</label>
         </pv-float-label>
       </div>
+
       <div class="form-group">
         <pv-float-label>
           <pv-textarea
@@ -26,17 +27,17 @@
           <label for="description" class="float-label">Description</label>
         </pv-float-label>
       </div>
+
       <div class="form-group">
         <pv-date-picker
             id="created_at"
-            v-model="formattedCreatedAt"
+            v-model="form.createdAt"
             dateFormat="yy-mm-dd"
             showIcon
         />
         <label for="created_at" class="fixed-label">Created At</label>
       </div>
-      <!-- Campo oculto para el idTeacher, que obtiene el userId desde Vuex -->
-      <input type="hidden" v-model="idTeacher" />
+
       <pv-button
           type="submit"
           label="Create report"
@@ -58,32 +59,26 @@ export default {
         kind_of_report: '',
         description: '',
         resourceId: null,
-        status: 'en proceso',
+        createdAt: new Date(),
+        status: 'string'
       },
-      formattedCreatedAt: new Date().toISOString().slice(0, 10),
       reportService: new ReportService(),
     };
   },
   created() {
-    this.form.resourceId = this.$route.params.resourceId;
-    this.setUserId();  // Inicializa el idTeacher desde Vuex
+    this.form.resourceId = parseInt(this.$route.params.resourceId);
   },
   computed: {
-    ...mapGetters(['userId', 'userRole']),
-    idTeacher() {
-      console.log("ID del usuario desde Vuex:", this.userId); // Verificar que userId esté presente
-      return this.userId;
-    },
+    ...mapGetters('user', ['userId']),
   },
   methods: {
     async submitForm() {
       const reportData = {
-        kind_of_report: this.form.kind_of_report,
+        kindOfReport: this.form.kind_of_report,
         description: this.form.description,
         resourceId: this.form.resourceId,
-        created_at: this.getDateWithoutTime(this.formattedCreatedAt),
-        status: this.form.status,
-        idTeacher: String(this.idTeacher),  // Usamos el idTeacher desde el computed
+        createdAt: this.formatDate(this.form.createdAt),
+        status: this.form.status
       };
 
       try {
@@ -94,13 +89,16 @@ export default {
         alert("Error al crear el reporte. Por favor, revisa la consola para más detalles.");
       }
     },
-    getDateWithoutTime(dateString) {
-      const date = new Date(dateString);
-      return date.toISOString().split('T')[0];
-    },
-    setUserId() {
-      // Aquí puedes agregar lógica si deseas hacer algo más con el userId cuando se inicializa
-      console.log('User ID from Vuex:', this.idTeacher);
+    formatDate(date) {
+      const d = new Date(date);
+      const year = d.getFullYear();
+      const month = String(d.getMonth() + 1).padStart(2, '0');
+      const day = String(d.getDate()).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, '0');
+      const minutes = String(d.getMinutes()).padStart(2, '0');
+      const seconds = String(d.getSeconds()).padStart(2, '0');
+
+      return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}.229Z`;
     }
   },
 };
@@ -145,6 +143,25 @@ h2::after {
   position: relative;
 }
 
+:deep(.p-inputtext),
+:deep(.p-textarea),
+:deep(.p-datepicker) {
+  width: 100%;
+  padding: 14px;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  background-color: #fff;
+}
+
+:deep(.p-inputtext:focus),
+:deep(.p-textarea:focus),
+:deep(.p-datepicker:focus) {
+  border-color: #3498db;
+  box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
 .float-label {
   position: absolute;
   left: 14px;
@@ -153,6 +170,17 @@ h2::after {
   color: #7f8c8d;
   transition: 0.2s ease all;
   pointer-events: none;
+}
+
+:deep(.p-inputtext:focus) + .float-label,
+:deep(.p-inputtext:not(:placeholder-shown)) + .float-label,
+:deep(.p-textarea:focus) + .float-label,
+:deep(.p-textarea:not(:placeholder-shown)) + .float-label {
+  top: -10px;
+  font-size: 0.9rem;
+  color: #3498db;
+  background-color: #fff;
+  padding: 0 5px;
 }
 
 .fixed-label {
@@ -179,6 +207,16 @@ h2::after {
   background: linear-gradient(90deg, #2980b9, #27ae60);
   transform: translateY(-2px);
   box-shadow: 0 7px 20px rgba(0, 0, 0, 0.2);
+}
+
+:deep(.p-datepicker) {
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+:deep(.p-datepicker-trigger) {
+  border-top-right-radius: 12px;
+  border-bottom-right-radius: 12px;
 }
 
 @media (max-width: 768px) {

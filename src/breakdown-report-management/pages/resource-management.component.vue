@@ -1,14 +1,20 @@
 <template>
   <div class="resource-management">
-    <h1 class="centered-title">Resources for Classroom {{ classroomName }}</h1>
-    <div class="resource-cards">
+    <h1 class="centered-title">Resources for {{ classroomName }}</h1>
+
+    <div v-if="loading" class="loading">
+      Cargando recursos...
+    </div>
+
+    <div v-else-if="resources.length > 0" class="resource-cards">
       <div
           v-for="resource in resources"
           :key="resource.id"
           class="resource-card"
       >
-        <h2 class="resource-title">{{ resource.name || 'No name available' }}</h2>
-        <p class="resource-kind">Kind: {{ resource.kind_of_resource || 'No kind available' }}</p>
+        <h2 class="resource-title">{{ resource.name }}</h2>
+        <p class="resource-kind">Type: {{ resource.kindOfResource }}</p>
+        <p class="resource-classroom">Classroom: {{ resource.classroom?.name || classroomName }}</p>
         <div class="button-container">
           <pv-button
               label="Report Resource"
@@ -18,13 +24,14 @@
         </div>
       </div>
     </div>
-    <p v-if="resources.length === 0">No resources available for this classroom.</p>
+
+    <p v-else class="no-resources">No resources available for this classroom.</p>
   </div>
 </template>
 
 <script>
-import { ResourceService } from "../services/resource.service.js";
-import { ClassroomService } from "../services/classroom.service.js";
+import {ResourceService} from "../../classroom-space-resource-management/services/resource.service.js";
+import {ClassroomService} from "../../classroom-space-resource-management/services/classroom.service.js";
 
 export default {
   name: 'ResourceManagement',
@@ -33,33 +40,45 @@ export default {
       resources: [],
       classroomId: this.$route.params.classroomId,
       classroomName: '',
+      loading: true,
+      resourceService: new ResourceService(),
+      classroomService: new ClassroomService()
     };
   },
   created() {
-    this.loadResources();
     this.loadClassroomName();
+    this.loadResources();
   },
   methods: {
     async loadResources() {
-      const resourceService = new ResourceService();
+      this.loading = true;
       try {
-        const response = await resourceService.findByClassroom(this.classroomId);
+        const response = await this.resourceService.getAllByClassroomId(this.classroomId);
         this.resources = response.data;
+        console.log("Resources loaded:", this.resources);
       } catch (error) {
         console.error("Error loading resources", error);
+      } finally {
+        this.loading = false;
       }
     },
     async loadClassroomName() {
-      const classroomService = new ClassroomService();
       try {
-        const response = await classroomService.getById(this.classroomId);
+        const response = await this.classroomService.getById(this.classroomId);
         this.classroomName = response.data.name;
       } catch (error) {
         console.error("Error loading classroom name", error);
+        this.classroomName = `Classroom ${this.classroomId}`;
       }
     },
     goToReport(resourceId) {
-      this.$router.push({ name: 'report-resource', params: { resourceId } });
+      this.$router.push({
+        name: 'report-resource',
+        params: {
+          classroomId: this.classroomId,
+          resourceId: resourceId
+        }
+      });
     }
   }
 };
@@ -83,27 +102,27 @@ export default {
 }
 
 .resource-card {
-  width: 250px; /* Ajusta el ancho según sea necesario */
-  border: 1px solid #0CC0DF; /* Color del borde */
-  border-radius: 50px; /* Esquinas muy redondeadas */
+  width: 250px;
+  border: 1px solid #0CC0DF;
+  border-radius: 50px;
   padding: 1.5rem;
   box-shadow: 0 4px 28px rgba(12, 192, 223, 0.28);
   transition: transform 0.2s;
 }
 
 .resource-card:hover {
-  transform: translateY(-10px); /* Efecto al pasar el mouse */
+  transform: translateY(-10px);
 }
 
 .resource-title {
   text-align: center;
-  font-size: 1.5rem; /* Tamaño del texto */
-  margin-bottom: 0.5rem; /* Espacio inferior */
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .resource-kind {
   text-align: center;
-  color: #333; /* Color del texto */
+  color: #333;
 }
 
 .button-container {
@@ -113,14 +132,14 @@ export default {
 }
 
 .report-resource-button {
-  background-color: #ffcc00; /* Color de fondo del botón */
-  color: #000; /* Color del texto del botón */
-  border-radius: 50px; /* Esquinas redondeadas del botón */
-  padding: 0.5rem 1rem; /* Espaciado interno del botón */
-  text-transform: uppercase; /* Transformar texto a mayúsculas */
+  background-color: #ffcc00;
+  color: #000;
+  border-radius: 50px;
+  padding: 0.5rem 1rem;
+  text-transform: uppercase;
 }
 
 .report-resource-button:hover {
-  background-color: #ffdb4d; /* Color al pasar el mouse sobre el botón */
+  background-color: #ffdb4d;
 }
 </style>
