@@ -4,7 +4,7 @@
 
     <div class="classroom-cards">
       <div
-          v-for="classroom in classrooms"
+          v-for="classroom in filteredClassrooms"
           :key="classroom.id"
           class="classroom-card"
       >
@@ -30,48 +30,56 @@
       </div>
     </div>
 
-    <p v-if="classrooms.length === 0" class="no-classrooms">
-      No hay aulas disponibles.
+    <p v-if="!loading && filteredClassrooms.length === 0" class="no-classrooms">
+      No classrooms assigned to you.
+    </p>
+    <p v-if="loading" class="no-classrooms">
+      Loading classrooms...
     </p>
   </div>
 </template>
 
 <script>
-import {ClassroomService} from "../../shared/services/classroom.service.js";
+import { ClassroomService } from "../../shared/services/classroom.service.js";
+import { mapGetters } from "vuex";
 
 export default {
   name: 'ClassroomManagement',
   data() {
     return {
-      classrooms: [],
-      classroomService: new ClassroomService()
+      allClassrooms: [],
+      classroomService: new ClassroomService(),
+      loading: true,
     };
+  },
+  computed: {
+    ...mapGetters("user", ["userId"]),
+
+    filteredClassrooms() {
+      if (!this.userId) return [];
+      return this.allClassrooms.filter(
+          classroom => String(classroom.teacherId) === String(this.userId)
+      );
+    }
   },
   created() {
     this.loadClassrooms();
   },
   methods: {
     async loadClassrooms() {
+      this.loading = true;
       try {
         const response = await this.classroomService.getAll();
-        console.log("Todos los classrooms:", response.data);
-        console.log("userId actual:", this.id, "tipo:", typeof this.id);
-
-        this.classrooms = response.data.filter(
-            classroom => {
-              console.log(`Classroom ${classroom.id} teacherId:`, classroom.teacherId, "tipo:", typeof classroom.teacherId);
-              return Number(classroom.teacherId) === Number(this.userId);
-            }
-        );
-
-        console.log("Classrooms filtrados para este teacher:", this.classrooms);
+        this.allClassrooms = response.data; // Guardamos todas las aulas
       } catch (error) {
         console.error("Error al cargar las aulas", error);
+      } finally {
+        this.loading = false;
       }
     },
     goToClassroomResources(classroomId) {
       this.$router.push({
-        name: 'resource-management',
+        name: 'teacher-resource-management',
         params: { classroomId }
       });
     }

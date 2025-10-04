@@ -1,5 +1,5 @@
 <script>
-import {ClassroomService} from "../../../shared/services/classroom.service.js";
+import { ClassroomService } from "../../../shared/services/classroom.service.js";
 import ClassroomCreateAndEdit from "../../components/classrooms/classroom-create-and-edit.component.vue";
 
 export default {
@@ -13,22 +13,99 @@ export default {
         teacherId: null,
       },
       classroomService: new ClassroomService(),
+      serverError: null,
     };
   },
   methods: {
     async saveClassroom(classroomData) {
       try {
-        await this.classroomService.create(classroomData);
+        const { teacherId, name, description } = classroomData;
+
+        if (!teacherId) {
+          alert("A teacher must be selected.");
+          return;
+        }
+
+        const payload = { name, description };
+
+        await this.classroomService.createWithTeacher(payload, teacherId);
+
         alert("Classroom created successfully");
-        this.$router.push("/dashboard-admin/classrooms-shared-spaces");
+        this.serverError = null;
+        this.$router.push({ name: 'admin-classrooms' });
       } catch (error) {
+        // Detailed logging for debugging
         console.error("Error creating classroom:", error);
-        alert("Error creating classroom: " + error.message);
+
+        // Helper to extract a useful message from various backend shapes
+        const extractServerMessage = (err) => {
+          const resp = err?.response;
+          if (resp && resp.data) {
+            const d = resp.data;
+            if (typeof d === 'string' && d.trim()) return d;
+            if (d.message && typeof d.message === 'string') return d.message;
+            if (d.errors) {
+              // errors might be array, object, or string
+              if (typeof d.errors === 'string') return d.errors;
+              if (Array.isArray(d.errors)) return d.errors.join(', ');
+              if (typeof d.errors === 'object') {
+                try {
+                  const vals = Object.values(d.errors).flat().filter(Boolean);
+                  if (vals.length) return vals.join(', ');
+                } catch(e) {
+                  // fallthrough
+                }
+              }
+            }
+            try {
+              const s = JSON.stringify(d);
+              if (s && s !== '{}') return s;
+            } catch(e) {
+              // ignore
+            }
+          }
+
+          // Axios default message often looks like: "Request failed with status code 500"
+          if (err?.message) return err.message;
+
+          if (err?.response?.status) return `Server error (${err.response.status})`;
+
+          return 'Server error';
+        };
+
+        let rawMessage = extractServerMessage(error);
+
+        // Map some known backend english messages to friendly Spanish
+        const mapping = [
+          { re: /Classroom with the same title already exist/i, msg: 'Ya existe un aula con ese nombre.' },
+        ];
+        for (const m of mapping) {
+          if (m.re.test(rawMessage)) {
+            rawMessage = m.msg;
+            break;
+          }
+        }
+
+        // Map axios generic "Request failed with status code 500" to a friendly Spanish message
+        const axiosStatusMatch = rawMessage && rawMessage.match(/Request failed with status code (\d{3})/i);
+        if (axiosStatusMatch) {
+          const statusCode = axiosStatusMatch[1];
+          if (statusCode === '500') {
+            rawMessage = 'Error del servidor (500). Intenta más tarde.';
+          } else {
+            rawMessage = `Error del servidor (${statusCode}).`;
+          }
+        }
+
+        this.serverError = rawMessage;
       }
     },
     cancel() {
-      this.$router.push("/dashboard-admin/classrooms-shared-spaces");
+      this.$router.push({ name: 'admin-classrooms' });
     },
+    clearServerError() {
+      this.serverError = null;
+    }
   },
 };
 </script>
@@ -37,6 +114,8 @@ export default {
   <classroom-create-and-edit
       :classroom="classroom"
       :isCreateMode="true"
+      :server-error="serverError"
+      @clear-server-error="clearServerError"
       @save="saveClassroom"
       @cancel="cancel"/>
 </template>

@@ -16,6 +16,10 @@ export default {
     isCreateMode: {
       type: Boolean,
       default: true
+    },
+    serverError: {
+      type: String,
+      default: null,
     }
   },
   data() {
@@ -44,6 +48,12 @@ export default {
     },
     cancel() {
       this.$emit("cancel");
+    },
+    clearServerError() {
+      // Inform parent to clear the server error when user makes changes
+      if (this.serverError) {
+        this.$emit('clear-server-error');
+      }
     }
   },
   computed: {
@@ -53,6 +63,14 @@ export default {
         value: teacher.id,
       }));
     },
+    // If serverError mentions the name/title, show it inline under the Name field
+    nameFieldError() {
+      if (!this.serverError) return null;
+      const s = this.serverError;
+      // check English and Spanish keywords that indicate the error refers to the name/title
+      const nameKeywords = /title|name|nombre|titulo|aula/i;
+      return nameKeywords.test(s) ? s : null;
+    }
   }
 };
 </script>
@@ -70,15 +88,20 @@ export default {
     <div class="form-header">
       <h2>{{ isCreateMode ? 'Create Classroom' : 'Edit Classroom' }}</h2>
     </div>
+    <!-- If the server error is specifically about the name/title, show it inline under Name. Otherwise show a general box. -->
+    <div v-if="!nameFieldError && serverError" class="server-error">
+      {{ serverError }}
+    </div>
     <form @submit.prevent="save" class="form-grid">
       <div class="form-field">
         <pv-float-label>Name:</pv-float-label>
-        <pv-input-text v-model="form.name" placeholder="Enter name"/>
+        <pv-input-text v-model="form.name" placeholder="Enter name" @input="clearServerError" />
+        <div v-if="nameFieldError" class="field-error">{{ nameFieldError }}</div>
       </div>
 
       <div class="form-field">
         <pv-float-label>Description:</pv-float-label>
-        <pv-input-text v-model="form.description" placeholder="Enter description"/>
+        <pv-input-text v-model="form.description" placeholder="Enter description" @input="clearServerError" />
       </div>
 
       <pv-float-label for="teacher">Teacher</pv-float-label>
@@ -89,6 +112,7 @@ export default {
           option-value="value"
           placeholder="Select a teacher"
           class="form-control"
+          @change="clearServerError"
       />
 
       <div class="form-actions">
@@ -139,5 +163,20 @@ export default {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
+}
+
+.server-error {
+  background: #ffe6e6;
+  color: #a00;
+  border: 1px solid #f5c2c2;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 4px;
+}
+
+.field-error {
+  color: #a00;
+  font-size: 0.9rem;
+  margin-top: 6px;
 }
 </style>

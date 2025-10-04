@@ -3,10 +3,10 @@ export default {
   name: "breakdown-reports",
   methods: {
     goToReport() {
-      this.$router.push({ name: 'Classrooms' });
+      this.$router.push({ name: 'teacher-classrooms' });
     },
     goToFaultReports() {
-      this.$router.push({ name: 'reports'});
+      this.$router.push({ name: 'teacher-reports'});
     }
   }
 }
