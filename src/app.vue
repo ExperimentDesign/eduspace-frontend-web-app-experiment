@@ -101,7 +101,7 @@ export default {
           { label: "Home", to: "/dashboard-teacher/home-teacher", svg: HomeIcon },
           { label: "Reservations", to: "/dashboard-teacher/reservations", svg: NotificationIcon},
           { label: "Breakdown Reports", to: "/dashboard-teacher/breakdown-reports", svg: BreakdownIcon },
-          { label: "Space Availability", to: "/dashboard-teacher/space-availability", svg: SpaceIcon },
+          { label: "Space Availability", to: "/dashboard-teacher/reservations/space-availability", svg: SpaceIcon },
         ];
       } else {
         this.items = [

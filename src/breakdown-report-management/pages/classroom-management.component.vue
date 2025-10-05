@@ -2,7 +2,7 @@
   <div class="classroom-management">
     <h1 class="centered-title">Make a breakdown report</h1>
 
-    <div class="classroom-cards">
+    <div v-if="!loading && filteredClassrooms.length > 0" class="classroom-cards">
       <div
           v-for="classroom in filteredClassrooms"
           :key="classroom.id"
@@ -11,17 +11,17 @@
         <div class="image-container">
           <img
               src="https://i0.wp.com/mirincondeaprendizaje.com/wp-content/uploads/2019/08/school-2648668_960_720.jpg?resize=768%2C508&ssl=1"
-              alt="Imagen del Aula"
+              alt="Classroom Image"
               class="classroom-image"
           />
         </div>
 
         <div class="card-content">
-          <h2 class="classroom-name">{{ classroom.name || 'Sin nombre disponible' }}</h2>
-          <p class="classroom-description">{{ classroom.description || 'Sin descripción disponible' }}</p>
+          <h2 class="classroom-name">{{ classroom.name || 'No name available' }}</h2>
+          <p class="classroom-description">{{ classroom.description || 'No description available' }}</p>
           <div class="button-container">
             <pv-button
-                label="Ver Recursos"
+                label="View Resources"
                 @click="goToClassroomResources(classroom.id)"
                 class="view-resources-button"
             />
@@ -31,8 +31,9 @@
     </div>
 
     <p v-if="!loading && filteredClassrooms.length === 0" class="no-classrooms">
-      No classrooms assigned to you.
+      You do not have any classrooms assigned.
     </p>
+
     <p v-if="loading" class="no-classrooms">
       Loading classrooms...
     </p>
@@ -58,21 +59,21 @@ export default {
     filteredClassrooms() {
       if (!this.userId) return [];
       return this.allClassrooms.filter(
-          classroom => String(classroom.teacherId) === String(this.userId)
+          classroom => String(classroom.teacherId) !== String(this.userId)
       );
     }
   },
   created() {
-    this.loadClassrooms();
+    this.loadAllClassrooms();
   },
   methods: {
-    async loadClassrooms() {
+    async loadAllClassrooms() {
       this.loading = true;
       try {
         const response = await this.classroomService.getAll();
-        this.allClassrooms = response.data; // Guardamos todas las aulas
+        this.allClassrooms = response.data;
       } catch (error) {
-        console.error("Error al cargar las aulas", error);
+        console.error("Error loading classrooms", error);
       } finally {
         this.loading = false;
       }
