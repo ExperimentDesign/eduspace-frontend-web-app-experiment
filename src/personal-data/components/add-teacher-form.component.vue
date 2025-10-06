@@ -1,86 +1,129 @@
 <template>
-  <form @submit.prevent="submitForm">
-    <div class="form-field">
-      <pv-input-text
-        v-model="formData.firstName"
-        placeholder="Nombre"
-        required
-      />
-      <pv-input-text
-        v-model="formData.lastName"
-        placeholder="Apellido"
-        required
-      />
-    </div>
+  <form @submit.prevent="submitForm" class="teacher-form">
+    <div class="form-section">
+      <h3 class="section-title">Personal Information</h3>
 
-    <div class="form-field">
-      <div class="input-container">
-        <pv-input-text
-          v-model="formData.email"
-          placeholder="Email"
-          required
-          :class="{ 'p-invalid': errors.email }"
-          @blur="validateField('email', formData.email)"
-        />
-        <small v-if="errors.email" class="error-message">{{
-          errors.email
-        }}</small>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="firstName">First Name *</label>
+          <pv-input-text
+              id="firstName"
+              v-model="formData.firstName"
+              placeholder="Enter first name"
+              required
+          />
+        </div>
+        <div class="form-group">
+          <label for="lastName">Last Name *</label>
+          <pv-input-text
+              id="lastName"
+              v-model="formData.lastName"
+              placeholder="Enter last name"
+              required
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="email">Email *</label>
+          <pv-input-text
+              id="email"
+              v-model="formData.email"
+              placeholder="example@domain.com"
+              required
+              :class="{ 'p-invalid': errors.email }"
+              @blur="validateField('email', formData.email)"
+          />
+          <small v-if="errors.email" class="error-message">
+            {{ errors.email }}
+          </small>
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone *</label>
+          <pv-input-text
+              id="phone"
+              v-model="formData.phone"
+              placeholder="987654321"
+              required
+              :class="{ 'p-invalid': errors.phone }"
+              @input="formData.phone = formData.phone.replace(/\D/g, '')"
+              @blur="validateField('phone', formData.phone)"
+              maxlength="9"
+          />
+          <small v-if="errors.phone" class="error-message">
+            {{ errors.phone }}
+          </small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="dni">DNI *</label>
+          <pv-input-text
+              id="dni"
+              v-model="formData.dni"
+              placeholder="12345678"
+              required
+              :class="{ 'p-invalid': errors.dni }"
+              @input="formData.dni = formData.dni.replace(/\D/g, '')"
+              @blur="validateField('dni', formData.dni)"
+              maxlength="8"
+          />
+          <small v-if="errors.dni" class="error-message">
+            {{ errors.dni }}
+          </small>
+        </div>
+        <div class="form-group">
+          <label for="address">Address *</label>
+          <pv-input-text
+              id="address"
+              v-model="formData.address"
+              placeholder="Enter address"
+              required
+          />
+        </div>
       </div>
     </div>
 
-    <div class="form-field">
-      <div class="input-container">
-        <pv-input-text
-          v-model="formData.dni"
-          placeholder="DNI (8 dígitos)"
-          required
-          :class="{ 'p-invalid': errors.dni }"
-          @input="formData.dni = formData.dni.replace(/\D/g, '')"
-          @blur="validateField('dni', formData.dni)"
-          maxlength="8"
-        />
-        <small v-if="errors.dni" class="error-message">{{ errors.dni }}</small>
-      </div>
-      <pv-input-text
-        v-model="formData.address"
-        placeholder="Dirección"
-        required
-      />
-    </div>
+    <div class="form-section">
+      <h3 class="section-title">Account Credentials</h3>
 
-    <div class="form-field">
-      <div class="input-container">
-        <pv-input-text
-          v-model="formData.phone"
-          placeholder="Teléfono (ej: 987654321)"
-          required
-          :class="{ 'p-invalid': errors.phone }"
-          @input="formData.phone = formData.phone.replace(/\D/g, '')"
-          @blur="validateField('phone', formData.phone)"
-          maxlength="9"
-        />
-        <small v-if="errors.phone" class="error-message">{{
-          errors.phone
-        }}</small>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="username">Username *</label>
+          <pv-input-text
+              id="username"
+              v-model="formData.username"
+              placeholder="Enter username"
+              required
+          />
+        </div>
+        <div class="form-group">
+          <label for="password">Password *</label>
+          <pv-password
+              id="password"
+              v-model="formData.password"
+              placeholder="Enter password"
+              required
+              :feedback="false"
+          />
+        </div>
       </div>
     </div>
 
-    <div class="form-field">
-      <pv-input-text
-        v-model="formData.username"
-        placeholder="Nombre de usuario"
-        required
+    <div class="form-actions">
+      <pv-button
+          label="Cancel"
+          severity="secondary"
+          @click="cancel"
+          type="button"
       />
-      <pv-password
-        v-model="formData.password"
-        placeholder="Contraseña"
-        required
+      <pv-button
+          label="Save Teacher"
+          icon="pi pi-check"
+          type="submit"
       />
-    </div>
-
-    <div class="form-buttons">
-      <pv-button label="Guardar" type="submit" />
-      <pv-button label="Cancelar" @click="cancel" />
     </div>
   </form>
 </template>
@@ -97,14 +140,12 @@ export default {
         lastName: "",
         email: "",
         dni: "",
+        address: "",
         phone: "",
-        workingDays: "",
-        field: "",
-        administratorId: null, // Se llenará automáticamente con el ID del administrador logueado
-        password: "", // Campo para la contraseña
+        administratorId: null,
+        username: "",
+        password: "",
       },
-      days: ["Monday - Friday", "Saturday - Sunday"],
-      fields: ["Math", "Science", "Literature"], // Agrega los campos necesarios
       errors: {
         email: "",
         dni: "",
@@ -113,13 +154,13 @@ export default {
     };
   },
   computed: {
-    ...mapGetters("user", ["userId"]), // Obtiene el userId desde Vuex
+    ...mapGetters("user", ["userId"]),
   },
   watch: {
     userId: {
       immediate: true,
       handler(newValue) {
-        this.formData.administratorId = newValue; // Asigna el ID automáticamente
+        this.formData.administratorId = newValue;
       },
     },
   },
@@ -129,40 +170,34 @@ export default {
       return emailRegex.test(email);
     },
     validateDNI(dni) {
-      // DNI peruano: exactamente 8 dígitos
       const dniRegex = /^\d{8}$/;
       return dniRegex.test(dni);
     },
     validatePhone(phone) {
-      // Teléfono peruano: exactamente 9 dígitos, empezando con 9
       const phoneRegex = /^9\d{8}$/;
       return phoneRegex.test(phone);
     },
     validateField(field, value) {
       this.errors[field] = "";
-
       switch (field) {
         case "email":
           if (value && !this.validateEmail(value)) {
-            this.errors.email =
-              "Ingrese un email válido (ejemplo: usuario@dominio.com)";
+            this.errors.email = "Enter a valid email (e.g.: user@domain.com)";
           }
           break;
         case "dni":
           if (value && !this.validateDNI(value)) {
-            this.errors.dni = "El DNI debe tener exactamente 8 dígitos";
+            this.errors.dni = "DNI must be exactly 8 digits";
           }
           break;
         case "phone":
           if (value && !this.validatePhone(value)) {
-            this.errors.phone =
-              "El teléfono debe tener 9 dígitos y comenzar con 9 (ej: 987654321)";
+            this.errors.phone = "Phone must be 9 digits and start with 9";
           }
           break;
       }
     },
     isFormValid() {
-      // Validar todos los campos requeridos
       const requiredFields = [
         "firstName",
         "lastName",
@@ -171,66 +206,112 @@ export default {
         "password",
         "dni",
         "phone",
+        "address",
       ];
       const hasAllRequiredFields = requiredFields.every(
-        (field) => this.formData[field]
+          (field) => this.formData[field]
       );
-
-      // Validar formatos específicos
       const isEmailValid = this.validateEmail(this.formData.email);
       const isDNIValid = this.validateDNI(this.formData.dni);
       const isPhoneValid = this.validatePhone(this.formData.phone);
-
       return hasAllRequiredFields && isEmailValid && isDNIValid && isPhoneValid;
     },
     submitForm() {
-      // Validar todos los campos antes de enviar
       this.validateField("email", this.formData.email);
       this.validateField("dni", this.formData.dni);
       this.validateField("phone", this.formData.phone);
-
       if (this.isFormValid()) {
-        this.$emit("save", this.formData); // Emite el formulario completo
+        this.$emit("save", this.formData);
       }
     },
     cancel() {
-      this.$emit("cancel"); // Emite el evento de cancelar
+      this.$emit("cancel");
     },
   },
 };
 </script>
 
 <style scoped>
-form {
+.teacher-form {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: 20px;
+  gap: 2rem;
+  padding: 1.5rem;
+  max-width: 900px;
+  margin: 0 auto;
 }
 
-.form-field {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 1em;
+.form-section {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid #e9ecef;
 }
 
-.input-container {
-  flex: 1;
+.section-title {
+  margin: 0 0 1.5rem 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #495057;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.form-row:last-child {
+  margin-bottom: 0;
+}
+
+.form-group {
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-weight: 500;
+  font-size: 0.9rem;
+  color: #495057;
 }
 
 .error-message {
   color: #dc3545;
-  font-size: 0.8em;
-  margin-top: 0.25em;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  display: block;
   min-height: 1.2em;
 }
 
-.form-buttons {
+.form-actions {
   display: flex;
-  gap: 10px;
+  gap: 1rem;
   justify-content: flex-end;
-  margin-top: 20px;
+  padding-top: 1rem;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .teacher-form {
+    padding: 1rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .form-actions {
+    flex-direction: column-reverse;
+  }
+
+  .form-actions button {
+    width: 100%;
+  }
 }
 </style>

@@ -1,19 +1,25 @@
 import AuthenticationService from "../../iam/services/authentication.service.js";
 
+const getStoredUser = () => {
+    const user = localStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+};
+
 export default {
     namespaced: true,
     state: {
-        id: null,
-        role: null,
-        token: localStorage.getItem("token") || null, // Cargar el token desde localStorage si existe
-        isAuthenticated: false,
-        user: null, // Objeto completo del usuario
+        user: getStoredUser(),
+        id: getStoredUser()?.id || null,
+        role: getStoredUser()?.role || null,
+        token: localStorage.getItem("token") || null,
+        isAuthenticated: !!localStorage.getItem("token"),
     },
     mutations: {
         SET_USER(state, user) {
+            state.user = user;
             state.id = user?.id || null;
             state.role = user?.role || null;
-            state.user = user;
+            state.isAuthenticated = true;
         },
         SET_TOKEN(state, token) {
             state.token = token;
@@ -33,19 +39,19 @@ export default {
             if (!id || !role || !token) {
                 throw new Error("Datos de usuario incompletos en la respuesta del servidor.");
             }
-            commit("SET_USER", { id, role, username });
-            commit("SET_TOKEN", token);
+
+            const userData = { id, role, username };
+
             localStorage.setItem("token", token);
+            localStorage.setItem('user', JSON.stringify(userData));
+
+            commit("SET_TOKEN", token);
+            commit("SET_USER", userData);
         },
-        async signUp(_, payload) {
-            await AuthenticationService.signUp(payload);
-        },
-        signOut({ commit }) {
+        async signOut({ commit }) {
             commit("CLEAR_USER");
             localStorage.removeItem("token");
-        },
-        clearAuth({ commit }) {
-            commit("CLEAR_USER");
+            localStorage.removeItem('user');
         },
     },
     getters: {

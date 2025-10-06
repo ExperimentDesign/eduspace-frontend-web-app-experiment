@@ -51,7 +51,6 @@
       <router-view />
     </main>
 
-    <!-- Confirmación de Logout -->
     <pv-confirmpopup group="logout-group">
       <template #message="slotProps">
         <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0">
@@ -65,11 +64,9 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-
-// Importar los SVG desde las rutas especificadas
 import HomeIcon from "/src/assets/admin/Home.svg";
 import ClassroomIcon from "/src/assets/admin/Clasroom.svg";
-import EnviromentIcon from "/src/assets/admin/Enviroment.svg";
+import EnvironmentIcon from "/src/assets/admin/Environment.svg";
 import PersonalDIcon from "/src/assets/admin/Personal_Data.svg";
 import BreakdownIcon from "/src/assets/teacher/Breakdown_Reports.svg";
 import NotificationIcon from "/src/assets/teacher/Notification.svg";
@@ -79,35 +76,32 @@ export default {
   data() {
     return {
       drawer: false,
-      items: [], // Inicializa vacío, se actualizará en changeToolbar según el rol
+      items: [],
     };
   },
   computed: {
-    ...mapGetters("user", ["isAuthenticated", "currentUsername", "userRole"]), // Incluye `currentUsername`
+    ...mapGetters("user", ["isAuthenticated", "currentUsername", "userRole"]),
   },
   methods: {
-    ...mapActions("user", ["clearAuth"]), // Usa la acción `clearAuth` para cerrar sesión
-    toggleDrawer() {
-      this.drawer = !this.drawer;
-    },
-    handleLogOut() {
-      this.clearAuth(); // Limpia el estado de autenticación
-      this.$router.push({ name: "login" }); // Redirige al login
+    ...mapActions("user", ["signOut"]),
+    async handleLogOut() {
+      await this.signOut();
+      this.$router.push({ name: "login" });
     },
     changeToolbar() {
       if (this.userRole === "RoleAdmin") {
         this.items = [
           { label: "Home", to: "/dashboard-admin/home-admin", svg: HomeIcon },
-          { label: "Classrooms and Shared Spaces", to: "/dashboard-admin/classrooms-shared-spaces", svg: EnviromentIcon },
+          { label: "Classrooms and Shared Spaces", to: "/dashboard-admin/classrooms-shared-spaces", svg: EnvironmentIcon },
           {label: 'Classroom Changes and Meetings', to: '/dashboard-admin/classroom-changes-meetings', svg: ClassroomIcon},
           { label: "Personal Data", to: "/dashboard-admin/personal-data", svg: PersonalDIcon },
         ];
       } else if (this.userRole === "RoleTeacher") {
         this.items = [
           { label: "Home", to: "/dashboard-teacher/home-teacher", svg: HomeIcon },
-          { label: "Notifications", to: "/dashboard-teacher/notifications", svg: NotificationIcon },
+          { label: "Reservations", to: "/dashboard-teacher/reservations", svg: NotificationIcon},
           { label: "Breakdown Reports", to: "/dashboard-teacher/breakdown-reports", svg: BreakdownIcon },
-          { label: "Space Availability", to: "/dashboard-teacher/space-availability", svg: SpaceIcon },
+          { label: "Space Availability", to: "/dashboard-teacher/reservations/space-availability", svg: SpaceIcon },
         ];
       } else {
         this.items = [
@@ -142,21 +136,43 @@ export default {
   },
   created() {
     if (!this.isAuthenticated) {
-      this.$router.push({ name: "login" }); // Redirige al login si no está autenticado
+      this.$router.push({ name: "login" });
     } else {
-      this.changeToolbar(); // Confiregura la barra lateral si el usuario está autenticado
+      this.changeToolbar();
     }
   },
   watch: {
     userRole() {
-      this.changeToolbar(); // Observa cambios en el rol del usuario y actualiza la barra lateral
+      this.changeToolbar();
     },
   },
 };
 </script>
 
-
 <style scoped>
+
+.admin-sidenav {
+  background: linear-gradient(160deg,
+  rgba(255, 231, 120, 1) 0%,
+  rgba(255, 255, 255, 1) 24%,
+  rgba(246, 246, 246, 1) 34%,
+  rgba(255, 255, 255, 1) 52%,
+  rgba(255, 255, 255, 1) 71%,
+  rgba(255, 255, 255, 1) 85%,
+  rgba(147, 227, 241, 1) 100%);
+}
+
+.teacher-sidenav {
+  background: linear-gradient(160deg,
+  rgba(147, 227, 241, 1) 0%,
+  rgba(255, 255, 255, 1) 24%,
+  rgba(246, 246, 246, 1) 34%,
+  rgba(255, 255, 255, 1) 52%,
+  rgba(255, 255, 255, 1) 71%,
+  rgba(255, 255, 255, 1) 85%,
+  rgba(255, 231, 120, 1) 100%);
+}
+
 .user-info {
   padding: 15px 0;
   font-size: 1rem;
@@ -175,9 +191,8 @@ export default {
 }
 
 .app-container {
-  display: flex; /* Hace que el contenedor principal sea flex para alinear los elementos en fila */
-
-  height: 100vh; /* Altura completa para que el sidebar ocupe toda la pantalla */
+  display: flex;
+  height: 100vh;
 }
 
 .sidenav-wrapper {
@@ -195,28 +210,6 @@ export default {
   flex-direction: column;
   justify-content: space-between;
   padding: 20px;
-}
-
-.admin-sidenav {
-  background: linear-gradient(160deg,
-  rgba(147, 227, 241, 1) 0%,
-  rgba(255, 255, 255, 1) 24%,
-  rgba(246, 246, 246, 1) 34%,
-  rgba(255, 255, 255, 1) 52%,
-  rgba(255, 255, 255, 1) 71%,
-  rgba(255, 255, 255, 1) 85%,
-  rgba(255, 231, 120, 1) 100%);
-}
-
-.teacher-sidenav {
-  background: linear-gradient(160deg,
-  rgba(255, 231, 120, 1) 0%,
-  rgba(255, 255, 255, 1) 24%,
-  rgba(246, 246, 246, 1) 34%,
-  rgba(255, 255, 255, 1) 52%,
-  rgba(255, 255, 255, 1) 71%,
-  rgba(255, 255, 255, 1) 85%,
-  rgba(147, 227, 241, 1) 100%);
 }
 
 .drawer-content {
@@ -277,20 +270,6 @@ export default {
 .p-button-text {
   color: #000 !important;
   text-align: left;
-}
-
-.admin-hover-active:hover,
-.router-link-active .admin-hover-active,
-.router-link-exact-active .admin-hover-active {
-  background-color: rgba(12, 192, 223, 0.28) !important;
-  color: #000 !important;
-}
-
-.teacher-hover-active:hover,
-.router-link-active .teacher-hover-active,
-.router-link-exact-active .teacher-hover-active {
-  background-color: rgba(255, 210, 0, 0.28) !important;
-  color: #000 !important;
 }
 
 .pv-button {
