@@ -5,6 +5,7 @@ import store from "../store/index.js";
 import HomeComponent from '../public/pages/home.component.vue';
 import LoginComponent from '../iam/login/pages/login.component.vue';
 import RegisterComponent from '../iam/register/pages/register.component.vue';
+import VerifyCodeComponent from "../iam/login/components/verify-code.component.vue";
 
 // Componentes de Contextos de Dominio
 import MeetManagementComponent from "../meeting-management/pages/meet-management.component.vue";
@@ -41,6 +42,7 @@ const router = createRouter({
         // Rutas Públicas y de Autenticación
         { path: '/', redirect: '/login' },
         { path: '/login', name: 'login', component: LoginComponent, meta: { title: 'Login' } },
+        { path: '/verify-code', name: 'verify-code', component: VerifyCodeComponent, meta: { title: 'Verify Code' } },
         { path: '/register', name: 'register', component: RegisterComponent, meta: { title: 'Register' } },
         { path: '/home', name: 'home', component: HomeComponent, meta: { title: 'Home' } },
 
