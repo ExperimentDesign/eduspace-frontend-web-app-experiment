@@ -1,6 +1,6 @@
 <template>
   <div class="dashboard-container">
-    <!-- Información del Teacher -->
+    <!-- Teacher Information -->
     <div class="teacher-info-card">
       <div class="teacher-avatar">
         <pv-avatar
@@ -18,7 +18,7 @@
       </div>
     </div>
 
-    <!-- Cards en Bloques -->
+    <!-- Cards Section -->
     <div class="cards-section">
       <!-- Classroom Reservations -->
       <pv-card class="dashboard-card">
@@ -51,12 +51,12 @@
               class="shared-reservation-card"
             >
               <div class="reservation-header">
-                <h4 class="reservation-title">{{ reservation.title || 'Sin título' }}</h4>
-                <span class="reservation-area">{{ reservation.areaName || 'Área desconocida' }}</span>
+                <h4 class="reservation-title">{{ reservation.title || 'No title' }}</h4>
+                <span class="reservation-area">{{ reservation.areaName || 'Unknown area' }}</span>
               </div>
-              <p class="reservation-datetime"><strong>Inicio:</strong> {{ formatDateTime(reservation.start) }}</p>
-              <p class="reservation-datetime"><strong>Fin:</strong> {{ formatDateTime(reservation.end) }}</p>
-              <p v-if="reservation.areaDescription" class="reservation-description"><strong>Descripción:</strong> {{ reservation.areaDescription }}</p>
+              <p class="reservation-datetime"><strong>Start:</strong> {{ formatDateTime(reservation.start) }}</p>
+              <p class="reservation-datetime"><strong>End:</strong> {{ formatDateTime(reservation.end) }}</p>
+              <p v-if="reservation.areaDescription" class="reservation-description"><strong>Description:</strong> {{ reservation.areaDescription }}</p>
             </div>
           </div>
           <p v-else>No shared area reservations available.</p>
@@ -89,6 +89,9 @@
 <script>
 import { mapGetters } from "vuex";
 import http from "../../shared/services/http-common.js";
+import { ReservationService } from "../../reservation-management/services/reservation.service.js";
+import { MeetService } from "../../meeting-management/services/meet.service.js";
+import {ClassroomService} from "../../shared/services/classroom.service.js";
 
 export default {
   name: "TeacherDashboard",
@@ -97,12 +100,14 @@ export default {
       teacher: null,
       classroomReservations: [],
       sharedAreaReservations: [],
-      sharedAreas: [],
       meetings: [],
+      reservationService: new ReservationService(),
+      meetService: new MeetService(),
+      classroomService: new ClassroomService(),
     };
   },
   computed: {
-    ...mapGetters(["userId"]),
+    ...mapGetters("user", ["userId"]),
     fullName() {
       return `${this.teacher?.firstName || ""} ${this.teacher?.lastName || ""}`.trim();
     },
@@ -119,7 +124,7 @@ export default {
       if (!dateString) return "N/A";
       try {
         const date = new Date(dateString);
-        return date.toLocaleString('es-ES', {
+        return date.toLocaleString('en-US', {
           year: 'numeric',
           month: 'short',
           day: 'numeric',
@@ -127,78 +132,59 @@ export default {
           minute: '2-digit'
         });
       } catch (error) {
-        console.error("Error al formatear la fecha:", error);
+        console.error("Error formatting date:", error);
         return dateString;
       }
     }
   },
   async mounted() {
+    if (!this.userId) {
+      console.error("Teacher ID not found.");
+      return;
+    }
     try {
-      console.log("Teacher ID desde Vuex:", this.userId);
+      const teacherResponse = await http.get(`/teachers-profiles/${this.userId}`);
+      this.teacher = teacherResponse.data;
 
-      // Cargar información del teacher
-      const teacherResponse = await http.get("/teachers-profiles");
-      const allTeachers = teacherResponse.data;
-      this.teacher = allTeachers.find((t) => String(t.id) === String(this.userId)) || {
-        email: null,
-        phone: null,
-        dni: null,
-      };
+      const classroomResponse = await http.get(`/classrooms/teachers/${this.userId}`);
+      this.classroomReservations = classroomResponse.data;
 
-      // Cargar reservas de aulas
-      const classroomResponse = await http.get("/classrooms");
-      this.classroomReservations = classroomResponse.data.filter(
-          (classroom) => classroom.teacherId === this.userId
+      const [areasResponse, reservationsResponse] = await Promise.all([
+        http.get("/shared-area"),
+        this.reservationService.getAll()
+      ]);
+      const allAreas = areasResponse.data;
+      const allReservations = reservationsResponse.data;
+
+      const myReservations = allReservations.filter(
+          (reservation) => reservation.teacherId === this.userId
       );
 
-      // Cargar áreas compartidas
-      const sharedAreaResponse = await http.get("/shared-area");
-      this.sharedAreas = sharedAreaResponse.data;
+      this.sharedAreaReservations = myReservations.map(reservation => {
+        const area = allAreas.find(a => a.id === reservation.areaId);
+        return {
+          ...reservation,
+          areaName: area ? area.name : 'Unknown area'
+        };
+      });
 
-      // Cargar reservas de cada área compartida
-      const allReservations = [];
-      for (const area of this.sharedAreas) {
-        try {
-          const areaReservationsResponse = await http.get(`/areas/${area.id}/reservations`);
-          // Agregar información del área a cada reserva
-          const reservationsWithAreaInfo = areaReservationsResponse.data.map(reservation => ({
-            ...reservation,
-            areaId: area.id,
-            areaName: area.name,
-            areaDescription: area.description
-          }));
-          allReservations.push(...reservationsWithAreaInfo);
-        } catch (error) {
-          console.error(`Error cargando reservas del área ${area.id}:`, error);
-        }
-      }
+      const meetResponse = await http.get(`/teachers/${this.userId}/meetings`);
+      this.meetings = meetResponse.data;
 
-      // Filtrar solo las reservas del teacher actual
-      this.sharedAreaReservations = allReservations.filter(
-          reservation => reservation.teacherId === this.userId
-      );
-
-      console.log("Reservas del teacher:", this.sharedAreaReservations);
-
-      // Cargar reuniones
-      const meetResponse = await http.get("/meet");
-      this.meetings = meetResponse.data.filter((meet) =>
-          meet.teachers.some((teacher) => teacher.id === this.userId)
-      );
     } catch (error) {
-      console.error("Error al cargar datos:", error);
+      console.error("Error loading teacher dashboard data:", error);
     }
   },
 };
 </script>
 
 <style scoped>
-/* Contenedor Principal */
+/* Main Container */
 .dashboard-container {
   padding: 20px;
 }
 
-/* Card Principal del Teacher */
+/* Teacher Main Card */
 .teacher-info-card {
   display: flex;
   background-color: #e3f2fd;
@@ -222,7 +208,7 @@ export default {
   margin: 5px 0;
 }
 
-/* Cards de Contenido */
+/* Content Cards */
 .cards-section {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -255,7 +241,7 @@ p {
   margin: 5px 0;
 }
 
-/* Estilos para tarjetas de Shared Area Reservations */
+/* Shared Area Reservations Card Styles */
 .shared-reservations-container {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
