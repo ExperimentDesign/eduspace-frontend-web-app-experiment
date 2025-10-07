@@ -13,6 +13,8 @@ export default {
         role: getStoredUser()?.role || null,
         token: localStorage.getItem("token") || null,
         isAuthenticated: !!localStorage.getItem("token"),
+        isVerificationPending: false,
+        verificationEmail: null,
     },
     mutations: {
         SET_USER(state, user) {
@@ -20,6 +22,8 @@ export default {
             state.id = user?.id || null;
             state.role = user?.role || null;
             state.isAuthenticated = true;
+            state.isVerificationPending = false;
+            state.verificationEmail = null;
         },
         SET_TOKEN(state, token) {
             state.token = token;
@@ -30,12 +34,24 @@ export default {
             state.token = null;
             state.isAuthenticated = false;
             state.user = null;
+            state.isVerificationPending = false;
+            state.verificationEmail = null;
+        },
+        SET_VERIFICATION_PENDING(state, email) {
+            state.isVerificationPending = true;
+            state.verificationEmail = email;
         },
     },
     actions: {
         async signIn({ commit }, payload) {
-            const response = await AuthenticationService.signIn(payload);
+            await AuthenticationService.signIn(payload);
+            commit("SET_VERIFICATION_PENDING", payload.username);
+        },
+
+        async verifyCodeAndLogin({ commit }, verifyPayload) {
+            const response = await AuthenticationService.verifyCode(verifyPayload);
             const { id, role, token, username } = response.data;
+
             if (!id || !role || !token) {
                 throw new Error("Datos de usuario incompletos en la respuesta del servidor.");
             }
@@ -48,6 +64,7 @@ export default {
             commit("SET_TOKEN", token);
             commit("SET_USER", userData);
         },
+
         async signOut({ commit }) {
             commit("CLEAR_USER");
             localStorage.removeItem("token");
@@ -73,5 +90,11 @@ export default {
         userToken(state) {
             return state.token;
         },
+        isVerificationPending(state) {
+            return state.isVerificationPending;
+        },
+        verificationEmail(state) {
+            return state.verificationEmail;
+        }
     },
 };

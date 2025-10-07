@@ -24,19 +24,18 @@ export default {
 
     async handleLogin({ email, password }) {
       try {
-        // Crear el objeto de solicitud
         const userPayload = { username: email, password: password };
         this.signInRequest = new SignInRequest(userPayload);
 
-        // Llamada al método Vuex para iniciar sesión
         await this.signIn(this.signInRequest);
 
-        // Redirigir basado en el rol
-        if (this.userRole === "RoleAdmin") {
-          this.$router.push("/dashboard-admin/home-admin");
-        } else if (this.userRole === "RoleTeacher") {
-          this.$router.push("/dashboard-teacher/home-teacher");
-        }
+        this.$router.push({name: "verify-code", query: { email: email }});
+
+        // if (this.userRole === "RoleAdmin") {
+        //   this.$router.push("/dashboard-admin/home-admin");
+        // } else if (this.userRole === "RoleTeacher") {
+        //   this.$router.push("/dashboard-teacher/home-teacher");
+        // }
       } catch {
         alert("Error during login. Please check your credentials.");
       }
