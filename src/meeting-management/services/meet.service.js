@@ -7,6 +7,10 @@ export class MeetService {
         return http.get(this.resourceEndpoint);
     }
 
+    getAllByTeacherId(teacherId) {
+        return http.get(`/teachers/${teacherId}/meetings`);
+    }
+
     delete(id) {
         return http.delete(`${this.resourceEndpoint}/${id}`);
     }

@@ -27,7 +27,7 @@ export class ClassroomService {
         return http.delete(`${this.endpoint}/${id}`);
     }
 
-    findByName(name) {
-        return http.get(`${this.endpoint}?name=${name}`);
+    getByTeacherId(teacherId) {
+        return http.get(`${this.endpoint}/teachers/${teacherId}`);
     }
 }

@@ -50,13 +50,14 @@ export default {
 
         async verifyCodeAndLogin({ commit }, verifyPayload) {
             const response = await AuthenticationService.verifyCode(verifyPayload);
-            const { id, role, token, username } = response.data;
 
-            if (!id || !role || !token) {
+            const { id, profileId, role, token, username } = response.data;
+
+            if (!profileId || !role || !token) {
                 throw new Error("Datos de usuario incompletos en la respuesta del servidor.");
             }
 
-            const userData = { id, role, username };
+            const userData = { id: profileId,accountId: id, role, username };
 
             localStorage.setItem("token", token);
             localStorage.setItem('user', JSON.stringify(userData));
