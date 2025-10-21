@@ -5,7 +5,7 @@ export class Report {
                     description = '',
                     resourceId = 0,
                     createdAt = '',
-                    status = 'string'
+                    status = 'Pending'
                 }) {
         this.id = id;
         this.kindOfReport = kindOfReport;

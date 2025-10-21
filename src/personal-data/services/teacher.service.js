@@ -40,6 +40,31 @@ export class TeacherService {
         }
     }
 
+    static async updateTeacher(teacherId, teacherData) {
+        try {
+            const response = await http.put(`/teachers-profiles/${teacherId}`, {
+                firstName: teacherData.firstName,
+                lastName: teacherData.lastName,
+                email: teacherData.email,
+                dni: teacherData.dni,
+                address: teacherData.address,
+                phone: teacherData.phone
+            });
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error, "updating teacher");
+        }
+    }
+
+    static async deleteTeacher(teacherId) {
+        try {
+            const response = await http.delete(`/teachers-profiles/${teacherId}`);
+            return response.data;
+        } catch (error) {
+            throw this.handleError(error, "deleting teacher");
+        }
+    }
+
     static handleError(error, action) {
         if (!error.response) {
             return new Error(`Network error while ${action}. Please check your connection.`);

@@ -1,24 +1,29 @@
-// Archivo: meet.entity.js
+import { unwrapValue } from '../../shared/utils/value-object-unwrapper.js';
+
 export class Meet {
     constructor({
-                    id = 0,
+                    meetingId = 0,
                     title = '',
                     description = '',
-                    day = '',
+                    date = '',
                     start = '',
                     end = '',
+                    administratorId = null,
+                    classroomId = null,
                     classroom = null,
                     administrator = null,
                     teachers = []
                 }) {
-        this.id = id;
+        this.meetingId = meetingId;
         this.title = title;
         this.description = description;
-        this.day = day;
+        this.date = date;
         this.start = start;
         this.end = end;
+        this.administratorId = unwrapValue(administratorId);
+        this.classroomId = unwrapValue(classroomId);
         this.classroom = classroom;
         this.administrator = administrator;
-        this.teachers = teachers;
+        this.teachers = teachers || [];
     }
 }

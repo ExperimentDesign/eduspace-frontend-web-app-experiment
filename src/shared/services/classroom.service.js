@@ -11,11 +11,7 @@ export class ClassroomService {
         return http.get(`${this.endpoint}/${id}`);
     }
 
-    create(classroom) {
-        return http.post(this.endpoint, classroom);
-    }
-
-    createWithTeacher(classroom, teacherId) {
+    create(classroom, teacherId) {
         return http.post(`${this.endpoint}/teachers/${teacherId}`, classroom);
     }
 

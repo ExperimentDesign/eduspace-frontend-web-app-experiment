@@ -7,6 +7,10 @@ export class MeetService {
         return http.get(this.resourceEndpoint);
     }
 
+    getById(id) {
+        return http.get(`${this.resourceEndpoint}/${id}`);
+    }
+
     getAllByTeacherId(teacherId) {
         return http.get(`/teachers/${teacherId}/meetings`);
     }

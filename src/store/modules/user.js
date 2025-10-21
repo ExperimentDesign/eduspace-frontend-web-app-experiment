@@ -15,12 +15,18 @@ export default {
         isAuthenticated: !!localStorage.getItem("token"),
         isVerificationPending: false,
         verificationEmail: null,
+        profile: getStoredUser()?.profile || null,
+        classrooms: getStoredUser()?.classrooms || [],
+        meetings: getStoredUser()?.meetings || [],
     },
     mutations: {
         SET_USER(state, user) {
             state.user = user;
             state.id = user?.id || null;
             state.role = user?.role || null;
+            state.profile = user?.profile || null;
+            state.classrooms = user?.classrooms || [];
+            state.meetings = user?.meetings || [];
             state.isAuthenticated = true;
             state.isVerificationPending = false;
             state.verificationEmail = null;
@@ -34,6 +40,9 @@ export default {
             state.token = null;
             state.isAuthenticated = false;
             state.user = null;
+            state.profile = null;
+            state.classrooms = [];
+            state.meetings = [];
             state.isVerificationPending = false;
             state.verificationEmail = null;
         },
@@ -51,13 +60,21 @@ export default {
         async verifyCodeAndLogin({ commit }, verifyPayload) {
             const response = await AuthenticationService.verifyCode(verifyPayload);
 
-            const { id, profileId, role, token, username } = response.data;
+            const { id, profileId, role, token, username, profile, classrooms, meetings } = response.data;
 
             if (!profileId || !role || !token) {
                 throw new Error("Datos de usuario incompletos en la respuesta del servidor.");
             }
 
-            const userData = { id: profileId,accountId: id, role, username };
+            const userData = {
+                id: profileId,
+                accountId: id,
+                role,
+                username,
+                profile: profile || null,
+                classrooms: classrooms || [],
+                meetings: meetings || []
+            };
 
             localStorage.setItem("token", token);
             localStorage.setItem('user', JSON.stringify(userData));
@@ -96,6 +113,15 @@ export default {
         },
         verificationEmail(state) {
             return state.verificationEmail;
+        },
+        userProfile(state) {
+            return state.profile;
+        },
+        userClassrooms(state) {
+            return state.classrooms;
+        },
+        userMeetings(state) {
+            return state.meetings;
         }
     },
 };
