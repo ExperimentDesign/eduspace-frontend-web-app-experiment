@@ -2,7 +2,7 @@
 import CreateAndEdit from "../../shared/components/create-and-edit.component.vue";
 import { TeacherService } from "../services/teachers.service.js";
 import { mapGetters } from "vuex";
-import {ClassroomService} from "../../shared/services/classroom.service.js";
+import { ClassroomService } from "../../shared/services/classroom.service.js";
 
 export default {
   name: "meet-create-and-edit-dialog",
@@ -10,16 +10,16 @@ export default {
   props: {
     item: {
       type: Object,
-      required: true
+      required: true,
     },
     visible: {
       type: Boolean,
-      required: true
+      required: true,
     },
     edit: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
@@ -32,59 +32,71 @@ export default {
     };
   },
   computed: {
-    ...mapGetters('user', ['userId', 'currentUsername']),
+    ...mapGetters("user", ["userId", "currentUsername"]),
 
     teachersWithDisabled() {
       // When 2 teachers are already selected, disable other teacher options
       const max = 2;
       const selectedSet = new Set(this.selectedTeachers || []);
-      return this.teachers.map(t => ({
+      return this.teachers.map((t) => ({
         ...t,
-        disabled: (this.selectedTeachers && this.selectedTeachers.length >= max && !selectedSet.has(t.id))
+        disabled:
+          this.selectedTeachers &&
+          this.selectedTeachers.length >= max &&
+          !selectedSet.has(t.id),
       }));
-    }
+    },
   },
   created() {
     this.loadInitialData();
 
     // Watch `item` to sync incoming prop into localItem (deep & immediate)
-    this.$watch('item', (newItem) => {
-      this.localItem = { ...newItem };
+    this.$watch(
+      "item",
+      (newItem) => {
+        this.localItem = { ...newItem };
 
-      if (newItem && newItem.start && typeof newItem.start === 'string') {
-        const [hours, minutes, seconds] = newItem.start.split(':');
-        const startDate = new Date();
-        startDate.setHours(hours, minutes, seconds || 0);
-        this.localItem.start = startDate;
-      }
-      if (newItem && newItem.end && typeof newItem.end === 'string') {
-        const [hours, minutes, seconds] = newItem.end.split(':');
-        const endDate = new Date();
-        endDate.setHours(hours, minutes, seconds || 0);
-        this.localItem.end = endDate;
-      }
-
-      if (newItem && newItem.id) {
-        this.localItem.administratorId = newItem.administrator?.id || null;
-        if (newItem.classroom) {
-          this.localItem.classroomId = newItem.classroom.id;
+        if (newItem && newItem.start && typeof newItem.start === "string") {
+          const [hours, minutes, seconds] = newItem.start.split(":");
+          const startDate = new Date();
+          startDate.setHours(hours, minutes, seconds || 0);
+          this.localItem.start = startDate;
         }
-      } else {
-        this.localItem.administratorId = this.userId;
-        this.localItem.classroomId = null;
-      }
-      this.formatTeachersForEdit();
-    }, { immediate: true, deep: true });
+        if (newItem && newItem.end && typeof newItem.end === "string") {
+          const [hours, minutes, seconds] = newItem.end.split(":");
+          const endDate = new Date();
+          endDate.setHours(hours, minutes, seconds || 0);
+          this.localItem.end = endDate;
+        }
+
+        if (newItem && newItem.id) {
+          this.localItem.administratorId = newItem.administrator?.id || null;
+          if (newItem.classroom) {
+            this.localItem.classroomId = Number(newItem.classroom.id);
+          }
+        } else {
+          this.localItem.administratorId = this.userId;
+          this.localItem.classroomId = null;
+        }
+        this.formatTeachersForEdit();
+      },
+      { immediate: true, deep: true }
+    );
 
     // Watch selectedTeachers to prevent selecting more than 2 and show an error
-    this.$watch('selectedTeachers', (newVal) => {
-      if (newVal && newVal.length > 2) {
-        this.selectedTeachers = newVal.slice(0, 2);
-        this.selectedTeachersError = 'Solo puedes invitar hasta 2 profesores.';
-      } else {
-        this.selectedTeachersError = null;
-      }
-    }, { immediate: true });
+    this.$watch(
+      "selectedTeachers",
+      (newVal) => {
+        if (newVal && newVal.length > 2) {
+          this.selectedTeachers = newVal.slice(0, 2);
+          this.selectedTeachersError =
+            "Solo puedes invitar hasta 2 profesores.";
+        } else {
+          this.selectedTeachersError = null;
+        }
+      },
+      { immediate: true }
+    );
   },
   methods: {
     async loadInitialData() {
@@ -97,26 +109,31 @@ export default {
     },
     async loadTeachers() {
       const response = await TeacherService.fetchTeachers();
-      this.teachers = response.map(teacher => ({
+      this.teachers = response.map((teacher) => ({
         id: teacher.id,
-        name: `${teacher.firstName} ${teacher.lastName}`
+        name: `${teacher.firstName} ${teacher.lastName}`,
       }));
       console.log("Teachers loaded:", this.teachers);
     },
     async loadClassrooms() {
       const classroomsService = new ClassroomService();
       const response = await classroomsService.getAll();
-      this.classrooms = response.data.map(classroom => ({
-        id: classroom.id,
-        name: classroom.name
+      this.classrooms = response.data.map((classroom) => ({
+        id: Number(classroom.id),
+        name: classroom.name,
       }));
       console.log("Classrooms loaded:", this.classrooms);
     },
     formatTeachersForEdit() {
       if (Array.isArray(this.item.teachers) && this.item.teachers.length > 0) {
-        this.selectedTeachers = this.item.teachers.map(teacher => typeof teacher === 'object' ? teacher.id : teacher).slice(0, 2);
+        this.selectedTeachers = this.item.teachers
+          .map((teacher) =>
+            typeof teacher === "object" ? teacher.id : teacher
+          )
+          .slice(0, 2);
         if (this.item.teachers.length > 2) {
-          this.selectedTeachersError = 'Solo puedes invitar hasta 2 profesores.';
+          this.selectedTeachersError =
+            "Solo puedes invitar hasta 2 profesores.";
         } else {
           this.selectedTeachersError = null;
         }
@@ -128,26 +145,32 @@ export default {
     formatDate(date) {
       if (!date) return null;
       const d = new Date(date);
-      return d.toISOString().split('T')[0];
+      return d.toISOString().split("T")[0];
     },
     formatTime(time) {
       if (!time) return null;
       const d = new Date(time);
-      const hours = String(d.getHours()).padStart(2, '0');
-      const minutes = String(d.getMinutes()).padStart(2, '0');
-      const seconds = String(d.getSeconds()).padStart(2, '0');
+      const hours = String(d.getHours()).padStart(2, "0");
+      const minutes = String(d.getMinutes()).padStart(2, "0");
+      const seconds = String(d.getSeconds()).padStart(2, "0");
       return `${hours}:${minutes}:${seconds}`;
     },
     onCancelRequested() {
-      this.$emit('update:visible', false);
+      this.$emit("update:visible", false);
     },
     onSaveRequested() {
       this.submitted = true;
       if (this.selectedTeachers && this.selectedTeachers.length > 2) {
-        this.selectedTeachersError = 'Solo puedes invitar hasta 2 profesores.';
+        this.selectedTeachersError = "Solo puedes invitar hasta 2 profesores.";
         return;
       }
-      if (!this.localItem.title || !this.localItem.day || !this.localItem.start || !this.localItem.end || !this.localItem.classroomId) {
+      if (
+        !this.localItem.title ||
+        !this.localItem.date ||
+        !this.localItem.start ||
+        !this.localItem.end ||
+        !this.localItem.classroomId
+      ) {
         return;
       }
 
@@ -157,12 +180,12 @@ export default {
 
         meetData: {
           title: this.localItem.title,
-          description: this.localItem.description || '',
-          date: this.formatDate(this.localItem.day),
+          description: this.localItem.description || "",
+          date: this.formatDate(this.localItem.date),
           start: this.formatTime(this.localItem.start),
           end: this.formatTime(this.localItem.end),
         },
-        teacherIds: this.selectedTeachers
+        teacherIds: this.selectedTeachers,
       };
 
       if (this.edit) {
@@ -171,21 +194,21 @@ export default {
         payload.meetData.classroomId = this.localItem.classroomId;
       }
 
-      this.$emit('save-requested', payload);
-    }
-  }
+      this.$emit("save-requested", payload);
+    },
+  },
 };
 </script>
 
 <template>
   <create-and-edit
-      :entity="localItem"
-      :visible="visible"
-      size="standard"
-      entity-name="Meet"
-      @update:visible="(value) => $emit('update:visible', value)"
-      @cancelled="onCancelRequested"
-      @saved="onSaveRequested"
+    :entity="localItem"
+    :visible="visible"
+    size="standard"
+    entity-name="Meet"
+    @update:visible="(value) => $emit('update:visible', value)"
+    @cancelled="onCancelRequested"
+    @saved="onSaveRequested"
   >
     <template #content>
       <div class="meet-form">
@@ -199,10 +222,10 @@ export default {
             <div class="form-field full-width">
               <label for="title">Title <span class="required">*</span></label>
               <pv-input-text
-                  id="title"
-                  v-model="localItem.title"
-                  placeholder="Enter meeting title"
-                  :class="{ 'p-invalid': submitted && !localItem.title }"
+                id="title"
+                v-model="localItem.title"
+                placeholder="Enter meeting title"
+                :class="{ 'p-invalid': submitted && !localItem.title }"
               />
               <small v-if="submitted && !localItem.title" class="error-message">
                 Title is required
@@ -214,27 +237,32 @@ export default {
             <div class="form-field full-width">
               <label for="description">Description</label>
               <pv-input-text
-                  id="description"
-                  v-model="localItem.description"
-                  placeholder="Enter meeting description (optional)"
+                id="description"
+                v-model="localItem.description"
+                placeholder="Enter meeting description (optional)"
               />
             </div>
           </div>
 
           <div class="form-row">
             <div class="form-field full-width">
-              <label for="classroom">Classroom <span class="required">*</span></label>
+              <label for="classroom"
+                >Classroom <span class="required">*</span></label
+              >
               <pv-dropdown
-                  id="classroom"
-                  v-model="localItem.classroomId"
-                  :options="classrooms"
-                  optionLabel="name"
-                  optionValue="id"
-                  placeholder="Select a classroom"
-                  :class="{ 'p-invalid': submitted && !localItem.classroomId }"
-                  class="w-full"
+                id="classroom"
+                v-model="localItem.classroomId"
+                :options="classrooms"
+                optionLabel="name"
+                optionValue="id"
+                placeholder="Select a classroom"
+                :class="{ 'p-invalid': submitted && !localItem.classroomId }"
+                class="w-full"
               />
-              <small v-if="submitted && !localItem.classroomId" class="error-message">
+              <small
+                v-if="submitted && !localItem.classroomId"
+                class="error-message"
+              >
                 Classroom is required
               </small>
             </div>
@@ -249,18 +277,18 @@ export default {
 
           <div class="form-row">
             <div class="form-field full-width">
-              <label for="day">Date <span class="required">*</span></label>
+              <label for="date">Date <span class="required">*</span></label>
               <pv-date-picker
-                  id="day"
-                  v-model="localItem.day"
-                  showIcon
-                  fluid
-                  :showOnFocus="false"
-                  date-format="yy-mm-dd"
-                  placeholder="Select meeting date"
-                  :class="{ 'p-invalid': submitted && !localItem.day }"
+                id="date"
+                v-model="localItem.date"
+                showIcon
+                fluid
+                :showOnFocus="false"
+                date-format="yy-mm-dd"
+                placeholder="Select meeting date"
+                :class="{ 'p-invalid': submitted && !localItem.date }"
               />
-              <small v-if="submitted && !localItem.day" class="error-message">
+              <small v-if="submitted && !localItem.date" class="error-message">
                 Date is required
               </small>
             </div>
@@ -268,26 +296,30 @@ export default {
 
           <div class="form-row two-cols">
             <div class="form-field">
-              <label for="start-time">Start Time <span class="required">*</span></label>
+              <label for="start-time"
+                >Start Time <span class="required">*</span></label
+              >
               <pv-date-picker
-                  id="start-time"
-                  v-model="localItem.start"
-                  timeOnly
-                  placeholder="Start time"
-                  :class="{ 'p-invalid': submitted && !localItem.start }"
+                id="start-time"
+                v-model="localItem.start"
+                timeOnly
+                placeholder="Start time"
+                :class="{ 'p-invalid': submitted && !localItem.start }"
               />
               <small v-if="submitted && !localItem.start" class="error-message">
                 Start time is required
               </small>
             </div>
             <div class="form-field">
-              <label for="end-time">End Time <span class="required">*</span></label>
+              <label for="end-time"
+                >End Time <span class="required">*</span></label
+              >
               <pv-date-picker
-                  id="end-time"
-                  v-model="localItem.end"
-                  timeOnly
-                  placeholder="End time"
-                  :class="{ 'p-invalid': submitted && !localItem.end }"
+                id="end-time"
+                v-model="localItem.end"
+                timeOnly
+                placeholder="End time"
+                :class="{ 'p-invalid': submitted && !localItem.end }"
               />
               <small v-if="submitted && !localItem.end" class="error-message">
                 End time is required
@@ -306,17 +338,19 @@ export default {
             <div class="form-field full-width">
               <label for="invite">Invite Teachers</label>
               <pv-multi-select
-                  id="invite"
-                  v-model="selectedTeachers"
-                  :options="teachersWithDisabled"
-                  option-label="name"
-                  option-value="id"
-                  placeholder="Select teachers to invite"
-                  class="w-full"
-                  :class="{ 'p-invalid': submitted && selectedTeachersError }"
-                  display="chip"
+                id="invite"
+                v-model="selectedTeachers"
+                :options="teachersWithDisabled"
+                option-label="name"
+                option-value="id"
+                placeholder="Select teachers to invite"
+                class="w-full"
+                :class="{ 'p-invalid': submitted && selectedTeachersError }"
+                display="chip"
               />
-              <small v-if="selectedTeachersError" class="error-message">{{ selectedTeachersError }}</small>
+              <small v-if="selectedTeachersError" class="error-message">{{
+                selectedTeachersError
+              }}</small>
               <small class="field-hint">
                 You can invite multiple teachers to this meeting
               </small>

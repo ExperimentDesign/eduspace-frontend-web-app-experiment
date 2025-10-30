@@ -7,19 +7,19 @@
         <div class="form-group">
           <label for="firstName">First Name *</label>
           <pv-input-text
-              id="firstName"
-              v-model="formData.firstName"
-              placeholder="Enter first name"
-              required
+            id="firstName"
+            v-model="formData.firstName"
+            placeholder="Enter first name"
+            required
           />
         </div>
         <div class="form-group">
           <label for="lastName">Last Name *</label>
           <pv-input-text
-              id="lastName"
-              v-model="formData.lastName"
-              placeholder="Enter last name"
-              required
+            id="lastName"
+            v-model="formData.lastName"
+            placeholder="Enter last name"
+            required
           />
         </div>
       </div>
@@ -28,12 +28,12 @@
         <div class="form-group">
           <label for="email">Email *</label>
           <pv-input-text
-              id="email"
-              v-model="formData.email"
-              placeholder="example@domain.com"
-              required
-              :class="{ 'p-invalid': errors.email }"
-              @blur="validateField('email', formData.email)"
+            id="email"
+            v-model="formData.email"
+            placeholder="example@domain.com"
+            required
+            :class="{ 'p-invalid': errors.email }"
+            @blur="validateField('email', formData.email)"
           />
           <small v-if="errors.email" class="error-message">
             {{ errors.email }}
@@ -42,14 +42,14 @@
         <div class="form-group">
           <label for="phone">Phone *</label>
           <pv-input-text
-              id="phone"
-              v-model="formData.phone"
-              placeholder="987654321"
-              required
-              :class="{ 'p-invalid': errors.phone }"
-              @input="formData.phone = formData.phone.replace(/\D/g, '')"
-              @blur="validateField('phone', formData.phone)"
-              maxlength="9"
+            id="phone"
+            v-model="formData.phone"
+            placeholder="987654321"
+            required
+            :class="{ 'p-invalid': errors.phone }"
+            @input="formData.phone = formData.phone.replace(/\D/g, '')"
+            @blur="validateField('phone', formData.phone)"
+            maxlength="9"
           />
           <small v-if="errors.phone" class="error-message">
             {{ errors.phone }}
@@ -61,14 +61,14 @@
         <div class="form-group">
           <label for="dni">DNI *</label>
           <pv-input-text
-              id="dni"
-              v-model="formData.dni"
-              placeholder="12345678"
-              required
-              :class="{ 'p-invalid': errors.dni }"
-              @input="formData.dni = formData.dni.replace(/\D/g, '')"
-              @blur="validateField('dni', formData.dni)"
-              maxlength="8"
+            id="dni"
+            v-model="formData.dni"
+            placeholder="12345678"
+            required
+            :class="{ 'p-invalid': errors.dni }"
+            @input="formData.dni = formData.dni.replace(/\D/g, '')"
+            @blur="validateField('dni', formData.dni)"
+            maxlength="8"
           />
           <small v-if="errors.dni" class="error-message">
             {{ errors.dni }}
@@ -77,36 +77,36 @@
         <div class="form-group">
           <label for="address">Address *</label>
           <pv-input-text
-              id="address"
-              v-model="formData.address"
-              placeholder="Enter address"
-              required
+            id="address"
+            v-model="formData.address"
+            placeholder="Enter address"
+            required
           />
         </div>
       </div>
     </div>
 
-    <div class="form-section">
+    <div class="form-section" v-if="!isEdit">
       <h3 class="section-title">Account Credentials</h3>
 
       <div class="form-row">
         <div class="form-group">
           <label for="username">Username *</label>
           <pv-input-text
-              id="username"
-              v-model="formData.username"
-              placeholder="Enter username"
-              required
+            id="username"
+            v-model="formData.username"
+            placeholder="Enter username"
+            required
           />
         </div>
         <div class="form-group">
           <label for="password">Password *</label>
           <pv-password
-              id="password"
-              v-model="formData.password"
-              placeholder="Enter password"
-              required
-              :feedback="false"
+            id="password"
+            v-model="formData.password"
+            placeholder="Enter password"
+            required
+            :feedback="false"
           />
         </div>
       </div>
@@ -114,15 +114,15 @@
 
     <div class="form-actions">
       <pv-button
-          label="Cancel"
-          severity="secondary"
-          @click="cancel"
-          type="button"
+        label="Cancel"
+        severity="secondary"
+        @click="cancel"
+        type="button"
       />
       <pv-button
-          label="Save Teacher"
-          icon="pi pi-check"
-          type="submit"
+        :label="isEdit ? 'Update Teacher' : 'Save Teacher'"
+        icon="pi pi-check"
+        type="submit"
       />
     </div>
   </form>
@@ -133,6 +133,16 @@ import { mapGetters } from "vuex";
 
 export default {
   name: "add-teacher-form",
+  props: {
+    teacher: {
+      type: Object,
+      default: null,
+    },
+    isEdit: {
+      type: Boolean,
+      default: false,
+    },
+  },
   data() {
     return {
       formData: {
@@ -161,6 +171,26 @@ export default {
       immediate: true,
       handler(newValue) {
         this.formData.administratorId = newValue;
+      },
+    },
+    teacher: {
+      immediate: true,
+      handler(newTeacher) {
+        if (newTeacher && this.isEdit) {
+          this.formData = {
+            firstName: newTeacher.firstName || "",
+            lastName: newTeacher.lastName || "",
+            email: newTeacher.email || "",
+            dni: newTeacher.dni || "",
+            address: newTeacher.address || "",
+            phone: newTeacher.phone || "",
+            administratorId: this.formData.administratorId,
+            username: "",
+            password: "",
+          };
+        } else if (!this.isEdit) {
+          this.resetForm();
+        }
       },
     },
   },
@@ -198,18 +228,20 @@ export default {
       }
     },
     isFormValid() {
-      const requiredFields = [
-        "firstName",
-        "lastName",
-        "email",
-        "username",
-        "password",
-        "dni",
-        "phone",
-        "address",
-      ];
+      const requiredFields = this.isEdit
+        ? ["firstName", "lastName", "email", "dni", "phone", "address"]
+        : [
+            "firstName",
+            "lastName",
+            "email",
+            "username",
+            "password",
+            "dni",
+            "phone",
+            "address",
+          ];
       const hasAllRequiredFields = requiredFields.every(
-          (field) => this.formData[field]
+        (field) => this.formData[field]
       );
       const isEmailValid = this.validateEmail(this.formData.email);
       const isDNIValid = this.validateDNI(this.formData.dni);
@@ -226,6 +258,24 @@ export default {
     },
     cancel() {
       this.$emit("cancel");
+    },
+    resetForm() {
+      this.formData = {
+        firstName: "",
+        lastName: "",
+        email: "",
+        dni: "",
+        address: "",
+        phone: "",
+        administratorId: this.formData.administratorId,
+        username: "",
+        password: "",
+      };
+      this.errors = {
+        email: "",
+        dni: "",
+        phone: "",
+      };
     },
   },
 };

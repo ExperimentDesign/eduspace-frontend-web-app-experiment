@@ -3,10 +3,10 @@
     <div class="page-header">
       <h1>Teachers Management</h1>
       <pv-button
-          label="Add Teacher"
-          icon="pi pi-plus"
-          @click="showAddDialog = true"
-          class="add-teacher-button"
+        label="Add Teacher"
+        icon="pi pi-plus"
+        @click="showAddDialog = true"
+        class="add-teacher-button"
       />
     </div>
 
@@ -16,46 +16,51 @@
     </div>
 
     <div v-else-if="teachers.length === 0" class="empty-state">
-      <i class="pi pi-users" style="font-size: 4rem; color: #ccc;"></i>
+      <i class="pi pi-users" style="font-size: 4rem; color: #ccc"></i>
       <h3>No teachers found</h3>
       <p>Start by adding your first teacher</p>
     </div>
 
     <div v-else class="teacher-grid">
       <TeacherCardComponent
-          v-for="teacher in teachers"
-          :key="teacher.id"
-          :teacher="teacher"
-          @view="viewTeacherDetails"
+        v-for="teacher in teachers"
+        :key="teacher.id"
+        :teacher="teacher"
+        @view="viewTeacherDetails"
+        @edit="editTeacher"
+        @delete="deleteTeacher"
       />
     </div>
 
     <pv-dialog
-        v-model:visible="showAddDialog"
-        header="Add New Teacher"
-        :modal="true"
-        :closable="true"
-        :style="{ width: '90vw', maxWidth: '950px' }"
-        :draggable="false"
+      v-model:visible="showAddDialog"
+      header="Add New Teacher"
+      :modal="true"
+      :closable="true"
+      :style="{ width: '90vw', maxWidth: '950px' }"
+      :draggable="false"
     >
       <AddTeacherFormComponent
-          @save="handleAddTeacher"
-          @cancel="showAddDialog = false"
+        @save="handleAddTeacher"
+        @cancel="showAddDialog = false"
       />
     </pv-dialog>
 
     <pv-dialog
-        v-model:visible="showDetailsDialog"
-        header="Teacher Details"
-        :modal="true"
-        :closable="true"
-        :style="{ width: '90vw', maxWidth: '600px' }"
-        :draggable="false"
+      v-model:visible="showDetailsDialog"
+      header="Teacher Details"
+      :modal="true"
+      :closable="true"
+      :style="{ width: '90vw', maxWidth: '600px' }"
+      :draggable="false"
     >
       <div v-if="selectedTeacher" class="teacher-details">
         <div class="detail-row">
           <span class="detail-label">Full Name:</span>
-          <span class="detail-value">{{ selectedTeacher.firstName }} {{ selectedTeacher.lastName }}</span>
+          <span class="detail-value"
+            >{{ selectedTeacher.firstName }}
+            {{ selectedTeacher.lastName }}</span
+          >
         </div>
         <div class="detail-row">
           <span class="detail-label">Email:</span>
@@ -76,10 +81,65 @@
       </div>
       <template #footer>
         <pv-button
-            label="Close"
-            icon="pi pi-times"
-            @click="showDetailsDialog = false"
-            severity="secondary"
+          label="Close"
+          icon="pi pi-times"
+          @click="showDetailsDialog = false"
+          severity="secondary"
+        />
+      </template>
+    </pv-dialog>
+
+    <pv-dialog
+      v-model:visible="showEditDialog"
+      header="Edit Teacher"
+      :modal="true"
+      :closable="true"
+      :style="{ width: '90vw', maxWidth: '950px' }"
+      :draggable="false"
+    >
+      <AddTeacherFormComponent
+        :teacher="selectedTeacher"
+        :is-edit="true"
+        @save="handleEditTeacher"
+        @cancel="showEditDialog = false"
+      />
+    </pv-dialog>
+
+    <pv-dialog
+      v-model:visible="showDeleteDialog"
+      header="Confirm Delete"
+      :modal="true"
+      :closable="true"
+      :style="{ width: '90vw', maxWidth: '450px' }"
+      :draggable="false"
+    >
+      <div v-if="teacherToDelete" class="delete-confirmation">
+        <p>
+          Are you sure you want to delete the teacher
+          <strong
+            >{{ teacherToDelete.firstName }}
+            {{ teacherToDelete.lastName }}</strong
+          >?
+        </p>
+        <p class="warning-text">
+          <i class="pi pi-exclamation-triangle"></i>
+          Note: This teacher cannot be deleted if they are assigned to any
+          meetings.
+        </p>
+        <p class="warning-text">This action cannot be undone.</p>
+      </div>
+      <template #footer>
+        <pv-button
+          label="Cancel"
+          icon="pi pi-times"
+          @click="showDeleteDialog = false"
+          severity="secondary"
+        />
+        <pv-button
+          label="Delete"
+          icon="pi pi-trash"
+          @click="confirmDeleteTeacher"
+          severity="danger"
         />
       </template>
     </pv-dialog>
@@ -95,10 +155,10 @@ import AddTeacherFormComponent from "../../personal-data/components/add-teacher-
 import { TeacherService } from "../../personal-data/services/teacher.service.js";
 
 export default {
-  name: 'personal-data',
+  name: "personal-data",
   components: {
     TeacherCardComponent,
-    AddTeacherFormComponent
+    AddTeacherFormComponent,
   },
   data() {
     return {
@@ -106,6 +166,9 @@ export default {
       selectedTeacher: null,
       showAddDialog: false,
       showDetailsDialog: false,
+      showEditDialog: false,
+      showDeleteDialog: false,
+      teacherToDelete: null,
       loading: false,
     };
   },
@@ -122,10 +185,10 @@ export default {
         this.teachers = await TeacherService.fetchTeachers();
       } catch (error) {
         this.$toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error.message || 'Failed to load teachers',
-          life: 4000
+          severity: "error",
+          summary: "Error",
+          detail: error.message || "Failed to load teachers",
+          life: 4000,
         });
       } finally {
         this.loading = false;
@@ -136,19 +199,19 @@ export default {
       try {
         await TeacherService.addTeacher(teacherData);
         this.$toast.add({
-          severity: 'success',
-          summary: 'Success',
-          detail: 'Teacher added successfully',
-          life: 3000
+          severity: "success",
+          summary: "Success",
+          detail: "Teacher added successfully",
+          life: 3000,
         });
         this.showAddDialog = false;
         await this.loadTeachers();
       } catch (error) {
         this.$toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error.message || 'Failed to add teacher',
-          life: 4000
+          severity: "error",
+          summary: "Error",
+          detail: error.message || "Failed to add teacher",
+          life: 4000,
         });
       }
     },
@@ -159,14 +222,94 @@ export default {
         this.showDetailsDialog = true;
       } catch (error) {
         this.$toast.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: error.message || 'Failed to load teacher details',
-          life: 4000
+          severity: "error",
+          summary: "Error",
+          detail: error.message || "Failed to load teacher details",
+          life: 4000,
         });
       }
-    }
-  }
+    },
+
+    async editTeacher(teacher) {
+      this.selectedTeacher = teacher;
+      this.showEditDialog = true;
+    },
+
+    async deleteTeacher(teacherId) {
+      const teacher = this.teachers.find((t) => t.id === teacherId);
+      if (teacher) {
+        this.teacherToDelete = teacher;
+        this.showDeleteDialog = true;
+      }
+    },
+
+    async handleEditTeacher(teacherData) {
+      try {
+        await TeacherService.updateTeacher(
+          this.selectedTeacher.id,
+          teacherData
+        );
+        this.$toast.add({
+          severity: "success",
+          summary: "Success",
+          detail: "Teacher updated successfully",
+          life: 3000,
+        });
+        this.showEditDialog = false;
+        this.selectedTeacher = null;
+        await this.loadTeachers();
+      } catch (error) {
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: error.message || "Failed to update teacher",
+          life: 4000,
+        });
+      }
+    },
+
+    async confirmDeleteTeacher() {
+      try {
+        await TeacherService.deleteTeacher(this.teacherToDelete.id);
+        this.$toast.add({
+          severity: "success",
+          summary: "Success",
+          detail: "Teacher deleted successfully",
+          life: 3000,
+        });
+        this.showDeleteDialog = false;
+        this.teacherToDelete = null;
+        await this.loadTeachers();
+      } catch (error) {
+        // Check if the error is due to foreign key constraint
+        const errorMessage =
+          error.message ||
+          error.response?.data?.message ||
+          "Failed to delete teacher";
+
+        if (
+          errorMessage.includes("foreign key constraint") ||
+          errorMessage.includes("Cannot delete or update a parent row") ||
+          error.response?.status === 409
+        ) {
+          this.$toast.add({
+            severity: "warn",
+            summary: "Cannot Delete Teacher",
+            detail:
+              "This teacher cannot be deleted because they are assigned to meetings. Please remove them from all meetings first.",
+            life: 6000,
+          });
+        } else {
+          this.$toast.add({
+            severity: "error",
+            summary: "Error",
+            detail: errorMessage,
+            life: 4000,
+          });
+        }
+      }
+    },
+  },
 };
 </script>
 
@@ -270,6 +413,29 @@ export default {
   font-size: 1rem;
   color: #2c3e50;
   font-weight: 500;
+}
+
+.delete-confirmation {
+  text-align: center;
+  padding: 1rem 0;
+}
+
+.delete-confirmation p {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+  color: #495057;
+}
+
+.warning-text {
+  color: #dc3545;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.warning-text i {
+  font-size: 1.2rem;
 }
 
 @media (max-width: 768px) {

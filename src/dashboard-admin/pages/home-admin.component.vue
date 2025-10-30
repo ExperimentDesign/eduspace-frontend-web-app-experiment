@@ -7,7 +7,7 @@ import MeetingCard from "../../meeting-management/components/meeting-card.vue";
 import MeetCreateAndEditDialog from "../../meeting-management/components/meet-create-and-edit.component.vue";
 import { Meet } from "../../meeting-management/model/meet.entity.js";
 import { MeetService } from "../../meeting-management/services/meet.service.js";
-import {ClassroomService} from "../../shared/services/classroom.service.js";
+import { ClassroomService } from "../../shared/services/classroom.service.js";
 import { AdministratorsService } from "../../meeting-management/services/administrators.service.js";
 
 export default {
@@ -15,7 +15,7 @@ export default {
   components: {
     TeacherCardComponent,
     MeetingCard,
-    MeetCreateAndEditDialog
+    MeetCreateAndEditDialog,
   },
   data() {
     return {
@@ -45,7 +45,9 @@ export default {
       if (!this.userId) return;
 
       const adminResponse = await http.get("/administrator-profiles");
-      this.admin = adminResponse.data.find((a) => Number(a.id) === Number(this.userId));
+      this.admin = adminResponse.data.find(
+        (a) => Number(a.id) === Number(this.userId)
+      );
       if (!this.admin) {
         return;
       }
@@ -67,67 +69,108 @@ export default {
 
   methods: {
     notifySuccessfulAction(message) {
-      if (this.$toast) this.$toast.add({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+      if (this.$toast)
+        this.$toast.add({
+          severity: "success",
+          summary: "Success",
+          detail: message,
+          life: 3000,
+        });
     },
     notifyErrorAction(message) {
-      if (this.$toast) this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+      if (this.$toast)
+        this.$toast.add({
+          severity: "error",
+          summary: "Error",
+          detail: message,
+          life: 3000,
+        });
     },
 
     async loadMeetings() {
       try {
-        const [meetingsResponse, classroomsResponse, administratorsResponse] = await Promise.all([
-          this.meetService.getAll(),
-          this.classroomsService.getAll(),
-          this.administratorsService.getAllAdministrators()
-        ]);
+        const [meetingsResponse, classroomsResponse, administratorsResponse] =
+          await Promise.all([
+            this.meetService.getAll(),
+            this.classroomsService.getAll(),
+            this.administratorsService.getAllAdministrators(),
+          ]);
 
         const meetingsData = meetingsResponse.data;
         const allClassrooms = classroomsResponse.data;
         const allAdministrators = administratorsResponse.data;
 
-        const mapped = meetingsData.map(meetData => {
-          const classroom = allClassrooms.find(c => c.id === meetData.classroomId?.classroomIdentifier) || meetData.classroomId;
-          const administrator = allAdministrators.find(a => a.id === meetData.administratorId?.administratorIdentifier) || meetData.administratorId;
+        const mapped = meetingsData.map((meetData) => {
+          const classroom =
+            allClassrooms.find(
+              (c) => c.id === meetData.classroomId?.classroomIdentifier
+            ) || meetData.classroomId;
+          const administrator =
+            allAdministrators.find(
+              (a) => a.id === meetData.administratorId?.administratorIdentifier
+            ) || meetData.administratorId;
 
           return new Meet({
-            id: meetData.meetingId,
+            meetingId: meetData.meetingId,
             title: meetData.title,
             description: meetData.description,
-            day: meetData.date,
+            date: meetData.date,
             start: meetData.start,
             end: meetData.end,
             classroom: classroom,
             administrator: administrator,
-            teachers: meetData.teachers || []
+            teachers: meetData.teachers || [],
           });
         });
 
-        const adminId = this.admin?.id ?? this.admin?.administratorIdentifier ?? null;
-        const adminFullName = `${this.admin?.firstName || ''} ${this.admin?.lastName || ''}`.trim();
+        const adminId =
+          this.admin?.id ?? this.admin?.administratorIdentifier ?? null;
+        const adminFullName = `${this.admin?.firstName || ""} ${
+          this.admin?.lastName || ""
+        }`.trim();
 
         const matchesAdmin = (mAdmin) => {
           if (!mAdmin) return false;
-          if (typeof mAdmin === 'object') {
-            const mid = mAdmin.id ?? mAdmin.administratorIdentifier ?? mAdmin.administratorId ?? null;
-            const mName = (mAdmin.name) ? mAdmin.name : `${mAdmin.firstName || ''} ${mAdmin.lastName || ''}`.trim();
+          if (typeof mAdmin === "object") {
+            const mid =
+              mAdmin.id ??
+              mAdmin.administratorIdentifier ??
+              mAdmin.administratorId ??
+              null;
+            const mName = mAdmin.name
+              ? mAdmin.name
+              : `${mAdmin.firstName || ""} ${mAdmin.lastName || ""}`.trim();
             if (mid && adminId && String(mid) === String(adminId)) return true;
             return !!(mName && adminFullName && mName === adminFullName);
-
           }
-          return String(mAdmin) === String(adminId) || String(mAdmin) === adminFullName;
+          return (
+            String(mAdmin) === String(adminId) ||
+            String(mAdmin) === adminFullName
+          );
         };
 
-        this.meetings = mapped.filter(m => matchesAdmin(m.administrator));
+        this.meetings = mapped.filter((m) => matchesAdmin(m.administrator));
 
-        console.debug('Loaded meetings total:', mapped.length, 'Filtered for admin:', this.meetings.length);
+        console.debug(
+          "Loaded meetings total:",
+          mapped.length,
+          "Filtered for admin:",
+          this.meetings.length
+        );
 
-        if ((!this.meetings || this.meetings.length === 0) && (mapped && mapped.length > 0)) {
-          console.warn('No meetings matched the admin filter; falling back to showing all meetings.');
+        if (
+          (!this.meetings || this.meetings.length === 0) &&
+          mapped &&
+          mapped.length > 0
+        ) {
+          console.warn(
+            "No meetings matched the admin filter; falling back to showing all meetings."
+          );
           this.meetings = mapped;
         }
       } catch (error) {
-        console.error('Error loading meetings in admin home', error);
-        this.notifyErrorAction('Could not load meetings');
+        console.error("Error loading meetings in admin home", error);
+        this.notifyErrorAction("Could not load meetings");
       }
     },
     onSaveRequested(payload) {
@@ -141,23 +184,26 @@ export default {
     async createMeet(payload) {
       try {
         const createResponse = await this.meetService.create(
-            payload.administratorId,
-            payload.classroomId,
-            payload.meetData
+          payload.administratorId,
+          payload.classroomId,
+          payload.meetData
         );
         const newMeeting = createResponse.data;
 
         if (payload.teacherIds && payload.teacherIds.length > 0) {
-          const addTeachersPromises = payload.teacherIds.map(teacherId =>
-              this.meetService.addTeacherToMeeting(newMeeting.meetingId, teacherId)
+          const addTeachersPromises = payload.teacherIds.map((teacherId) =>
+            this.meetService.addTeacherToMeeting(
+              newMeeting.meetingId,
+              teacherId
+            )
           );
           await Promise.all(addTeachersPromises);
         }
         await this.loadMeetings();
-        this.notifySuccessfulAction('Meet Created Successfully');
+        this.notifySuccessfulAction("Meet Created Successfully");
       } catch (error) {
-        console.error('Error creating meet from admin home', error);
-        this.notifyErrorAction('An error occurred while creating the meet.');
+        console.error("Error creating meet from admin home", error);
+        this.notifyErrorAction("An error occurred while creating the meet.");
       } finally {
         this.createAndEditDialogIsVisible = false;
       }
@@ -169,13 +215,22 @@ export default {
 
         await this.meetService.update(this.meet.id, payload.meetData);
         await this.loadMeetings();
-        this.notifySuccessfulAction('Meet Updated Successfully');
+        this.notifySuccessfulAction("Meet Updated Successfully");
       } catch (error) {
-        console.error('Error updating meet from admin home', error);
-        this.notifyErrorAction('An error occurred while updating the meet.');
+        console.error("Error updating meet from admin home", error);
+        this.notifyErrorAction("An error occurred while updating the meet.");
       } finally {
         this.createAndEditDialogIsVisible = false;
       }
+    },
+    formatDate(dateString) {
+      if (!dateString) return "N/A";
+      const date = new Date(dateString);
+      return date.toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
     },
   },
 };
@@ -186,15 +241,19 @@ export default {
     <div class="admin-info">
       <div class="admin-avatar">
         <pv-avatar
-            :label="initials || 'NA'"
-            size="xlarge"
-            style="background-color: #2196F3; color: white; font-size: 30px;"
+          :label="initials || 'NA'"
+          size="xlarge"
+          style="background-color: #2196f3; color: white; font-size: 30px"
         ></pv-avatar>
       </div>
       <div class="admin-details">
         <p><strong>Name:</strong> {{ admin?.firstName || "Not available" }}</p>
-        <p><strong>Last Name:</strong> {{ admin?.lastName || "Not available" }}</p>
-        <p><strong>Cell Phone:</strong> {{ admin?.phone || "Not available" }}</p>
+        <p>
+          <strong>Last Name:</strong> {{ admin?.lastName || "Not available" }}
+        </p>
+        <p>
+          <strong>Cell Phone:</strong> {{ admin?.phone || "Not available" }}
+        </p>
         <p><strong>Status:</strong> Admin</p>
         <p><strong>Email:</strong> {{ admin?.email || "Not available" }}</p>
       </div>
@@ -210,10 +269,10 @@ export default {
       <template #content>
         <div v-if="teachers.length" class="teacher-list">
           <TeacherCardComponent
-              v-for="teacher in teachers"
-              :key="teacher.id"
-              :teacher="teacher"
-              :compact="true"
+            v-for="teacher in teachers"
+            :key="teacher.id"
+            :teacher="teacher"
+            :compact="true"
           />
         </div>
         <div v-else class="empty-state">
@@ -234,10 +293,10 @@ export default {
         <div v-if="meetings.length">
           <div class="cards-grid">
             <MeetingCard
-                v-for="meeting in meetings"
-                :key="meeting.id"
-                :meeting="meeting"
-                :compact="true"
+              v-for="meeting in meetings"
+              :key="meeting.id"
+              :meeting="meeting"
+              :compact="true"
             />
           </div>
         </div>
@@ -258,10 +317,14 @@ export default {
       <template #content>
         <div v-if="reports.length">
           <ul class="reports-list">
-            <li v-for="(report, index) in reports" :key="index" class="report-item">
+            <li
+              v-for="(report, index) in reports"
+              :key="index"
+              class="report-item"
+            >
               <div class="report-row">
                 <span class="report-label">Type:</span>
-                <span class="report-value">{{ report.kind_of_report }}</span>
+                <span class="report-value">{{ report.kindOfReport }}</span>
               </div>
               <div class="report-row">
                 <span class="report-label">Description:</span>
@@ -273,11 +336,16 @@ export default {
               </div>
               <div class="report-row">
                 <span class="report-label">Created At:</span>
-                <span class="report-value">{{ report.created_at }}</span>
+                <span class="report-value">{{
+                  formatDate(report.createdAt)
+                }}</span>
               </div>
               <div class="report-row">
                 <span class="report-label">Status:</span>
-                <span class="report-value" :class="'status-' + report.status.toLowerCase()">
+                <span
+                  class="report-value"
+                  :class="'status-' + report.status.toLowerCase()"
+                >
                   {{ report.status }}
                 </span>
               </div>
@@ -293,11 +361,11 @@ export default {
     </pv-card>
 
     <meet-create-and-edit-dialog
-        :item="meet"
-        :visible="createAndEditDialogIsVisible"
-        :edit="isEdit"
-        @update:visible="value => createAndEditDialogIsVisible = value"
-        @save-requested="onSaveRequested"
+      :item="meet"
+      :visible="createAndEditDialogIsVisible"
+      :edit="isEdit"
+      @update:visible="(value) => (createAndEditDialogIsVisible = value)"
+      @save-requested="onSaveRequested"
     />
   </div>
 </template>
@@ -312,7 +380,11 @@ export default {
 
 .admin-info {
   grid-column: span 3;
-  background: linear-gradient(135deg, rgba(255, 210, 0, 0.4) 0%, rgba(255, 223, 77, 0.3) 100%);
+  background: linear-gradient(
+    135deg,
+    rgba(255, 210, 0, 0.4) 0%,
+    rgba(255, 223, 77, 0.3) 100%
+  );
   padding: 25px;
   border-radius: 20px;
   display: grid;
@@ -374,19 +446,19 @@ export default {
 
 .header-icon {
   font-size: 24px;
-  color: #2196F3;
+  color: #2196f3;
 }
 
 .teachers-card .header-icon {
-  color: #1976D2;
+  color: #1976d2;
 }
 
 .meet-card .header-icon {
-  color: #388E3C;
+  color: #388e3c;
 }
 
 .reports-card .header-icon {
-  color: #7B1FA2;
+  color: #7b1fa2;
 }
 
 .card-title {

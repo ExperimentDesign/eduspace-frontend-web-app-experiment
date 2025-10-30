@@ -2,12 +2,30 @@
   <pv-toast />
   <div class="app-container">
     <header v-if="userRole" class="sidenav-wrapper">
-      <div :class="['sidenav', { 'admin-sidenav': userRole === 'RoleAdmin', 'teacher-sidenav': userRole === 'RoleTeacher' }]">
+      <div
+        :class="[
+          'sidenav',
+          {
+            'admin-sidenav': userRole === 'RoleAdmin',
+            'teacher-sidenav': userRole === 'RoleTeacher',
+          },
+        ]"
+      >
         <div class="user-info">
-          <pv-avatar image="../src/assets/default-avatar.png" class="mr-2" size="xlarge" shape="circle"></pv-avatar>
+          <pv-avatar
+            image="/src/assets/default-avatar.png"
+            class="mr-2"
+            size="xlarge"
+            shape="circle"
+          ></pv-avatar>
           <div class="info">
-            <p class="info" :style="{ color: userRole === 'RoleAdmin' ? '#064C58' : '#584F06' }">
-              {{ userRole === 'RoleAdmin' ? 'Administrator' : 'Teacher' }}
+            <p
+              class="info"
+              :style="{
+                color: userRole === 'RoleAdmin' ? '#064C58' : '#584F06',
+              }"
+            >
+              {{ userRole === "RoleAdmin" ? "Administrator" : "Teacher" }}
             </p>
             <p class="info">{{ currentUsername }}</p>
           </div>
@@ -16,19 +34,27 @@
         <div class="drawer-content">
           <div v-for="item in items" :key="item.label" class="menu-item">
             <router-link
-                v-if="item.to"
-                :to="item.to"
-                class="nav-link"
-                active-class="router-link-active"
-                exact-active-class="router-link-exact-active"
+              v-if="item.to"
+              :to="item.to"
+              class="nav-link"
+              active-class="router-link-active"
+              exact-active-class="router-link-exact-active"
             >
               <pv-button
-                  :class="[
+                :class="[
                   'p-button-text',
-                  { 'admin-hover-active': userRole === 'RoleAdmin', 'teacher-hover-active': userRole === 'RoleTeacher' },
+                  {
+                    'admin-hover-active': userRole === 'RoleAdmin',
+                    'teacher-hover-active': userRole === 'RoleTeacher',
+                  },
                 ]"
               >
-                <img v-if="item.svg" :src="item.svg" alt="icon" style="width: 20px; height: 20px; margin-right: 8px;" />
+                <img
+                  v-if="item.svg"
+                  :src="item.svg"
+                  alt="icon"
+                  style="width: 20px; height: 20px; margin-right: 8px"
+                />
                 {{ item.label }}
               </pv-button>
             </router-link>
@@ -37,8 +63,15 @@
 
         <div class="footer-section">
           <div class="logout-container">
-            <pv-button class="pv-button log-out logout-hover" @click="showLogoutConfirm($event)">
-              <img src="./assets/Logo%20sidebar.png" alt="Logo" class="logout-icon" />
+            <pv-button
+              class="pv-button log-out logout-hover"
+              @click="showLogoutConfirm($event)"
+            >
+              <img
+                src="./assets/Logo%20sidebar.png"
+                alt="Logo"
+                class="logout-icon"
+              />
               <span>Log out</span>
             </pv-button>
           </div>
@@ -53,8 +86,13 @@
 
     <pv-confirmpopup group="logout-group">
       <template #message="slotProps">
-        <div class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0">
-          <i :class="slotProps.message.icon" class="text-6xl text-primary-500"></i>
+        <div
+          class="flex flex-col items-center w-full gap-4 border-b border-surface-200 dark:border-surface-700 p-4 mb-4 pb-0"
+        >
+          <i
+            :class="slotProps.message.icon"
+            class="text-6xl text-primary-500"
+          ></i>
           <p>{{ slotProps.message.message }}</p>
         </div>
       </template>
@@ -92,16 +130,44 @@ export default {
       if (this.userRole === "RoleAdmin") {
         this.items = [
           { label: "Home", to: "/dashboard-admin/home-admin", svg: HomeIcon },
-          { label: "Classrooms and Shared Spaces", to: "/dashboard-admin/classrooms-shared-spaces", svg: EnvironmentIcon },
-          {label: 'Classroom Changes and Meetings', to: '/dashboard-admin/classroom-changes-meetings', svg: ClassroomIcon},
-          { label: "Personal Data", to: "/dashboard-admin/personal-data", svg: PersonalDIcon },
+          {
+            label: "Classrooms and Shared Spaces",
+            to: "/dashboard-admin/classrooms-shared-spaces",
+            svg: EnvironmentIcon,
+          },
+          {
+            label: "Classroom Changes and Meetings",
+            to: "/dashboard-admin/classroom-changes-meetings",
+            svg: ClassroomIcon,
+          },
+          {
+            label: "Personal Data",
+            to: "/dashboard-admin/personal-data",
+            svg: PersonalDIcon,
+          },
         ];
       } else if (this.userRole === "RoleTeacher") {
         this.items = [
-          { label: "Home", to: "/dashboard-teacher/home-teacher", svg: HomeIcon },
-          { label: "Reservations", to: "/dashboard-teacher/reservations", svg: NotificationIcon},
-          { label: "Breakdown Reports", to: "/dashboard-teacher/breakdown-reports", svg: BreakdownIcon },
-          { label: "Space Availability", to: "/dashboard-teacher/reservations/space-availability", svg: SpaceIcon },
+          {
+            label: "Home",
+            to: "/dashboard-teacher/home-teacher",
+            svg: HomeIcon,
+          },
+          {
+            label: "Reservations",
+            to: "/dashboard-teacher/reservations",
+            svg: NotificationIcon,
+          },
+          {
+            label: "Breakdown Reports",
+            to: "/dashboard-teacher/breakdown-reports",
+            svg: BreakdownIcon,
+          },
+          {
+            label: "Space Availability",
+            to: "/dashboard-teacher/reservations/space-availability",
+            svg: SpaceIcon,
+          },
         ];
       } else {
         this.items = [
@@ -129,7 +195,12 @@ export default {
           this.handleLogOut();
         },
         reject: () => {
-          this.$toast.add({ severity: "info", summary: "Cancelled", detail: "Logout cancelled", life: 3000 });
+          this.$toast.add({
+            severity: "info",
+            summary: "Cancelled",
+            detail: "Logout cancelled",
+            life: 3000,
+          });
         },
       });
     },
@@ -150,27 +221,30 @@ export default {
 </script>
 
 <style scoped>
-
 .admin-sidenav {
-  background: linear-gradient(160deg,
-  rgba(255, 231, 120, 1) 0%,
-  rgba(255, 255, 255, 1) 24%,
-  rgba(246, 246, 246, 1) 34%,
-  rgba(255, 255, 255, 1) 52%,
-  rgba(255, 255, 255, 1) 71%,
-  rgba(255, 255, 255, 1) 85%,
-  rgba(147, 227, 241, 1) 100%);
+  background: linear-gradient(
+    160deg,
+    rgba(255, 231, 120, 1) 0%,
+    rgba(255, 255, 255, 1) 24%,
+    rgba(246, 246, 246, 1) 34%,
+    rgba(255, 255, 255, 1) 52%,
+    rgba(255, 255, 255, 1) 71%,
+    rgba(255, 255, 255, 1) 85%,
+    rgba(147, 227, 241, 1) 100%
+  );
 }
 
 .teacher-sidenav {
-  background: linear-gradient(160deg,
-  rgba(147, 227, 241, 1) 0%,
-  rgba(255, 255, 255, 1) 24%,
-  rgba(246, 246, 246, 1) 34%,
-  rgba(255, 255, 255, 1) 52%,
-  rgba(255, 255, 255, 1) 71%,
-  rgba(255, 255, 255, 1) 85%,
-  rgba(255, 231, 120, 1) 100%);
+  background: linear-gradient(
+    160deg,
+    rgba(147, 227, 241, 1) 0%,
+    rgba(255, 255, 255, 1) 24%,
+    rgba(246, 246, 246, 1) 34%,
+    rgba(255, 255, 255, 1) 52%,
+    rgba(255, 255, 255, 1) 71%,
+    rgba(255, 255, 255, 1) 85%,
+    rgba(255, 231, 120, 1) 100%
+  );
 }
 
 .user-info {
@@ -186,7 +260,7 @@ export default {
   font-weight: 550;
 }
 
-.info{
+.info {
   margin: auto 0;
 }
 

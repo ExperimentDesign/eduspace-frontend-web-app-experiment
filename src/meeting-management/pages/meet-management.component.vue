@@ -2,16 +2,16 @@
 import { Meet } from "../model/meet.entity.js";
 import MeetCreateAndEditDialog from "../components/meet-create-and-edit.component.vue";
 import { MeetService } from "../services/meet.service.js";
-import {ClassroomService} from "../../shared/services/classroom.service.js";
+import { ClassroomService } from "../../shared/services/classroom.service.js";
 import { AdministratorsService } from "../services/administrators.service.js";
-import MeetingCard from '../components/meeting-card.vue';
+import MeetingCard from "../components/meeting-card.vue";
 
 export default {
   name: "meet-management",
   components: { MeetCreateAndEditDialog, MeetingCard },
   data() {
     return {
-      title: { singular: 'Meet', plural: 'Meetings' },
+      title: { singular: "Meet", plural: "Meetings" },
       meetings: [],
       meet: new Meet({}),
       selectedMeetings: [],
@@ -21,47 +21,62 @@ export default {
       createAndEditDialogIsVisible: false,
       isEdit: false,
       submitted: false,
-    }
+    };
   },
   methods: {
     notifySuccessfulAction(message) {
-      this.$toast.add({ severity: 'success', summary: 'Success', detail: message, life: 3000 });
+      this.$toast.add({
+        severity: "success",
+        summary: "Success",
+        detail: message,
+        life: 3000,
+      });
     },
     notifyErrorAction(message) {
-      this.$toast.add({ severity: 'error', summary: 'Error', detail: message, life: 3000 });
+      this.$toast.add({
+        severity: "error",
+        summary: "Error",
+        detail: message,
+        life: 3000,
+      });
     },
 
     async loadMeetings() {
       try {
-        const [meetingsResponse, classroomsResponse, administratorsResponse] = await Promise.all([
-          this.meetService.getAll(),
-          this.classroomsService.getAll(),
-          this.administratorsService.getAllAdministrators()
-        ]);
+        const [meetingsResponse, classroomsResponse, administratorsResponse] =
+          await Promise.all([
+            this.meetService.getAll(),
+            this.classroomsService.getAll(),
+            this.administratorsService.getAllAdministrators(),
+          ]);
 
         const meetingsData = meetingsResponse.data;
         const allClassrooms = classroomsResponse.data;
         const allAdministrators = administratorsResponse.data;
 
-        this.meetings = meetingsData.map(meetData => {
-          const classroom = allClassrooms.find(c => c.id === meetData.classroomId?.classroomIdentifier);
-          const administrator = allAdministrators.find(a => a.id === meetData.administratorId?.administratorIdentifier);
+        this.meetings = meetingsData.map((meetData) => {
+          const classroom = allClassrooms.find(
+            (c) => c.id == meetData.classroomId?.classroomIdentifier
+          );
+          const administrator = allAdministrators.find(
+            (a) => a.id == meetData.administratorId?.administratorIdentifier
+          );
 
           return new Meet({
             id: meetData.meetingId,
             title: meetData.title,
             description: meetData.description,
-            day: meetData.date,
+            date: meetData.date,
             start: meetData.start,
             end: meetData.end,
             classroom: classroom,
             administrator: administrator,
-            teachers: meetData.teachers || []
+            teachers: meetData.teachers || [],
           });
         });
       } catch (error) {
         console.error("Error loading and enriching meetings:", error);
-        this.notifyErrorAction('Could not load meetings data.');
+        this.notifyErrorAction("Could not load meetings data.");
       }
     },
 
@@ -78,13 +93,16 @@ export default {
       this.createAndEditDialogIsVisible = true;
     },
     onDeleteItem(item) {
-      this.meetService.delete(item.id).then(() => {
-        this.meetings = this.meetings.filter(m => m.id !== item.id);
-        this.notifySuccessfulAction('Meet Deleted');
-      }).catch(error => {
-        console.error("Error deleting meet:", error);
-        this.notifyErrorAction('Could not delete meet.');
-      });
+      this.meetService
+        .delete(item.id)
+        .then(() => {
+          this.meetings = this.meetings.filter((m) => m.id !== item.id);
+          this.notifySuccessfulAction("Meet Deleted");
+        })
+        .catch((error) => {
+          console.error("Error deleting meet:", error);
+          this.notifyErrorAction("Could not delete meet.");
+        });
     },
     onCancelRequested() {
       this.createAndEditDialogIsVisible = false;
@@ -99,25 +117,27 @@ export default {
     },
     async createMeet(payload) {
       try {
-
         const createResponse = await this.meetService.create(
-            payload.administratorId,
-            payload.classroomId,
-            payload.meetData
+          payload.administratorId,
+          payload.classroomId,
+          payload.meetData
         );
         const newMeeting = createResponse.data;
 
         if (payload.teacherIds && payload.teacherIds.length > 0) {
-          const addTeachersPromises = payload.teacherIds.map(teacherId =>
-              this.meetService.addTeacherToMeeting(newMeeting.meetingId, teacherId)
+          const addTeachersPromises = payload.teacherIds.map((teacherId) =>
+            this.meetService.addTeacherToMeeting(
+              newMeeting.meetingId,
+              teacherId
+            )
           );
           await Promise.all(addTeachersPromises);
         }
         await this.loadMeetings();
-        this.notifySuccessfulAction('Meet Created Successfully');
+        this.notifySuccessfulAction("Meet Created Successfully");
       } catch (error) {
         console.error("Error :", error);
-        this.notifyErrorAction('An error occurred while creating the meet.');
+        this.notifyErrorAction("An error occurred while creating the meet.");
       } finally {
         this.createAndEditDialogIsVisible = false;
       }
@@ -127,18 +147,23 @@ export default {
         payload.meetData.administratorId = this.meet.administrator?.id;
         payload.meetData.classroomId = this.meet.classroom?.id;
 
-        await this.meetService.update(this.meet.id, payload.meetData);
+        await this.meetService.update(
+          payload.meetData.meetingId,
+          payload.meetData
+        );
         await this.loadMeetings();
-        this.notifySuccessfulAction('Meet Updated Successfully');
+        this.notifySuccessfulAction("Meet Updated Successfully");
       } catch (error) {
         console.error("Error updating meet:", error);
-        this.notifyErrorAction('An error occurred while updating the meet.');
+        this.notifyErrorAction("An error occurred while updating the meet.");
       } finally {
         this.createAndEditDialogIsVisible = false;
       }
     },
     onViewItem(meeting) {
-      this.notifySuccessfulAction(`Viewing meeting: ${meeting.title || meeting.id}`);
+      this.notifySuccessfulAction(
+        `Viewing meeting: ${meeting.title || meeting.id}`
+      );
     },
   },
   created() {
@@ -146,8 +171,8 @@ export default {
     this.classroomsService = new ClassroomService();
     this.administratorsService = new AdministratorsService();
     this.loadMeetings();
-  }
-}
+  },
+};
 </script>
 
 <template>
@@ -165,9 +190,18 @@ export default {
     </div>
 
     <div class="meetings-list">
-      <button class="p-button p-button-success" @click="onNewItem">Nuevo Meeting</button>
+      <button class="p-button p-button-success" @click="onNewItem">
+        Nuevo Meeting
+      </button>
       <div v-if="meetings.length" class="cards">
-        <MeetingCard v-for="meeting in meetings" :key="meeting.id" :meeting="meeting" @view="onViewItem" @edit="onEditItem" @delete="onDeleteItem" />
+        <MeetingCard
+          v-for="meeting in meetings"
+          :key="meeting.id"
+          :meeting="meeting"
+          @view="onViewItem"
+          @edit="onEditItem"
+          @delete="onDeleteItem"
+        />
       </div>
       <div v-else>
         <p>No hay reuniones programadas.</p>
@@ -175,12 +209,12 @@ export default {
     </div>
 
     <meet-create-and-edit-dialog
-        :item="meet"
-        :visible="createAndEditDialogIsVisible"
-        :edit="isEdit"
-        @update:visible="value => createAndEditDialogIsVisible = value"
-        @cancel-requested="onCancelRequested"
-        @save-requested="onSaveRequested($event)"
+      :item="meet"
+      :visible="createAndEditDialogIsVisible"
+      :edit="isEdit"
+      @update:visible="(value) => (createAndEditDialogIsVisible = value)"
+      @cancel-requested="onCancelRequested"
+      @save-requested="onSaveRequested($event)"
     />
 
     <pv-toast />
