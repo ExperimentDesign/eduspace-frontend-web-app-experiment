@@ -117,6 +117,8 @@ export default {
     return {
       drawer: false,
       items: [],
+      DefaultAvatar,
+      LogoSidebar,
     };
   },
   computed: {
