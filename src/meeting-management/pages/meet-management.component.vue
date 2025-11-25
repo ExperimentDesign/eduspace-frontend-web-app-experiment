@@ -76,7 +76,8 @@ export default {
         });
       } catch (error) {
         console.error("Error loading and enriching meetings:", error);
-        this.notifyErrorAction("Could not load meetings data.");
+        const errorMessage = error.userMessage || "Could not load meetings data.";
+        this.notifyErrorAction(errorMessage);
       }
     },
 
@@ -101,7 +102,8 @@ export default {
         })
         .catch((error) => {
           console.error("Error deleting meet:", error);
-          this.notifyErrorAction("Could not delete meet.");
+          const errorMessage = error.userMessage || "Could not delete meet.";
+          this.notifyErrorAction(errorMessage);
         });
     },
     onCancelRequested() {
@@ -135,11 +137,11 @@ export default {
         }
         await this.loadMeetings();
         this.notifySuccessfulAction("Meet Created Successfully");
-      } catch (error) {
-        console.error("Error :", error);
-        this.notifyErrorAction("An error occurred while creating the meet.");
-      } finally {
         this.createAndEditDialogIsVisible = false;
+      } catch (error) {
+        console.error("Error creating meet:", error);
+        const errorMessage = error.userMessage || "An error occurred while creating the meet.";
+        this.notifyErrorAction(errorMessage);
       }
     },
     async updateMeet(payload) {
@@ -153,11 +155,11 @@ export default {
         );
         await this.loadMeetings();
         this.notifySuccessfulAction("Meet Updated Successfully");
+        this.createAndEditDialogIsVisible = false;
       } catch (error) {
         console.error("Error updating meet:", error);
-        this.notifyErrorAction("An error occurred while updating the meet.");
-      } finally {
-        this.createAndEditDialogIsVisible = false;
+        const errorMessage = error.userMessage || "An error occurred while updating the meet.";
+        this.notifyErrorAction(errorMessage);
       }
     },
     onViewItem(meeting) {

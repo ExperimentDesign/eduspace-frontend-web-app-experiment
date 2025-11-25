@@ -3,6 +3,7 @@ import CreateAndEdit from "../../shared/components/create-and-edit.component.vue
 import { TeacherService } from "../services/teachers.service.js";
 import { mapGetters } from "vuex";
 import { ClassroomService } from "../../shared/services/classroom.service.js";
+import { toDateOnlyString, toTimeOnlyString } from "../../shared/utils/date-utils.js";
 
 export default {
   name: "meet-create-and-edit-dialog",
@@ -142,19 +143,6 @@ export default {
         this.selectedTeachersError = null;
       }
     },
-    formatDate(date) {
-      if (!date) return null;
-      const d = new Date(date);
-      return d.toISOString().split("T")[0];
-    },
-    formatTime(time) {
-      if (!time) return null;
-      const d = new Date(time);
-      const hours = String(d.getHours()).padStart(2, "0");
-      const minutes = String(d.getMinutes()).padStart(2, "0");
-      const seconds = String(d.getSeconds()).padStart(2, "0");
-      return `${hours}:${minutes}:${seconds}`;
-    },
     onCancelRequested() {
       this.$emit("update:visible", false);
     },
@@ -181,9 +169,9 @@ export default {
         meetData: {
           title: this.localItem.title,
           description: this.localItem.description || "",
-          date: this.formatDate(this.localItem.date),
-          start: this.formatTime(this.localItem.start),
-          end: this.formatTime(this.localItem.end),
+          date: toDateOnlyString(this.localItem.date),
+          start: toTimeOnlyString(this.localItem.start),
+          end: toTimeOnlyString(this.localItem.end),
         },
         teacherIds: this.selectedTeachers,
       };

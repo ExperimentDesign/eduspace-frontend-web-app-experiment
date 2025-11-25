@@ -31,7 +31,6 @@ http.interceptors.request.use(
 http.interceptors.response.use(
     (response) => response,
     (error) => {
-        // Error de red (sin respuesta del servidor)
         if (!error.response) {
             console.error('Network error:', error);
             const networkError = new Error('Error de red. Verifica tu conexión a internet.');
@@ -40,54 +39,64 @@ http.interceptors.response.use(
         }
 
         const { status, data } = error.response;
-        let errorMessage = data?.message || 'Error desconocido';
+        let userMessage = 'Error desconocido';
+
+        if (data) {
+            if (data.detail) {
+                userMessage = data.detail;
+            }
+            else if (data.errors) {
+                const errors = Object.values(data.errors).flat();
+                userMessage = errors.join(', ');
+            }
+            else if (data.title) {
+                userMessage = data.title;
+            }
+            else if (data.message) {
+                userMessage = data.message;
+            }
+        }
 
         switch (status) {
             case 400:
-                console.error('Bad Request (400):', data);
-                errorMessage = data?.message || 'Datos inválidos. Verifica la información enviada.';
+                console.warn('Bad Request:', userMessage);
                 break;
 
             case 401:
-                console.error('Unauthorized (401):', data);
-                errorMessage = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
-
-                // Limpiar sesión y redirigir al login
+                console.error('Unauthorized');
                 store.dispatch('user/signOut');
-
-                // Solo redirigir si no estamos ya en login
                 if (router.currentRoute.value.name !== 'login') {
                     router.push('/login');
                 }
+                userMessage = 'Sesión expirada. Por favor, inicia sesión nuevamente.';
                 break;
 
             case 403:
-                console.error('Forbidden (403):', data);
-                errorMessage = 'No tienes permisos para realizar esta acción.';
+                console.error('Forbidden:', userMessage);
+                userMessage = userMessage || 'No tienes permisos para realizar esta acción.';
                 break;
 
             case 404:
-                console.error('Not Found (404):', data);
-                errorMessage = data?.message || 'Recurso no encontrado.';
+                console.error('Not Found:', userMessage);
+                userMessage = userMessage || 'Recurso no encontrado.';
                 break;
 
             case 409:
-                console.error('Conflict (409):', data);
-                errorMessage = data?.message || 'Conflicto: El recurso ya existe.';
+                console.error('Conflict:', userMessage);
+                userMessage = userMessage || 'Conflicto: El recurso ya existe.';
                 break;
 
             case 500:
-                console.error('Server Error (500):', data);
-                errorMessage = 'Error del servidor. Por favor, intenta más tarde.';
+                console.error('Server Error:', userMessage);
+                userMessage = 'Error del servidor. Por favor, intenta más tarde.';
                 break;
 
             default:
                 console.error(`HTTP Error (${status}):`, data);
-                errorMessage = data?.message || `Error ${status}: ${error.message}`;
+                userMessage = userMessage || `Error ${status}: ${error.message}`;
         }
 
-        // Agregar mensaje de error user-friendly al objeto error
-        error.userMessage = errorMessage;
+        error.userMessage = userMessage;
 
         return Promise.reject(error);
     }
