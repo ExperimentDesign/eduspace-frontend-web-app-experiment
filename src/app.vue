@@ -13,7 +13,7 @@
       >
         <div class="user-info">
           <pv-avatar
-            image="/src/assets/default-avatar.png"
+            :image="DefaultAvatar"
             class="mr-2"
             size="xlarge"
             shape="circle"
@@ -68,7 +68,7 @@
               @click="showLogoutConfirm($event)"
             >
               <img
-                src="./assets/Logo%20sidebar.png"
+                :src="LogoSidebar"
                 alt="Logo"
                 class="logout-icon"
               />
@@ -102,13 +102,15 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import HomeIcon from "/src/assets/admin/Home.svg";
-import ClassroomIcon from "/src/assets/admin/Clasroom.svg";
-import EnvironmentIcon from "/src/assets/admin/Environment.svg";
-import PersonalDIcon from "/src/assets/admin/Personal_Data.svg";
-import BreakdownIcon from "/src/assets/teacher/Breakdown_Reports.svg";
-import NotificationIcon from "/src/assets/teacher/Notification.svg";
-import SpaceIcon from "/src/assets/teacher/Space_Availability.svg";
+import HomeIcon from "./assets/admin/Home.svg";
+import ClassroomIcon from "./assets/admin/Clasroom.svg";
+import EnvironmentIcon from "./assets/admin/Environment.svg";
+import PersonalDIcon from "./assets/admin/Personal_Data.svg";
+import BreakdownIcon from "./assets/teacher/Breakdown_Reports.svg";
+import NotificationIcon from "./assets/teacher/Notification.svg";
+import SpaceIcon from "./assets/teacher/Space_Availability.svg";
+import DefaultAvatar from "./assets/default-avatar.png";
+import LogoSidebar from "./assets/Logo sidebar.png";
 export default {
   name: "app",
   data() {
