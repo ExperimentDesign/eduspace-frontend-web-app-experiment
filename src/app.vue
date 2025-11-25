@@ -106,9 +106,9 @@ import HomeIcon from "./assets/admin/Home.svg";
 import ClassroomIcon from "./assets/admin/Clasroom.svg";
 import EnvironmentIcon from "./assets/admin/Environment.svg";
 import PersonalDIcon from "./assets/admin/Personal_Data.svg";
+import PersonalManagementIcon from "./assets/admin/Personal_Management.svg";
 import BreakdownIcon from "./assets/teacher/Breakdown_Reports.svg";
 import NotificationIcon from "./assets/teacher/Notification.svg";
-import SpaceIcon from "./assets/teacher/Space_Availability.svg";
 import DefaultAvatar from "./assets/default-avatar.png";
 import LogoSidebar from "./assets/Logo sidebar.png";
 export default {
@@ -145,7 +145,12 @@ export default {
             svg: ClassroomIcon,
           },
           {
-            label: "Personal Data",
+            label: "Teachers Management",
+            to: "/dashboard-admin/teachers",
+            svg: PersonalManagementIcon,
+          },
+          {
+            label: "My Profile",
             to: "/dashboard-admin/personal-data",
             svg: PersonalDIcon,
           },
@@ -166,11 +171,6 @@ export default {
             label: "Breakdown Reports",
             to: "/dashboard-teacher/breakdown-reports",
             svg: BreakdownIcon,
-          },
-          {
-            label: "Space Availability",
-            to: "/dashboard-teacher/reservations/space-availability",
-            svg: SpaceIcon,
           },
         ];
       } else {

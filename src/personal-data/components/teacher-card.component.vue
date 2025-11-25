@@ -1,88 +1,112 @@
 <template>
-  <pv-card :class="['teacher-card', { compact: compact }]">
-    <template #title>
-      <div class="card-title">
-        <i class="pi pi-user"></i>
-        <span>{{ fullName }}</span>
+  <div v-if="compact" class="modern-card compact-mode">
+    <div class="card-header">
+      <pv-avatar
+        :label="initials"
+        size="large"
+        shape="circle"
+        class="custom-avatar"
+      />
+      <div class="header-info">
+        <h3 class="teacher-name">{{ fullName }}</h3>
+        <span class="teacher-role">{{ maskedEmail }}</span>
       </div>
-    </template>
-    <template #content>
-      <!-- Compact summary similar to MeetingCard compact -->
-      <div v-if="compact" class="teacher-compact">
-        <div class="compact-left">
-          <pv-avatar
-            :label="initials"
-            size="large"
-            style="background-color: #3b82f6; color: white"
-          />
+    </div>
+    <div class="compact-footer">
+      <span class="compact-phone">{{ formattedPhone }}</span>
+    </div>
+  </div>
+
+  <div v-else class="modern-card">
+    <div class="card-header">
+      <div class="avatar-container">
+        <pv-avatar
+          :label="initials"
+          size="large"
+          shape="circle"
+          class="custom-avatar"
+        />
+      </div>
+      <div class="header-info">
+        <h3 class="teacher-name">{{ fullName }}</h3>
+        <span class="teacher-role">Teacher</span>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <div class="info-item">
+        <div class="icon-box blue">
+          <i class="pi pi-envelope"></i>
         </div>
-        <div class="compact-center">
-          <div class="compact-name">{{ fullName }}</div>
-          <div class="compact-email">{{ maskedEmail }}</div>
-        </div>
-        <div class="compact-right">
-          <div class="compact-phone">{{ formattedPhone }}</div>
+        <div class="info-text">
+          <span class="label">Email</span>
+          <span class="value" :title="teacher.email">{{ maskedEmail }}</span>
         </div>
       </div>
 
-      <!-- Full detailed view (unchanged) -->
-      <div v-else class="teacher-info">
-        <div class="info-row">
-          <i class="pi pi-envelope"></i>
-          <div class="info-content">
-            <span class="info-label">Email:</span>
-            <span class="info-value">{{ maskedEmail }}</span>
+      <div class="info-grid">
+        <div class="info-item">
+          <div class="icon-box purple">
+            <i class="pi pi-id-card"></i>
+          </div>
+          <div class="info-text">
+            <span class="label">DNI</span>
+            <span class="value">{{ teacher.dni }}</span>
           </div>
         </div>
-        <div class="info-row">
-          <i class="pi pi-id-card"></i>
-          <div class="info-content">
-            <span class="info-label">DNI:</span>
-            <span class="info-value">{{ teacher.dni }}</span>
+
+        <div class="info-item">
+          <div class="icon-box green">
+            <i class="pi pi-phone"></i>
           </div>
-        </div>
-        <div class="info-row">
-          <i class="pi pi-phone"></i>
-          <div class="info-content">
-            <span class="info-label">Phone:</span>
-            <span class="info-value">{{ formattedPhone }}</span>
-          </div>
-        </div>
-        <div class="info-row" v-if="teacher.address">
-          <i class="pi pi-map-marker"></i>
-          <div class="info-content">
-            <span class="info-label">Address:</span>
-            <span class="info-value">{{ teacher.address }}</span>
+          <div class="info-text">
+            <span class="label">Phone</span>
+            <span class="value">{{ formattedPhone }}</span>
           </div>
         </div>
       </div>
-    </template>
-    <template #footer v-if="!compact">
-      <div class="card-actions">
-        <pv-button
-          icon="pi pi-eye"
-          label="View Details"
-          severity="info"
-          size="small"
-          @click="$emit('view', teacher.id)"
-        />
+
+      <div class="info-item" v-if="teacher.address">
+        <div class="icon-box orange">
+          <i class="pi pi-map-marker"></i>
+        </div>
+        <div class="info-text">
+          <span class="label">Address</span>
+          <span class="value">{{ teacher.address }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-footer">
+      <pv-button
+        icon="pi pi-eye"
+        text
+        rounded
+        severity="secondary"
+        v-tooltip.top="'View Details'"
+        @click="$emit('view', teacher.id)"
+      />
+
+      <div class="right-actions">
         <pv-button
           icon="pi pi-pencil"
           label="Edit"
-          severity="warning"
+          outlined
           size="small"
+          severity="info"
+          class="edit-btn"
           @click="$emit('edit', teacher)"
         />
         <pv-button
           icon="pi pi-trash"
-          label="Delete"
+          text
+          rounded
           severity="danger"
-          size="small"
           @click="$emit('delete', teacher.id)"
         />
       </div>
-    </template>
-  </pv-card>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -133,113 +157,192 @@ export default {
 </script>
 
 <style scoped>
-.teacher-card {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  transition: transform 0.2s, box-shadow 0.2s;
-  height: 100%;
+.modern-card {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #f1f5f9;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   display: flex;
   flex-direction: column;
+  height: 100%;
 }
 
-.card-title {
+.modern-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.08);
+  border-color: #e2e8f0;
+}
+
+.card-header {
+  padding: 1.25rem;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: #2c3e50;
-}
-
-.card-title i {
-  color: #3b82f6;
-  font-size: 1.5rem;
-}
-
-.teacher-info {
-  display: flex;
-  flex-direction: column;
   gap: 1rem;
+  border-bottom: 1px solid #f8fafc;
+  background: linear-gradient(to right, #ffffff, #f8fafc);
 }
 
-.info-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.5rem;
-  border-radius: 6px;
-  background: #f8f9fa;
-  transition: background 0.2s;
-}
-
-.info-row:hover {
-  background: #e9ecef;
-}
-
-.info-row > i {
-  color: #6c757d;
+.custom-avatar {
+  background-color: #3b82f6;
+  color: white;
+  font-weight: 600;
   font-size: 1.1rem;
-  margin-top: 0.2rem;
-  min-width: 20px;
 }
 
-.info-content {
+.header-info {
+  flex: 1;
+  overflow: hidden;
+}
+
+.teacher-name {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.teacher-role {
+  font-size: 0.75rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.card-body {
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 1.25rem;
   flex: 1;
 }
 
-.info-label {
-  font-size: 0.75rem;
-  color: #6c757d;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
 }
 
-.info-value {
-  font-size: 0.95rem;
-  color: #2c3e50;
-  font-weight: 500;
-  word-break: break-word;
-}
-
-.card-actions {
+.info-item {
   display: flex;
-  justify-content: center;
+  align-items: flex-start;
+  gap: 0.75rem;
 }
 
-/* Compact view styles */
-.teacher-compact {
+.icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 4px;
+  justify-content: center;
+  flex-shrink: 0;
+  font-size: 1rem;
 }
-.compact-left {
-  flex: 0 0 auto;
+
+.icon-box.blue {
+  background: #eff6ff;
+  color: #3b82f6;
 }
-.compact-center {
-  flex: 1 1 auto;
+.icon-box.purple {
+  background: #f3e8ff;
+  color: #a855f7;
 }
-.compact-name {
+.icon-box.green {
+  background: #f0fdf4;
+  color: #22c55e;
+}
+.icon-box.orange {
+  background: #fff7ed;
+  color: #f97316;
+}
+
+.info-text {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.value {
+  font-size: 0.9rem;
+  color: #334155;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-footer {
+  padding: 1rem 1.25rem;
+  background-color: #ffffff;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.right-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.edit-btn {
   font-weight: 600;
 }
-.compact-email {
-  font-size: 0.85rem;
-  color: #6c757d;
+
+.modern-card.compact-mode {
+  height: auto;
 }
-.compact-right {
-  flex: 0 0 auto;
-  text-align: right;
-  font-size: 0.9rem;
-  color: #2c3e50;
+
+.modern-card.compact-mode .card-header {
+  padding: 0.875rem 1rem;
+  border-bottom: none;
+}
+
+.modern-card.compact-mode .teacher-role {
+  text-transform: none;
+  font-size: 0.85rem;
+}
+
+.compact-footer {
+  padding: 0.5rem 1rem;
+  border-top: 1px solid #f1f5f9;
+  background-color: #fafbfc;
+}
+
+.compact-phone {
+  font-size: 0.85rem;
+  color: #64748b;
+  font-weight: 500;
 }
 
 @media (max-width: 768px) {
-  .card-actions button {
-    width: 100%;
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .right-actions {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .card-footer {
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: stretch;
   }
 }
 </style>

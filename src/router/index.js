@@ -18,6 +18,7 @@ import ReportsManagementComponent from "../breakdown-report-management/pages/rep
 // Componentes del Dashboard de Administrador
 import HomeAdminComponent from "../dashboard-admin/pages/home-admin.component.vue";
 import PersonalDataComponent from "../dashboard-admin/pages/personal-data.component.vue";
+import TeachersManagementComponent from "../dashboard-admin/pages/teachers-management.component.vue";
 import ClassroomChangesMeetingsComponent from "../dashboard-admin/pages/classroom-changes-meetings.component.vue";
 import ClassroomsSharedSpacesComponent from "../dashboard-admin/pages/classrooms-shared-spaces.component.vue";
 import AddClassroomsComponent from "../classroom-space-resource-management/pages/classrooms/add-classrooms.component.vue";
@@ -49,7 +50,8 @@ const router = createRouter({
         // --- Rutas del Administrador ---
         { path: '/dashboard-admin', redirect: '/dashboard-admin/home-admin' },
         { path: '/dashboard-admin/home-admin', name: 'home-admin', component: HomeAdminComponent, meta: { title: 'Home Admin' } },
-        { path: '/dashboard-admin/personal-data', name: 'personal-data', component: PersonalDataComponent, meta: { title: 'Personal Data' } },
+        { path: '/dashboard-admin/personal-data', name: 'personal-data', component: PersonalDataComponent, meta: { title: 'My Profile' } },
+        { path: '/dashboard-admin/teachers', name: 'teachers-management', component: TeachersManagementComponent, meta: { title: 'Teachers Management' } },
         { path: '/dashboard-admin/classroom-changes-meetings', name: 'classroom-changes-meetings', component: ClassroomChangesMeetingsComponent, meta: { title: 'Classroom Changes & Meetings' } },
         { path: '/dashboard-admin/classroom-changes-meetings/meeting-management', name: 'meet-management', component: MeetManagementComponent, meta: { title: 'Meeting Management' } },
         { path: '/dashboard-admin/classrooms-shared-spaces', name: 'classrooms-shared-spaces', component: ClassroomsSharedSpacesComponent, meta: { title: 'Classrooms & Shared Spaces' } },

@@ -53,6 +53,7 @@ import Password from "primevue/password";
 import Dropdown from "primevue/dropdown";
 import Avatar from "primevue/avatar";
 import ConfirmPopup from "primevue/confirmpopup";
+import ProgressSpinner from "primevue/progressspinner";
 
 // Create app instance
 
@@ -117,6 +118,7 @@ app.component('pv-button', Button)
     .component('pv-avatar', Avatar)
     .component('pv-confirmpopup', ConfirmPopup)
     .component('pv-input', InputText)
+    .component('pv-progress-spinner', ProgressSpinner)
 
 
 

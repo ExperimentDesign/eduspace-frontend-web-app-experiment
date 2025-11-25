@@ -146,15 +146,34 @@ export default {
     },
     async updateMeet(payload) {
       try {
-        payload.meetData.administratorId = this.meet.administrator?.id;
-        payload.meetData.classroomId = this.meet.classroom?.id;
+        const meetingId = payload.meetData.meetingId;
 
-        await this.meetService.update(
-          payload.meetData.meetingId,
-          payload.meetData
-        );
+        payload.meetData.administratorId = payload.meetData.administratorId || this.meet.administrator?.id;
+        payload.meetData.classroomId = payload.meetData.classroomId || this.meet.classroom?.id;
+
+        await this.meetService.update(meetingId, payload.meetData);
+
+        const originalTeacherIds = this.meet.teachers.map(t => t.id || t);
+        const newTeacherIds = payload.teacherIds || [];
+
+        const teachersToAdd = newTeacherIds.filter(id => !originalTeacherIds.includes(id));
+
+        const teachersToRemove = originalTeacherIds.filter(id => !newTeacherIds.includes(id));
+
+        const updatePromises = [];
+
+        teachersToAdd.forEach(teacherId => {
+          updatePromises.push(this.meetService.addTeacherToMeeting(meetingId, teacherId));
+        });
+
+        teachersToRemove.forEach(teacherId => {
+          updatePromises.push(this.meetService.removeTeacherFromMeeting(meetingId, teacherId));
+        });
+
+        await Promise.all(updatePromises);
+
         await this.loadMeetings();
-        this.notifySuccessfulAction("Meet Updated Successfully");
+        this.notifySuccessfulAction("Meeting and participants updated successfully");
         this.createAndEditDialogIsVisible = false;
       } catch (error) {
         console.error("Error updating meet:", error);
