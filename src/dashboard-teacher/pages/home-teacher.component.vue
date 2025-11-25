@@ -215,6 +215,9 @@ export default {
       const classroomResponse = await http.get(`/classrooms/teachers/${this.userId}`);
       this.classroomReservations = classroomResponse.data;
 
+      const allClassroomsResponse = await this.classroomService.getAll();
+      const allClassrooms = allClassroomsResponse.data;
+
       const [areasResponse, reservationsResponse] = await Promise.all([
         http.get("/shared-area"),
         this.reservationService.getAll()
@@ -235,7 +238,17 @@ export default {
       });
 
       const meetResponse = await http.get(`/teachers/${this.userId}/meetings`);
-      this.meetings = meetResponse.data;
+
+      this.meetings = meetResponse.data.map(meet => {
+        const classroomId = meet.classroomId?.classroomIdentifier || meet.classroomId;
+        const classroomObj = allClassrooms.find(c => c.id === classroomId);
+
+        return {
+          ...meet,
+          classroom: classroomObj ? classroomObj.name : "Unknown Classroom",
+          day: meet.date
+        };
+      });
 
     } catch (error) {
       console.error("Error loading teacher dashboard data:", error);

@@ -63,7 +63,7 @@ export default {
           );
 
           return new Meet({
-            id: meetData.meetingId,
+            meetingId: meetData.meetingId,
             title: meetData.title,
             description: meetData.description,
             date: meetData.date,
