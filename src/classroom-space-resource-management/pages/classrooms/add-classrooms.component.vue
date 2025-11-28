@@ -1,5 +1,5 @@
 <script>
-import { ClassroomService } from "../../../shared/services/classroom.service.js";
+import {ClassroomService} from "../../../shared/services/classroom.service.js";
 import ClassroomCreateAndEdit from "../../components/classrooms/classroom-create-and-edit.component.vue";
 
 export default {
@@ -14,23 +14,30 @@ export default {
       },
       classroomService: new ClassroomService(),
       serverError: null,
+      isSaving: false
     };
   },
   methods: {
     async saveClassroom(classroomData) {
+      this.isSaving = true;
       try {
         const { teacherId, name, description } = classroomData;
 
         if (!teacherId) {
-          alert("A teacher must be selected.");
+          this.$toast.add({
+            severity: 'warn',
+            summary: 'Atención',
+            detail: 'Debes seleccionar un profesor.',
+            life: 3000
+          });
           return;
         }
 
         const payload = { name, description };
 
-        await this.classroomService.createWithTeacher(payload, teacherId);
+        await this.classroomService.create(payload, teacherId);
 
-        alert("Classroom created successfully");
+        this.$toast.add({severity: 'success', summary: 'Éxito', detail: 'Aula creada correctamente', life: 3000});
         this.serverError = null;
         this.$router.push({ name: 'admin-classrooms' });
       } catch (error) {
@@ -98,6 +105,8 @@ export default {
         }
 
         this.serverError = rawMessage;
+      } finally {
+        this.isSaving = false;
       }
     },
     cancel() {
@@ -117,6 +126,7 @@ export default {
       :server-error="serverError"
       @clear-server-error="clearServerError"
       @save="saveClassroom"
+      :loading="isSaving"
       @cancel="cancel"/>
 </template>
 

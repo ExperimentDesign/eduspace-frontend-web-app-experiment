@@ -144,10 +144,10 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import {mapGetters} from "vuex";
 import http from "../../shared/services/http-common.js";
-import { ReservationService } from "../../reservation-management/services/reservation.service.js";
-import { MeetService } from "../../meeting-management/services/meet.service.js";
+import {ReservationService} from "../../reservation-management/services/reservation.service.js";
+import {MeetService} from "../../meeting-management/services/meet.service.js";
 import {ClassroomService} from "../../shared/services/classroom.service.js";
 
 export default {
@@ -181,7 +181,7 @@ export default {
       if (!dateString) return "N/A";
       try {
         const date = new Date(dateString);
-        return date.toLocaleString('en-US', {
+        return date.toLocaleString('es-ES', {
           year: 'numeric',
           month: 'short',
           day: 'numeric',

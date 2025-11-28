@@ -70,7 +70,7 @@
 </template>
 
 <script>
-import { ReportService } from "../services/report.service.js";
+import {ReportService} from "../services/report.service.js";
 
 export default {
   name: "reports-management",
@@ -89,7 +89,10 @@ export default {
       this.loading = true;
       try {
         const response = await this.reportService.getAll();
-        this.reports = response.data || [];
+        this.reports = (response.data || []).map(report => ({
+          ...report,
+          resourceId: report.resourceId?.value || report.resourceId
+        }));
       } catch (error) {
         console.error("Error fetching reports:", error);
         this.$toast.add({ severity: 'error', summary: 'Error', detail: 'Failed to load reports', life: 3000 });

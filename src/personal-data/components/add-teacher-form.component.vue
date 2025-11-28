@@ -34,9 +34,10 @@
             required
             :class="{ 'p-invalid': errors.email }"
             @blur="validateField('email', formData.email)"
+            @input="validateField('email', formData.email)"
           />
-          <small v-if="errors.email" class="error-message">
-            {{ errors.email }}
+          <small class="error-message">
+            {{ errors.email || '&nbsp;' }}
           </small>
         </div>
         <div class="form-group">
@@ -47,12 +48,12 @@
             placeholder="987654321"
             required
             :class="{ 'p-invalid': errors.phone }"
-            @input="formData.phone = formData.phone.replace(/\D/g, '')"
+            @input="formData.phone = formData.phone.replace(/\D/g, ''); validateField('phone', formData.phone)"
             @blur="validateField('phone', formData.phone)"
             maxlength="9"
           />
-          <small v-if="errors.phone" class="error-message">
-            {{ errors.phone }}
+          <small class="error-message">
+            {{ errors.phone || '&nbsp;' }}
           </small>
         </div>
       </div>
@@ -66,12 +67,12 @@
             placeholder="12345678"
             required
             :class="{ 'p-invalid': errors.dni }"
-            @input="formData.dni = formData.dni.replace(/\D/g, '')"
+            @input="formData.dni = formData.dni.replace(/\D/g, ''); validateField('dni', formData.dni)"
             @blur="validateField('dni', formData.dni)"
             maxlength="8"
           />
-          <small v-if="errors.dni" class="error-message">
-            {{ errors.dni }}
+          <small class="error-message">
+            {{ errors.dni || '&nbsp;' }}
           </small>
         </div>
         <div class="form-group">
@@ -123,13 +124,14 @@
         :label="isEdit ? 'Update Teacher' : 'Save Teacher'"
         icon="pi pi-check"
         type="submit"
+        :loading="loading"
       />
     </div>
   </form>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import {mapGetters} from "vuex";
 
 export default {
   name: "add-teacher-form",
@@ -142,6 +144,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    loading: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
@@ -335,7 +341,8 @@ export default {
   font-size: 0.85rem;
   margin-top: 0.25rem;
   display: block;
-  min-height: 1.2em;
+  min-height: 1.3em;
+  opacity: 1;
 }
 
 .form-actions {

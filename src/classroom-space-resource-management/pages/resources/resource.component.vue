@@ -1,5 +1,5 @@
 <script>
-import { ResourceService } from "../../services/resource.service.js";
+import {ResourceService} from "../../services/resource.service.js";
 import {ClassroomService} from "../../../shared/services/classroom.service.js";
 import ResourceCard from "../../components/resources/resource-card.component.vue";
 

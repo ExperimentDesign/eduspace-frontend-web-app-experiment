@@ -1,22 +1,8 @@
-<script>
-export default {
-  name: "breakdown-reports",
-  methods: {
-    goToReport() {
-      this.$router.push({ name: 'teacher-classrooms' });
-    },
-    goToFaultReports() {
-      this.$router.push({ name: 'teacher-reports'});
-    }
-  }
-}
-</script>
-
 <template>
+  <div class="breakdown-reports-container">
+    <h2>Breakdown Reports</h2>
 
-  <h2>Breakdown Reports</h2>
-
-  <div class="p-grid p-align-center p-justify-center">
+    <div class="p-grid p-align-center p-justify-center">
 
     <div class="p-col-12 p-md-6">
       <pv-card class="pv-card">
@@ -44,8 +30,23 @@ export default {
         </template>
       </pv-card>
     </div>
+    </div>
   </div>
 </template>
+
+<script>
+export default {
+  name: "breakdown-reports",
+  methods: {
+    goToReport() {
+      this.$router.push({name: 'teacher-classrooms'});
+    },
+    goToFaultReports() {
+      this.$router.push({name: 'teacher-reports'});
+    }
+  }
+}
+</script>
 
 <style scoped>
 h2 {
@@ -63,11 +64,13 @@ h2 {
   box-shadow: 0 4px 28px rgba(12, 192, 223, 0.28);
   margin-bottom: 2rem;
   padding: 1.5rem;
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .pv-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(12, 192, 223, 0.4) !important;
 }
 
 h3 {

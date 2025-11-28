@@ -1,5 +1,5 @@
 <script>
-import { SharedAreaService } from "../../services/shared-area.service.js";
+import {SharedAreaService} from "../../services/shared-area.service.js";
 import SharedSpaceCreateAndEdit from "../../components/shared-spaces/shared-space-create-and-edit.component.vue";
 
 export default {
@@ -19,11 +19,11 @@ export default {
     async saveSharedSpace(shared_space_data) {
       try {
         await this.sharedAreaService.create(shared_space_data);
-        alert("Shared area created successfully.");
+        this.$toast.add({severity: 'success', summary: 'Éxito', detail: 'Espacio compartido creado.', life: 3000});
         this.$router.push("/dashboard-admin/classrooms-shared-spaces/shared-spaces");
       } catch (error) {
         console.error("Error creating the shared area:", error);
-        alert("Could not create the shared area.");
+        this.$toast.add({severity: 'error', summary: 'Error', detail: 'No se pudo crear el espacio.', life: 3000});
       }
     },
     cancel() {

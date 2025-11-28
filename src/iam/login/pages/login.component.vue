@@ -1,7 +1,7 @@
 <script>
 import LoginForm from '../components/login-form.component.vue';
-import { mapActions, mapState } from 'vuex';
-import { SignInRequest } from "../../model/sign-in.request.js";
+import {mapActions, mapState} from 'vuex';
+import {SignInRequest} from "../../model/sign-in.request.js";
 
 export default {
   name: "LoginPage",
@@ -9,6 +9,7 @@ export default {
   data() {
     return {
       signInRequest: new SignInRequest({}),
+      isLoggingIn: false
     };
   },
   computed: {
@@ -23,6 +24,7 @@ export default {
     ...mapActions("user", ["signIn"]),
 
     async handleLogin({ email, password }) {
+      this.isLoggingIn = true;
       try {
         const userPayload = { username: email, password: password };
         this.signInRequest = new SignInRequest(userPayload);
@@ -37,7 +39,14 @@ export default {
         //   this.$router.push("/dashboard-teacher/home-teacher");
         // }
       } catch {
-        alert("Error during login. Please check your credentials.");
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error de acceso',
+          detail: 'Credenciales incorrectas. Verifica tu correo y contraseña.',
+          life: 3000
+        });
+      } finally {
+        this.isLoggingIn = false;
       }
     },
 
@@ -54,7 +63,7 @@ export default {
   <div class="login-container">
     <!-- Left Side (Login Form) -->
     <div class="left-side">
-      <LoginForm @onLogin="handleLogin" />
+      <LoginForm :loading="isLoggingIn" @onLogin="handleLogin"/>
     </div>
     <!-- Right Side -->
     <div class="right-side">

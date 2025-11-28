@@ -1,3 +1,29 @@
+<template>
+  <div class="classroom-changes-meetings-container">
+    <h2>Meeting Management</h2>
+
+    <div class="p-grid p-align-center p-justify-center">
+      <div class="p-col-12 p-md-6">
+        <pv-card class="pv-card">
+          <template #header>
+            <h3>Meeting Management</h3>
+            <p>
+              The meeting list presents a timeline of upcoming scheduled meetings, along with relevant details about
+              each. Each entry in the list includes the date and time of the meeting, the reserved room, the
+              participants involved, the purpose of the meeting, and any important additional notes, such as materials
+              that need to be brought or special instructions.
+            </p>
+          </template>
+
+          <template #footer>
+            <pv-button class="pv-button" label="Go" @click="goToMeetingManagement"/>
+          </template>
+        </pv-card>
+      </div>
+    </div>
+  </div>
+</template>
+
 <script>
 export default {
   name: "classroom-changes-meetings",
@@ -8,29 +34,6 @@ export default {
   }
 }
 </script>
-
-<template>
-
-  <h2>Classroom Changes and Meetings</h2>
-
-  <div class="p-grid p-align-center p-justify-center">
-
-    <div class="p-col-12 p-md-6">
-      <pv-card class="pv-card">
-        <template #header>
-          <h3>Meeting Management</h3>
-          <p>
-            The meeting list presents a timeline of upcoming scheduled meetings, along with relevant details about each. Each entry in the list includes the date and time of the meeting, the reserved room, the participants involved, the purpose of the meeting, and any important additional notes, such as materials that need to be brought or special instructions.
-          </p>
-        </template>
-
-        <template #footer>
-          <pv-button  class = "pv-button" label="Go" @click="goToMeetingManagement" />
-        </template>
-      </pv-card>
-    </div>
-  </div>
-</template>
 
 <style scoped>
 h2 {
@@ -48,11 +51,13 @@ h2 {
   box-shadow: 0 4px 28px rgba(12, 192, 223, 0.58);
   margin-bottom: 4rem;
   padding: 1.5rem;
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .pv-card:hover {
-  transform: translateY(-10px);
+  transform: translateY(-8px);
+  box-shadow: 0 12px 30px rgba(12, 192, 223, 0.4) !important;
 }
 
 h3 {

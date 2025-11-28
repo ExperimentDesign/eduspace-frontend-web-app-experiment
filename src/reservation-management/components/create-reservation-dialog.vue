@@ -69,6 +69,17 @@ export default {
       } else {
         return `${diffMins}min`;
       }
+    },
+
+    formatDateTime(dateString) {
+      const date = new Date(dateString);
+      return date.toLocaleString('es-ES', {
+        weekday: 'short',
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
     }
   }
 }
@@ -239,7 +250,7 @@ export default {
   padding: 0.75rem;
   border-radius: 8px;
   border: 2px solid #e2e8f0;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .form-input:focus {
@@ -349,7 +360,7 @@ export default {
   padding: 0.625rem 1.25rem;
   border-radius: 8px;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .primary-button {
@@ -394,17 +405,3 @@ export default {
   animation: slideInDown 0.3s ease-out;
 }
 </style>
-
-<script setup>
-// Helper function to format datetime
-const formatDateTime = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleString('es-ES', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-</script>

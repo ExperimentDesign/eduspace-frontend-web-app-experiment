@@ -9,18 +9,10 @@ export default {
       selectedItem: null
     }
   },
-  watch: {
-    selectedItem(newValue) {
-      console.log('selected item:', newValue);
-    }
-  },
   methods: {
     onSharedSpaceSelected(item) {
       if(item) {
-        console.log('enviando evento', item)
         this.$emit('shared-space-selected', item);
-      } else {
-        console.warn("No space selected");
       }
     }
   }
@@ -166,7 +158,7 @@ export default {
   border-radius: 12px;
   border: none;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .space-select :deep(.p-select-label) {
@@ -226,7 +218,7 @@ export default {
   font-weight: 600;
   font-size: 1rem;
   box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   white-space: nowrap;
 }
 

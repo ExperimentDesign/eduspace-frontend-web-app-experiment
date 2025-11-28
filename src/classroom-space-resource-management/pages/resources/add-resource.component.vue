@@ -1,5 +1,5 @@
 <script>
-import { ResourceService } from "../../services/resource.service.js";
+import {ResourceService} from "../../services/resource.service.js";
 import ResourceCreateAndEdit from "../../components/resources/resource-create-and-edit.component.vue";
 
 export default {
@@ -23,7 +23,7 @@ export default {
           kindOfResource: resourceData.kindOfResource
         };
         await this.resourceService.create(resourceData.classroomId, payload);
-        alert("Resource created successfully.");
+        this.$toast.add({severity: 'success', summary: 'Éxito', detail: 'Recurso creado correctamente.', life: 3000});
         this.$router.push("/dashboard-admin/classrooms-shared-spaces/resources");
       } catch (error) {
         console.error("Error creating resource:", error);

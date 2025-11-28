@@ -1,14 +1,14 @@
 <script>
-import { mapGetters } from "vuex";
+import {mapGetters} from "vuex";
 import TeacherCardComponent from "../../personal-data/components/teacher-card.component.vue";
-import { TeacherService } from "../../personal-data/services/teacher.service.js";
+import {TeacherService} from "../../personal-data/services/teacher.service.js";
 import http from "../../shared/services/http-common.js";
 import MeetingCard from "../../meeting-management/components/meeting-card.vue";
 import MeetCreateAndEditDialog from "../../meeting-management/components/meet-create-and-edit.component.vue";
-import { Meet } from "../../meeting-management/model/meet.entity.js";
-import { MeetService } from "../../meeting-management/services/meet.service.js";
-import { ClassroomService } from "../../shared/services/classroom.service.js";
-import { AdministratorsService } from "../../meeting-management/services/administrators.service.js";
+import {Meet} from "../../meeting-management/model/meet.entity.js";
+import {MeetService} from "../../meeting-management/services/meet.service.js";
+import {ClassroomService} from "../../shared/services/classroom.service.js";
+import {AdministratorsService} from "../../meeting-management/services/administrators.service.js";
 
 export default {
   name: "AdminDashboard",
@@ -151,21 +151,11 @@ export default {
 
         this.meetings = mapped.filter((m) => matchesAdmin(m.administrator));
 
-        console.debug(
-          "Loaded meetings total:",
-          mapped.length,
-          "Filtered for admin:",
-          this.meetings.length
-        );
-
         if (
           (!this.meetings || this.meetings.length === 0) &&
           mapped &&
           mapped.length > 0
         ) {
-          console.warn(
-            "No meetings matched the admin filter; falling back to showing all meetings."
-          );
           this.meetings = mapped;
         }
       } catch (error) {

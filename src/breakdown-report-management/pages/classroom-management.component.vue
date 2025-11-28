@@ -10,7 +10,8 @@
       >
         <div class="image-container">
           <img
-              src="https://i0.wp.com/mirincondeaprendizaje.com/wp-content/uploads/2019/08/school-2648668_960_720.jpg?resize=768%2C508&ssl=1"
+              :src="defaultClassroomImage"
+              @error="handleImageError"
               alt="Classroom Image"
               class="classroom-image"
           />
@@ -41,8 +42,8 @@
 </template>
 
 <script>
-import { ClassroomService } from "../../shared/services/classroom.service.js";
-import { mapGetters } from "vuex";
+import {ClassroomService} from "../../shared/services/classroom.service.js";
+import {mapGetters} from "vuex";
 
 export default {
   name: 'ClassroomManagement',
@@ -51,6 +52,8 @@ export default {
       allClassrooms: [],
       classroomService: new ClassroomService(),
       loading: true,
+      defaultClassroomImage: "https://i0.wp.com/mirincondeaprendizaje.com/wp-content/uploads/2019/08/school-2648668_960_720.jpg?resize=768%2C508&ssl=1",
+      fallbackImage: "https://placehold.co/600x400/e2e8f0/1e293b?text=EduSpace+Classroom"
     };
   },
   computed: {
@@ -59,7 +62,7 @@ export default {
     filteredClassrooms() {
       if (!this.userId) return [];
       return this.allClassrooms.filter(
-          classroom => String(classroom.teacherId) !== String(this.userId)
+          classroom => String(classroom.teacherId) === String(this.userId)
       );
     }
   },
@@ -83,6 +86,9 @@ export default {
         name: 'teacher-resource-management',
         params: { classroomId }
       });
+    },
+    handleImageError(event) {
+      event.target.src = this.fallbackImage;
     }
   }
 };
@@ -91,8 +97,9 @@ export default {
 <style scoped>
 .classroom-management {
   padding: 20px;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+  width: 100%;
 }
 
 .centered-title {
@@ -104,9 +111,10 @@ export default {
 
 .classroom-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
   padding: 0.5rem;
+  width: 100%;
 }
 
 .classroom-card {
@@ -133,7 +141,7 @@ export default {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
 }
 
 .classroom-card:hover .classroom-image {
@@ -173,7 +181,7 @@ export default {
   text-transform: uppercase;
   padding: 0.5rem 1rem;
   border-radius: 50px;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 :deep(.view-resources-button:hover) {

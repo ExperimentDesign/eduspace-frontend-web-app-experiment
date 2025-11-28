@@ -1,5 +1,5 @@
 import http from "../../../shared/services/http-common.js";
-import { SignUpResponse } from "../../model/sign-up.response.js";
+import {SignUpResponse} from "../../model/sign-up.response.js";
 
 class RegisterService {
   static async registerAdministrator(signUpRequest) {

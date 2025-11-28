@@ -1,6 +1,9 @@
 <script>
 export default {
   name: "login-form",
+  props: {
+    loading: {type: Boolean, default: false}
+  },
   data() {
     return {
       email: "",
@@ -29,7 +32,7 @@ export default {
         <pv-password v-model="password" placeholder="Password" toggleMask required class="login-input" />
       </div>
       <div class="login-actions">
-        <pv-button type="submit" label="SIGN IN" class="sign-in-button" />
+        <pv-button :loading="loading" class="sign-in-button" label="SIGN IN" type="submit"/>
       </div>
     </form>
   </div>

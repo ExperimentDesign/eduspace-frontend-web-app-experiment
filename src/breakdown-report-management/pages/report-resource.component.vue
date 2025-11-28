@@ -3,15 +3,14 @@
     <h2>Report Resource</h2>
     <form @submit.prevent="submitForm" class="report-form">
       <div class="form-group">
-        <pv-float-label>
-          <pv-input-text
-              id="kind_of_report"
-              v-model="form.kind_of_report"
-              required
-              placeholder=" "
-          />
-          <label for="kind_of_report" class="float-label">Kind of Report</label>
-        </pv-float-label>
+        <label class="fixed-label" for="kind_of_report">Type of Issue</label>
+        <pv-select
+            id="kind_of_report"
+            v-model="form.kind_of_report"
+            :options="reportTypes"
+            class="w-full"
+            placeholder="Select issue type"
+        />
       </div>
 
       <div class="form-group">
@@ -49,8 +48,8 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
-import { ReportService } from "../services/report.service.js";
+import {mapGetters} from 'vuex';
+import {ReportService} from "../services/report.service.js";
 
 export default {
   data() {
@@ -62,6 +61,18 @@ export default {
         createdAt: new Date(),
         status: 'string'
       },
+      reportTypes: [
+        'Hardware Failure',
+        'Software Issue',
+        'Physical Damage',
+        'Malfunction',
+        'Maintenance Required',
+        'Connectivity Problem',
+        'Missing Equipment',
+        'Electrical Issue',
+        'Safety Concern',
+        'Other'
+      ],
       reportService: new ReportService(),
     };
   },
@@ -86,7 +97,12 @@ export default {
         this.$router.push('/dashboard-teacher/breakdown-reports/classrooms');
       } catch (error) {
         console.error("Error al crear el reporte:", error);
-        alert("Error al crear el reporte. Por favor, revisa la consola para más detalles.");
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'No se pudo crear el reporte. Inténtalo de nuevo.',
+          life: 3000
+        });
       }
     },
     formatDate(date) {
@@ -145,21 +161,27 @@ h2::after {
 
 :deep(.p-inputtext),
 :deep(.p-textarea),
-:deep(.p-datepicker) {
+:deep(.p-datepicker),
+:deep(.p-select) {
   width: 100%;
   padding: 14px;
   border: 2px solid #e0e0e0;
   border-radius: 12px;
   font-size: 1.1rem;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   background-color: #fff;
 }
 
 :deep(.p-inputtext:focus),
 :deep(.p-textarea:focus),
-:deep(.p-datepicker:focus) {
+:deep(.p-datepicker:focus),
+:deep(.p-select:focus) {
   border-color: #3498db;
   box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+}
+
+:deep(.p-select .p-select-label) {
+  padding: 0;
 }
 
 .float-label {
@@ -199,7 +221,7 @@ h2::after {
   background: linear-gradient(90deg, #3498db, #2ecc71);
   border: none;
   color: #fff;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 

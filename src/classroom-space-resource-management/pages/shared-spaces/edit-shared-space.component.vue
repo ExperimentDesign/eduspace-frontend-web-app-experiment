@@ -1,5 +1,5 @@
 <script>
-import { SharedAreaService } from "../../services/shared-area.service.js";
+import {SharedAreaService} from "../../services/shared-area.service.js";
 import SharedSpaceCreateAndEdit from "../../components/shared-spaces/shared-space-create-and-edit.component.vue";
 
 export default {

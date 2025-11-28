@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import {createRouter, createWebHistory} from 'vue-router';
 import store from "../store/index.js";
 
 // Componentes de Autenticación y Públicos
@@ -21,12 +21,17 @@ import PersonalDataComponent from "../dashboard-admin/pages/personal-data.compon
 import TeachersManagementComponent from "../dashboard-admin/pages/teachers-management.component.vue";
 import ClassroomChangesMeetingsComponent from "../dashboard-admin/pages/classroom-changes-meetings.component.vue";
 import ClassroomsSharedSpacesComponent from "../dashboard-admin/pages/classrooms-shared-spaces.component.vue";
-import AddClassroomsComponent from "../classroom-space-resource-management/pages/classrooms/add-classrooms.component.vue";
+import AddClassroomsComponent
+    from "../classroom-space-resource-management/pages/classrooms/add-classrooms.component.vue";
 import ClassroomsComponent from "../classroom-space-resource-management/pages/classrooms/classrooms.component.vue";
-import EditClassroomComponent from "../classroom-space-resource-management/pages/classrooms/edit-classroom.component.vue";
-import AddSharedSpaceComponent from "../classroom-space-resource-management/pages/shared-spaces/add-shared-space.component.vue";
-import SharedSpaceComponent from "../classroom-space-resource-management/pages/shared-spaces/shared-space.component.vue";
-import EditSharedSpaceComponent from "../classroom-space-resource-management/pages/shared-spaces/edit-shared-space.component.vue";
+import EditClassroomComponent
+    from "../classroom-space-resource-management/pages/classrooms/edit-classroom.component.vue";
+import AddSharedSpaceComponent
+    from "../classroom-space-resource-management/pages/shared-spaces/add-shared-space.component.vue";
+import SharedSpaceComponent
+    from "../classroom-space-resource-management/pages/shared-spaces/shared-space.component.vue";
+import EditSharedSpaceComponent
+    from "../classroom-space-resource-management/pages/shared-spaces/edit-shared-space.component.vue";
 import ResourceComponent from "../classroom-space-resource-management/pages/resources/resource.component.vue";
 import AddResourceComponent from "../classroom-space-resource-management/pages/resources/add-resource.component.vue";
 import EditResourceComponent from "../classroom-space-resource-management/pages/resources/edit-resource.component.vue";
@@ -49,33 +54,155 @@ const router = createRouter({
 
         // --- Rutas del Administrador ---
         { path: '/dashboard-admin', redirect: '/dashboard-admin/home-admin' },
-        { path: '/dashboard-admin/home-admin', name: 'home-admin', component: HomeAdminComponent, meta: { title: 'Home Admin' } },
-        { path: '/dashboard-admin/personal-data', name: 'personal-data', component: PersonalDataComponent, meta: { title: 'My Profile' } },
-        { path: '/dashboard-admin/teachers', name: 'teachers-management', component: TeachersManagementComponent, meta: { title: 'Teachers Management' } },
-        { path: '/dashboard-admin/classroom-changes-meetings', name: 'classroom-changes-meetings', component: ClassroomChangesMeetingsComponent, meta: { title: 'Classroom Changes & Meetings' } },
-        { path: '/dashboard-admin/classroom-changes-meetings/meeting-management', name: 'meet-management', component: MeetManagementComponent, meta: { title: 'Meeting Management' } },
-        { path: '/dashboard-admin/classrooms-shared-spaces', name: 'classrooms-shared-spaces', component: ClassroomsSharedSpacesComponent, meta: { title: 'Classrooms & Shared Spaces' } },
-        { path: '/dashboard-admin/classrooms-shared-spaces/classrooms', name: 'admin-classrooms', component: ClassroomsComponent, meta: { title: 'Manage Classrooms' } },
-        { path: '/dashboard-admin/classrooms-shared-spaces/classrooms/add', name: 'add-classrooms', component: AddClassroomsComponent, meta: { title: 'Add Classroom' } },
-        { path: '/dashboard-admin/classrooms-shared-spaces/classrooms/edit/:id', name: 'edit-classroom', component: EditClassroomComponent, meta: { title: 'Edit Classroom' } },
-        { path: '/dashboard-admin/classrooms-shared-spaces/shared-spaces', name: 'shared-spaces', component: SharedSpaceComponent, meta: { title: 'Manage Shared Spaces' } },
-        { path: '/dashboard-admin/classrooms-shared-spaces/shared-spaces/add', name: 'add-shared-space', component: AddSharedSpaceComponent, meta: { title: 'Add Shared Space' } },
-        { path: '/dashboard-admin/classrooms-shared-spaces/shared-spaces/edit/:id', name: 'edit-shared-space', component: EditSharedSpaceComponent, meta: { title: 'Edit Shared Space' } },
-        { path: '/dashboard-admin/classrooms-shared-spaces/resources', name: 'resource-list', component: ResourceComponent, meta: { title: 'Resource List' } },
-        { path: '/dashboard-admin/classrooms-shared-spaces/resources/add', name: 'add-resource', component: AddResourceComponent, meta: { title: 'Add Resource' } },
-        { path: '/dashboard-admin/classrooms-shared-spaces/classrooms/:classroomId/resources/edit/:resourceId', name: 'edit-resource', component: EditResourceComponent, meta: { title: 'Edit Resource' } },
+        {
+            path: '/dashboard-admin/home-admin',
+            name: 'home-admin',
+            component: HomeAdminComponent,
+            meta: {title: 'Home Admin', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/personal-data',
+            name: 'personal-data',
+            component: PersonalDataComponent,
+            meta: {title: 'My Profile', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/teachers',
+            name: 'teachers-management',
+            component: TeachersManagementComponent,
+            meta: {title: 'Teachers Management', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/classroom-changes-meetings',
+            name: 'classroom-changes-meetings',
+            component: ClassroomChangesMeetingsComponent,
+            meta: {title: 'Meeting Management', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/classroom-changes-meetings/meeting-management',
+            name: 'meet-management',
+            component: MeetManagementComponent,
+            meta: {title: 'Meeting Management', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/classrooms-shared-spaces',
+            name: 'classrooms-shared-spaces',
+            component: ClassroomsSharedSpacesComponent,
+            meta: {title: 'Classrooms & Shared Spaces', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/classrooms-shared-spaces/classrooms',
+            name: 'admin-classrooms',
+            component: ClassroomsComponent,
+            meta: {title: 'Manage Classrooms', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/classrooms-shared-spaces/classrooms/add',
+            name: 'add-classrooms',
+            component: AddClassroomsComponent,
+            meta: {title: 'Add Classroom', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/classrooms-shared-spaces/classrooms/edit/:id',
+            name: 'edit-classroom',
+            component: EditClassroomComponent,
+            meta: {title: 'Edit Classroom', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/classrooms-shared-spaces/shared-spaces',
+            name: 'shared-spaces',
+            component: SharedSpaceComponent,
+            meta: {title: 'Manage Shared Spaces', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/classrooms-shared-spaces/shared-spaces/add',
+            name: 'add-shared-space',
+            component: AddSharedSpaceComponent,
+            meta: {title: 'Add Shared Space', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/classrooms-shared-spaces/shared-spaces/edit/:id',
+            name: 'edit-shared-space',
+            component: EditSharedSpaceComponent,
+            meta: {title: 'Edit Shared Space', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/classrooms-shared-spaces/resources',
+            name: 'resource-list',
+            component: ResourceComponent,
+            meta: {title: 'Resource List', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/classrooms-shared-spaces/resources/add',
+            name: 'add-resource',
+            component: AddResourceComponent,
+            meta: {title: 'Add Resource', requiresAuth: true, role: 'RoleAdmin'}
+        },
+        {
+            path: '/dashboard-admin/classrooms-shared-spaces/classrooms/:classroomId/resources/edit/:resourceId',
+            name: 'edit-resource',
+            component: EditResourceComponent,
+            meta: {title: 'Edit Resource', requiresAuth: true, role: 'RoleAdmin'}
+        },
 
         // --- Rutas del Profesor ---
         { path: '/dashboard-teacher', redirect: '/dashboard-teacher/home-teacher' },
-        { path: '/dashboard-teacher/home-teacher', name: 'home-teacher', component: HomeTeacherComponent, meta: { title: 'Home Teacher' } },
-        { path: '/dashboard-teacher/reservations', name: 'reservations', component: ReservationsComponent, meta: { title: 'Reservations' } },
-        { path: '/dashboard-teacher/reservations/reservation-management', name: 'reservation-management', component: ReservationManagementComponent, meta: { title: 'Reservation of spaces' } },
-        { path: '/dashboard-teacher/reservations/space-availability', name: 'space-availability', component: SpaceAvailabilityComponent, meta: { title: 'My Reservations' } },
-        { path: '/dashboard-teacher/breakdown-reports', name: 'breakdown-reports', component: BreakdownReportsComponent, meta: { title: 'Breakdown Reports' } },
-        { path: '/dashboard-teacher/breakdown-reports/classrooms', name: 'teacher-classrooms', component: ClassroomManagementComponent, meta: { title: 'My Classrooms' } },
-        { path: '/dashboard-teacher/breakdown-reports/classrooms/:classroomId/resources', name: 'teacher-resource-management', component: ResourceManagementComponent, meta: { title: 'Classroom Resources' }, props: true },
-        { path: '/dashboard-teacher/breakdown-reports/classrooms/:classroomId/resources/:resourceId/report', name: 'report-resource', component: ReportResourceComponent, meta: { title: 'Report Resource' }, props: true },
-        { path: '/dashboard-teacher/breakdown-reports/reports', name: 'teacher-reports', component: ReportsManagementComponent, meta: { title: 'My Reports' } },
+        {
+            path: '/dashboard-teacher/home-teacher',
+            name: 'home-teacher',
+            component: HomeTeacherComponent,
+            meta: {title: 'Home Teacher', requiresAuth: true, role: 'RoleTeacher'}
+        },
+        {
+            path: '/dashboard-teacher/reservations',
+            name: 'reservations',
+            component: ReservationsComponent,
+            meta: {title: 'Reservations', requiresAuth: true, role: 'RoleTeacher'}
+        },
+        {
+            path: '/dashboard-teacher/reservations/reservation-management',
+            name: 'reservation-management',
+            component: ReservationManagementComponent,
+            meta: {title: 'Reservation of spaces', requiresAuth: true, role: 'RoleTeacher'}
+        },
+        {
+            path: '/dashboard-teacher/reservations/space-availability',
+            name: 'space-availability',
+            component: SpaceAvailabilityComponent,
+            meta: {title: 'My Reservations', requiresAuth: true, role: 'RoleTeacher'}
+        },
+        {
+            path: '/dashboard-teacher/breakdown-reports',
+            name: 'breakdown-reports',
+            component: BreakdownReportsComponent,
+            meta: {title: 'Breakdown Reports', requiresAuth: true, role: 'RoleTeacher'}
+        },
+        {
+            path: '/dashboard-teacher/breakdown-reports/classrooms',
+            name: 'teacher-classrooms',
+            component: ClassroomManagementComponent,
+            meta: {title: 'My Classrooms', requiresAuth: true, role: 'RoleTeacher'}
+        },
+        {
+            path: '/dashboard-teacher/breakdown-reports/classrooms/:classroomId/resources',
+            name: 'teacher-resource-management',
+            component: ResourceManagementComponent,
+            meta: {title: 'Classroom Resources', requiresAuth: true, role: 'RoleTeacher'},
+            props: true
+        },
+        {
+            path: '/dashboard-teacher/breakdown-reports/classrooms/:classroomId/resources/:resourceId/report',
+            name: 'report-resource',
+            component: ReportResourceComponent,
+            meta: {title: 'Report Resource', requiresAuth: true, role: 'RoleTeacher'},
+            props: true
+        },
+        {
+            path: '/dashboard-teacher/breakdown-reports/reports',
+            name: 'teacher-reports',
+            component: ReportsManagementComponent,
+            meta: {title: 'My Reports', requiresAuth: true, role: 'RoleTeacher'}
+        },
     ]
 });
 

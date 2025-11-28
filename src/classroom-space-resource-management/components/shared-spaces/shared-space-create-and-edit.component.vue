@@ -75,17 +75,18 @@ export default {
 </script>
 
 <template>
-  <div class="breadcrumb" style="display: flex; align-items: center">
-    <h4 style="margin-right: 20px">Classrooms and Shared Spaces</h4>
-    <i class="pi pi-chevron-right"></i>
-    <h4 style="margin-left: 20px">Shared Spaces</h4>
-    <i class="pi pi-chevron-right"></i>
-    <h4 style="margin-left: 20px">
-      {{ isCreateMode ? "Add Shared Space" : "Edit Shared Space" }}
-    </h4>
-  </div>
+  <div class="shared-space-create-and-edit-container">
+    <div class="breadcrumb" style="display: flex; align-items: center">
+      <h4 style="margin-right: 20px">Classrooms and Shared Spaces</h4>
+      <i class="pi pi-chevron-right"></i>
+      <h4 style="margin-left: 20px">Shared Spaces</h4>
+      <i class="pi pi-chevron-right"></i>
+      <h4 style="margin-left: 20px">
+        {{ isCreateMode ? "Add Shared Space" : "Edit Shared Space" }}
+      </h4>
+    </div>
 
-  <div class="shared-space-create-form">
+    <div class="shared-space-create-form">
     <div class="form-header">
       <h2>{{ isCreateMode ? "Create Shared Space" : "Edit Shared Space" }}</h2>
     </div>
@@ -132,6 +133,7 @@ export default {
         />
       </div>
     </form>
+    </div>
   </div>
 </template>
 

@@ -1,5 +1,5 @@
 <script>
-import { ResourceService } from "../../services/resource.service.js";
+import {ResourceService} from "../../services/resource.service.js";
 import ResourceCreateAndEdit from "../../components/resources/resource-create-and-edit.component.vue";
 
 export default {
@@ -42,7 +42,12 @@ export default {
     async updateResource(resourceData) {
       try {
         await this.resourceService.update(this.classroomId, this.resourceId, resourceData);
-        alert("Resource updated successfully.");
+        this.$toast.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: 'Recurso actualizado correctamente.',
+          life: 3000
+        });
         this.$router.push({ name: 'resource-list' });
       } catch (error) {
         console.error("Error updating resource:", error);

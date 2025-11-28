@@ -1,6 +1,6 @@
 <script>
-import { mapGetters, mapActions } from "vuex";
-import { AdministratorService } from "../../profiles/services/administrator.service.js";
+import {mapActions, mapGetters} from "vuex";
+import {AdministratorService} from "../../profiles/services/administrator.service.js";
 
 export default {
   name: "admin-profile",

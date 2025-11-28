@@ -1,4 +1,4 @@
-import { unwrapValue } from "../../shared/utils/value-object-unwrapper.js";
+import {unwrapValue} from "../../shared/utils/value-object-unwrapper.js";
 
 export class Meet {
   constructor({

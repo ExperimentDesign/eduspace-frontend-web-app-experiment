@@ -20,6 +20,10 @@ export default {
     serverError: {
       type: String,
       default: null,
+    },
+    loading: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -32,7 +36,6 @@ export default {
     try {
       const response = await TeacherService.fetchTeachers();
       this.teachers = JSON.parse(JSON.stringify(response));
-      console.log("Teachers loaded:", this.teachers);
       this.$forceUpdate();
     } catch (error) {
       console.error("Error loading teachers:", error);
@@ -41,7 +44,12 @@ export default {
   methods: {
     save() {
       if (!this.form.name || !this.form.description || !this.form.teacherId) {
-        alert("Please fill in all fields.");
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Campos incompletos',
+          detail: 'Por favor completa todos los campos.',
+          life: 3000
+        });
         return;
       }
       this.$emit("save", this.form);
@@ -76,15 +84,16 @@ export default {
 </script>
 
 <template>
-  <div class="breadcrumb" style="display: flex; align-items: center">
-    <h4 style="margin-right: 20px">Classrooms and Shared Spaces</h4>
-    <i class="pi pi-chevron-right"></i>
-    <h4 style="margin-left: 20px">Classrooms</h4>
-    <i class="pi pi-chevron-right"></i>
-    <h4 style="margin-left: 20px">{{ isCreateMode ? 'Add Classroom' : 'Edit Classroom' }}</h4>
-  </div>
+  <div class="classroom-create-and-edit-container">
+    <div class="breadcrumb" style="display: flex; align-items: center">
+      <h4 style="margin-right: 20px">Classrooms and Shared Spaces</h4>
+      <i class="pi pi-chevron-right"></i>
+      <h4 style="margin-left: 20px">Classrooms</h4>
+      <i class="pi pi-chevron-right"></i>
+      <h4 style="margin-left: 20px">{{ isCreateMode ? 'Add Classroom' : 'Edit Classroom' }}</h4>
+    </div>
 
-  <div class="classroom-create-form">
+    <div class="classroom-create-form">
     <div class="form-header">
       <h2>{{ isCreateMode ? 'Create Classroom' : 'Edit Classroom' }}</h2>
     </div>
@@ -116,7 +125,7 @@ export default {
       />
 
       <div class="form-actions">
-        <pv-button type="submit" label="Save" class="p-button-success"/>
+        <pv-button :loading="loading" class="p-button-success" label="Save" type="submit"/>
         <pv-button
           type="button"
           label="Cancel"
@@ -125,6 +134,7 @@ export default {
         />
       </div>
     </form>
+    </div>
   </div>
 </template>
 

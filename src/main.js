@@ -1,7 +1,6 @@
 import {createApp} from 'vue'
 import './style.css'
 import App from './app.vue'
-import i18n from "./i18n.js";
 
 // PrimeVue
 import PrimeVue from 'primevue/config';
@@ -54,6 +53,7 @@ import Dropdown from "primevue/dropdown";
 import Avatar from "primevue/avatar";
 import ConfirmPopup from "primevue/confirmpopup";
 import ProgressSpinner from "primevue/progressspinner";
+import Tooltip from "primevue/tooltip";
 
 // Create app instance
 
@@ -61,10 +61,6 @@ const app = createApp(App);
 
 //user vuex
 app.use(store);
-
-// Use i18n
-
-app.use(i18n);
 
 // Use Router
 
@@ -81,6 +77,8 @@ app.use(PrimeVue, { theme: {
     .use(ConfirmationService)
     .use(DialogService)
     .use(ToastService);
+
+app.directive('tooltip', Tooltip);
 
 // Use PrimeVue Components
 

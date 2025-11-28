@@ -78,7 +78,15 @@ export default {
 
     handleEventClick(clickInfo) {
       const event = clickInfo.event;
-      alert(`Reserva: ${event.title}\nInicio: ${event.start.toLocaleString('es-ES')}\nFin: ${event.end.toLocaleString('es-ES')}`);
+      this.$toast.add({
+        severity: 'info',
+        summary: 'Detalles de Reserva',
+        detail: `${event.title} (${event.start.toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit'
+        })} - ${event.end.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})})`,
+        life: 5000
+      });
     },
 
     handleEvents(events) {
@@ -146,7 +154,7 @@ export default {
   border-radius: 6px;
   padding: 0.5rem 1rem;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
 }
 
 .enhanced-calendar :deep(.fc-button:hover) {
@@ -195,7 +203,7 @@ export default {
   border-radius: 6px;
   background: linear-gradient(135deg, #00bcd4 0%, #00acc1 100%);
   box-shadow: 0 2px 4px rgba(0, 188, 212, 0.3);
-  transition: all 0.3s ease;
+  transition: all 0.2s ease;
   cursor: pointer;
 }
 

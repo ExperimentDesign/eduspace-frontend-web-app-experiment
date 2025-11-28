@@ -1,5 +1,5 @@
 import http from "../../shared/services/http-common.js";
-import { RegisterTeacher } from "../model/register-teacher.entity.js";
+import {RegisterTeacher} from "../model/register-teacher.entity.js";
 
 export class TeacherService {
     static async fetchTeachers() {

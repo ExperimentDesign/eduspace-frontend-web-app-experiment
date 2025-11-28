@@ -55,7 +55,6 @@ export default {
       try {
         const response = await this.resourceService.getAllByClassroomId(this.classroomId);
         this.resources = response.data;
-        console.log("Resources loaded:", this.resources);
       } catch (error) {
         console.error("Error loading resources", error);
       } finally {

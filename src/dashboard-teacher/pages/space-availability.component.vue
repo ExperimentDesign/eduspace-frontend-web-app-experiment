@@ -1,8 +1,8 @@
 <script>
-import { mapGetters } from "vuex";
-import { ReservationService } from "../../reservation-management/services/reservation.service.js";
-import { SharedAreaService } from "../../classroom-space-resource-management/services/shared-area.service.js";
-import { toDateOnlyString, toTimeOnlyString } from "../../shared/utils/date-utils.js";
+import {mapGetters} from "vuex";
+import {ReservationService} from "../../reservation-management/services/reservation.service.js";
+import {SharedAreaService} from "../../classroom-space-resource-management/services/shared-area.service.js";
+import {toDateOnlyString, toTimeOnlyString} from "../../shared/utils/date-utils.js";
 
 export default {
   name: "TeacherSpaceAvailability",
@@ -23,11 +23,27 @@ export default {
         date: null,
         start: null,
         end: null
-      }
+      },
+
+      activeTab: 'active'
     };
   },
   computed: {
     ...mapGetters("user", ["userId"]),
+
+    activeReservations() {
+      const now = new Date();
+      return this.myReservations.filter(r => new Date(r.end) >= now);
+    },
+
+    pastReservations() {
+      const now = new Date();
+      return this.myReservations.filter(r => new Date(r.end) < now);
+    },
+
+    displayedReservations() {
+      return this.activeTab === 'active' ? this.activeReservations : this.pastReservations;
+    },
 
     isEditValid() {
       if (!this.editForm.start || !this.editForm.end) return false;
@@ -103,7 +119,21 @@ export default {
       }
     },
 
+    isReservationExpired(reservation) {
+      return new Date(reservation.end) < new Date();
+    },
+
     openEditDialog(reservation) {
+      if (this.isReservationExpired(reservation)) {
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Cannot Edit',
+          detail: 'Cannot edit expired reservations',
+          life: 3000
+        });
+        return;
+      }
+
       const startObj = new Date(reservation.start);
       const endObj = new Date(reservation.end);
 
@@ -195,15 +225,49 @@ export default {
       />
     </div>
 
-    <div v-else class="reservations-grid">
-      <div v-for="reservation in myReservations" :key="reservation.id" class="reservation-card">
+    <div v-else>
+      <div class="tabs-container">
+        <button
+            :class="['tab-button', { active: activeTab === 'active' }]"
+            @click="activeTab = 'active'"
+        >
+          <i class="pi pi-calendar-plus"></i>
+          Active Reservations
+          <span class="badge">{{ activeReservations.length }}</span>
+        </button>
+        <button
+            :class="['tab-button', { active: activeTab === 'history' }]"
+            @click="activeTab = 'history'"
+        >
+          <i class="pi pi-history"></i>
+          History
+          <span class="badge">{{ pastReservations.length }}</span>
+        </button>
+      </div>
+
+      <div v-if="displayedReservations.length === 0" class="empty-tab-state">
+        <i :class="['pi', activeTab === 'active' ? 'pi-calendar-plus' : 'pi-history', 'empty-icon']"></i>
+        <h3>{{ activeTab === 'active' ? 'No active reservations' : 'No past reservations' }}</h3>
+        <p>{{
+            activeTab === 'active' ? 'You don\'t have any upcoming reservations.' : 'No reservation history yet.'
+          }}</p>
+      </div>
+
+      <div v-else class="reservations-grid">
+        <div
+            v-for="reservation in displayedReservations"
+            :key="reservation.id"
+            :class="['reservation-card', { expired: isReservationExpired(reservation) }]"
+        >
         <div class="card-header">
           <div class="header-left">
-            <i class="pi pi-calendar-check"></i>
+            <i :class="['pi', isReservationExpired(reservation) ? 'pi-clock' : 'pi-calendar-check']"></i>
             <span class="area-badge">{{ getAreaName(reservation.areaId) }}</span>
+            <span v-if="isReservationExpired(reservation)" class="expired-badge">Expired</span>
           </div>
           <div class="header-actions">
             <pv-button
+                v-if="!isReservationExpired(reservation)"
               icon="pi pi-pencil"
               text
               rounded
@@ -237,6 +301,7 @@ export default {
               <span class="value">{{ formatDateTime(reservation.end) }}</span>
             </div>
           </div>
+        </div>
         </div>
       </div>
     </div>
@@ -319,6 +384,80 @@ export default {
   height: 2rem;
 }
 
+.tabs-container {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #f1f5f9;
+}
+
+.tab-button {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  color: #64748b;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: -2px;
+}
+
+.tab-button:hover {
+  color: #334155;
+  background: #f8fafc;
+}
+
+.tab-button.active {
+  color: #3b82f6;
+  border-bottom-color: #3b82f6;
+}
+
+.tab-button .badge {
+  background: #e2e8f0;
+  color: #475569;
+  padding: 0.15rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.tab-button.active .badge {
+  background: #dbeafe;
+  color: #3b82f6;
+}
+
+.empty-tab-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  background: #fff;
+  border-radius: 20px;
+  border: 2px dashed #e2e8f0;
+  margin-top: 1rem;
+}
+
+.empty-tab-state .empty-icon {
+  font-size: 3rem;
+  color: #cbd5e1;
+  margin-bottom: 1rem;
+}
+
+.empty-tab-state h3 {
+  color: #334155;
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-tab-state p {
+  color: #94a3b8;
+  margin: 0;
+}
+
 .reservations-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
@@ -339,6 +478,15 @@ export default {
 .reservation-card:hover {
   transform: translateY(-4px);
   box-shadow: 0 12px 30px rgba(0,0,0,0.08);
+}
+
+.reservation-card.expired {
+  opacity: 0.7;
+  border-color: #e2e8f0;
+}
+
+.reservation-card.expired .card-header {
+  background: #f8fafc;
 }
 
 .card-header {
@@ -369,6 +517,18 @@ export default {
   background: #e2e8f0;
   padding: 0.25rem 0.5rem;
   border-radius: 6px;
+}
+
+.expired-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  margin-left: 0.25rem;
 }
 
 .header-actions {

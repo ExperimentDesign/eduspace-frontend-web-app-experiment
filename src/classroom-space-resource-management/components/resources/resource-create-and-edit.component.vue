@@ -40,7 +40,12 @@ export default {
   methods: {
     save() {
       if (!this.form.name || !this.form.kindOfResource || !this.form.classroomId) {
-        alert("Please fill in all fields.");
+        this.$toast.add({
+          severity: 'warn',
+          summary: 'Atención',
+          detail: 'Por favor completa todos los campos.',
+          life: 3000
+        });
         return;
       }
       this.$emit("save", this.form);

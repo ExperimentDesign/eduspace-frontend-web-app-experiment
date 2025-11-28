@@ -27,11 +27,16 @@ export default {
     async updateClassroom(classroomData) {
       try {
         await this.classroomService.update(this.classroomId, classroomData);
-        alert("Classroom updated successfully");
+        this.$toast.add({severity: 'success', summary: 'Éxito', detail: 'Aula actualizada correctamente', life: 3000});
         this.$router.push("/dashboard-admin/classrooms-shared-spaces");
       } catch (error) {
         console.error("Error updating classroom:", error);
-        alert("Error updating classroom: " + error.message);
+        this.$toast.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Error al actualizar: ' + error.message,
+          life: 3000
+        });
       }
     },
     cancel() {

@@ -81,7 +81,11 @@
     </header>
 
     <main class="main-content">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <transition mode="out-in" name="fade">
+          <component :is="Component"/>
+        </transition>
+      </router-view>
     </main>
 
     <pv-confirmpopup group="logout-group">
@@ -101,7 +105,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import {mapActions, mapGetters} from "vuex";
 import HomeIcon from "./assets/admin/Home.svg";
 import ClassroomIcon from "./assets/admin/Clasroom.svg";
 import EnvironmentIcon from "./assets/admin/Environment.svg";
@@ -111,6 +115,7 @@ import BreakdownIcon from "./assets/teacher/Breakdown_Reports.svg";
 import NotificationIcon from "./assets/teacher/Notification.svg";
 import DefaultAvatar from "./assets/default-avatar.png";
 import LogoSidebar from "./assets/Logo sidebar.png";
+
 export default {
   name: "app",
   data() {
@@ -140,7 +145,7 @@ export default {
             svg: EnvironmentIcon,
           },
           {
-            label: "Classroom Changes and Meetings",
+            label: "Meeting Management",
             to: "/dashboard-admin/classroom-changes-meetings",
             svg: ClassroomIcon,
           },
@@ -383,5 +388,15 @@ export default {
   .main-content {
     margin-left: 0;
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

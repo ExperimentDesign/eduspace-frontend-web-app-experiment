@@ -43,6 +43,7 @@
       <AddTeacherFormComponent
         @save="handleAddTeacher"
         @cancel="showAddDialog = false"
+        :loading="isSaving"
       />
     </pv-dialog>
 
@@ -102,6 +103,7 @@
         :is-edit="true"
         @save="handleEditTeacher"
         @cancel="showEditDialog = false"
+        :loading="isSaving"
       />
     </pv-dialog>
 
@@ -149,10 +151,10 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import {mapGetters} from "vuex";
 import TeacherCardComponent from "../../personal-data/components/teacher-card.component.vue";
 import AddTeacherFormComponent from "../../personal-data/components/add-teacher-form.component.vue";
-import { TeacherService } from "../../personal-data/services/teacher.service.js";
+import {TeacherService} from "../../personal-data/services/teacher.service.js";
 
 export default {
   name: "teachers-management",
@@ -170,6 +172,7 @@ export default {
       showDeleteDialog: false,
       teacherToDelete: null,
       loading: false,
+      isSaving: false
     };
   },
   computed: {
@@ -196,6 +199,7 @@ export default {
     },
 
     async handleAddTeacher(teacherData) {
+      this.isSaving = true;
       try {
         await TeacherService.addTeacher(teacherData);
         this.$toast.add({
@@ -213,6 +217,8 @@ export default {
           detail: error.message || "Failed to add teacher",
           life: 4000,
         });
+      } finally {
+        this.isSaving = false;
       }
     },
 
@@ -244,6 +250,7 @@ export default {
     },
 
     async handleEditTeacher(teacherData) {
+      this.isSaving = true;
       try {
         await TeacherService.updateTeacher(
           this.selectedTeacher.id,
@@ -265,6 +272,8 @@ export default {
           detail: error.message || "Failed to update teacher",
           life: 4000,
         });
+      } finally {
+        this.isSaving = false;
       }
     },
 

@@ -1,9 +1,9 @@
 <script>
 import CreateAndEdit from "../../shared/components/create-and-edit.component.vue";
-import { TeacherService } from "../services/teachers.service.js";
-import { mapGetters } from "vuex";
-import { ClassroomService } from "../../shared/services/classroom.service.js";
-import { toDateOnlyString, toTimeOnlyString } from "../../shared/utils/date-utils.js";
+import {TeacherService} from "../services/teachers.service.js";
+import {mapGetters} from "vuex";
+import {ClassroomService} from "../../shared/services/classroom.service.js";
+import {toDateOnlyString, toTimeOnlyString} from "../../shared/utils/date-utils.js";
 
 export default {
   name: "meet-create-and-edit-dialog",
@@ -103,7 +103,6 @@ export default {
     async loadInitialData() {
       try {
         await Promise.all([this.loadTeachers(), this.loadClassrooms()]);
-        console.log("Initial data loaded");
       } catch (error) {
         console.error("Error loading initial data:", error);
       }
@@ -114,7 +113,6 @@ export default {
         id: teacher.id,
         name: `${teacher.firstName} ${teacher.lastName}`,
       }));
-      console.log("Teachers loaded:", this.teachers);
     },
     async loadClassrooms() {
       const classroomsService = new ClassroomService();
@@ -123,7 +121,6 @@ export default {
         id: Number(classroom.id),
         name: classroom.name,
       }));
-      console.log("Classrooms loaded:", this.classrooms);
     },
     formatTeachersForEdit() {
       if (Array.isArray(this.item.teachers) && this.item.teachers.length > 0) {
