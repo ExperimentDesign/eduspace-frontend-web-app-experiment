@@ -62,6 +62,21 @@
         </div>
 
         <div class="footer-section">
+          <div class="complaints-container">
+            <a
+              href="https://forms.gle/2feXqjeDQ3T7MPt98"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="complaints-link"
+            >
+              <img
+                :src="LibroReclamacionesIcon"
+                alt="Libro de Reclamaciones"
+                class="complaints-icon"
+              />
+              <span>Libro de Reclamaciones</span>
+            </a>
+          </div>
           <div class="logout-container">
             <pv-button
               class="pv-button log-out logout-hover"
@@ -115,6 +130,7 @@ import BreakdownIcon from "./assets/teacher/Breakdown_Reports.svg";
 import NotificationIcon from "./assets/teacher/Notification.svg";
 import DefaultAvatar from "./assets/default-avatar.png";
 import LogoSidebar from "./assets/Logo sidebar.png";
+import LibroReclamacionesIcon from "./assets/libro-de-reclamaciones.png";
 
 export default {
   name: "app",
@@ -124,6 +140,7 @@ export default {
       items: [],
       DefaultAvatar,
       LogoSidebar,
+      LibroReclamacionesIcon,
     };
   },
   computed: {
@@ -398,5 +415,50 @@ export default {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+.complaints-container {
+  width: 100%;
+  margin-bottom: 10px;
+  padding-left: 0;
+}
+
+.complaints-link {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  color: #000;
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 1rem;
+  padding: 0.5rem 0.7rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.complaints-link:hover {
+  color: #535bf2;
+  background-color: rgba(0, 0, 0, 0.04);
+  border-radius: 6px;
+}
+
+.complaints-icon {
+  width: 30px;
+  height: 30px;
+  margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+  .complaints-link span {
+    display: none;
+  }
+
+  .complaints-link {
+    justify-content: center;
+    padding: 0.5rem;
+  }
+
+  .complaints-icon {
+    margin-right: 0;
+  }
 }
 </style>
